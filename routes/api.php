@@ -1,19 +1,21 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\V1\JobPositionController;
+use App\Http\Controllers\V1\DriverInfoController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\V1\AuthController;
+use App\Http\Controllers\V1\UserController;
+use App\Http\Controllers\V1\DepartmentController;
+use App\Http\Controllers\V1\BranchController;
+use App\Http\Controllers\V1\UserRoleController;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::post('/login', [AuthController::class, 'login']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::apiResource('users', UserController::class);
+    Route::apiResource('departments', DepartmentController::class);
+    Route::apiResource('branches', BranchController::class);
+    Route::apiResource('roles', UserRoleController::class);
+    Route::apiResource('driver-info', DriverInfoController::class);
+    Route::apiResource('job-positions', JobPositionController::class);
 });

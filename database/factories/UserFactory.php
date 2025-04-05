@@ -3,38 +3,30 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
+use App\Models\User;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
- */
 class UserFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
-    public function definition(): array
+    protected $model = User::class;
+
+    public function definition()
     {
         return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
-            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
-            'remember_token' => Str::random(10),
+            'employee_code'    => 'EMP' . $this->faker->unique()->numberBetween(100, 999),
+            'first_name'       => $this->faker->firstName,
+            'last_name'        => $this->faker->lastName,
+            'phone_number'     => '+263' . $this->faker->unique()->numberBetween(712000000, 779999999),
+            'pin'              => $this->faker->numerify('####'),
+            'status'           => $this->faker->randomElement([0, 1, 2]),
+            'job_position_id'  => \App\Models\JobPosition::factory(),
+            'branch_id'        => \App\Models\Branch::factory(),
+            'department_id'    => \App\Models\Department::factory(),
+            'role_id'          => \App\Models\UserRole::factory(),
+            'physical_address' => $this->faker->address,
+            'date_of_birth'    => $this->faker->date(),
+            'national_id'      => $this->faker->optional()->numerify('##########'),
+            'gender'           => $this->faker->optional()->randomElement(['male', 'female']),
+            'email'            => $this->faker->optional()->unique()->safeEmail,
         ];
-    }
-
-    /**
-     * Indicate that the model's email address should be unverified.
-     *
-     * @return $this
-     */
-    public function unverified(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'email_verified_at' => null,
-        ]);
     }
 }

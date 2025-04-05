@@ -1,8 +1,7 @@
 <?php
 
 namespace App\Models;
-
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Hash;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -18,9 +17,9 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+        'employee_code', 'first_name', 'last_name', 'phone_number', 'pin', 'status',
+        'job_position_id', 'branch_id', 'department_id', 'role_id',
+        'physical_address', 'date_of_birth', 'national_id', 'gender', 'email'
     ];
 
     /**
@@ -29,16 +28,42 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
-        'password',
+        'pin',
         'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+    public function setPinAttribute($value)
+    {
+        $this->attributes['pin'] = Hash::make($value);
+    }
+
+    public function setPhoneNumberAttribute($value)
+    {
+        $this->attributes['phone_number'] = strpos($value, '+263') === 0 ? $value : '+263' . ltrim($value, '0');
+    }
+
+    public function jobPosition()
+    {
+        return $this->belongsTo(JobPosition::class);
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
+
+    public function role()
+    {
+        return $this->belongsTo(UserRole::class);
+    }
+
+    public function driverInfo()
+    {
+        return $this->hasOne(DriverInfo::class);
+    }
 }

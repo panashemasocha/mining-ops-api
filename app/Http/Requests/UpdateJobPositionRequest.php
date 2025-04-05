@@ -1,0 +1,22 @@
+<?php
+
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class UpdateJobPositionRequest extends FormRequest
+{
+    public function authorize()
+    {
+        $user = auth()->user();
+        return $user && in_array($user->role->name, ['management', 'executive']);
+    }
+
+    public function rules()
+    {
+        return [
+            'name' => 'sometimes|string|max:255|unique:job_positions,name,' . $this->job_position,
+            'role_id' => 'sometimes|exists:user_roles,id',
+        ];
+    }
+}
