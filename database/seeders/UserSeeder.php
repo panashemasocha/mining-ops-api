@@ -133,7 +133,7 @@ class UserSeeder extends Seeder
                     'job_position_id' => $jobPosition->id,
                     'branch_id' => $branchId,
                     'department_id' => $faker->numberBetween(1, 2),
-                    'role_id' => $jobPosition->id,
+                    'role_id' => $jobPosition->role_id,
                     'physical_address' => $physicalAddress,
                     'date_of_birth' => $faker->date('Y-m-d', '2000-12-31'),
                     'national_id' => $faker->numerify('##########'),
