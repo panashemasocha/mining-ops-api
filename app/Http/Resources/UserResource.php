@@ -7,7 +7,7 @@ class UserResource extends JsonResource
 {
     public function toArray($request)
     {
-        return [
+        $data= [
             'id'              => $this->id,
             'employeeCode'    => $this->employee_code,
             'firstName'       => $this->first_name,
@@ -23,6 +23,15 @@ class UserResource extends JsonResource
             'nationalId'      => $this->national_id,
             'gender'          => $this->gender,
             'email'           => $this->email,
+            'createdAt'       => $this->created_at,
+            'updatedAt'       => $this->updated_at,
+
         ];
+
+        if($this->whenLoaded('driverInfo') && $this->jobPosition && $this->jobPosition->name === 'Driver'){
+            $data['driverInfo'] = new DriverInfoResource($this->driverInfo); 
+        }
+
+        return $data;
     }
 }

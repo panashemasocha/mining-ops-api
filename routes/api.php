@@ -9,9 +9,17 @@ use App\Http\Controllers\V1\DepartmentController;
 use App\Http\Controllers\V1\BranchController;
 use App\Http\Controllers\V1\UserRoleController;
 
-Route::post('/login', [AuthController::class, 'login']);
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout']);
+//Public end points
+Route::prefix('v1')->group(function () {
+    Route::post('login', [AuthController::class, 'login']);
+});
+
+//Private end points
+Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
+    //Auth end points
+    Route::post('logout', [AuthController::class, 'logout']);
+
+    //User end points
     Route::apiResource('users', UserController::class);
     Route::apiResource('departments', DepartmentController::class);
     Route::apiResource('branches', BranchController::class);

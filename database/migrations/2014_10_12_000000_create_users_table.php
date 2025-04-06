@@ -19,7 +19,6 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('phone_number')->unique();
             $table->string('pin');
-            $table->tinyInteger('status')->default(1); // 1: active, 0: deactivated, 2: on-leave
             $table->foreignId('job_position_id')->constrained('job_positions');
             $table->foreignId('branch_id')->constrained('branches');
             $table->foreignId('department_id')->constrained('departments');
@@ -28,6 +27,7 @@ return new class extends Migration
             $table->date('date_of_birth')->nullable();
             $table->string('national_id')->nullable();
             $table->string('gender')->nullable();
+            $table->tinyInteger('status')->default(1); // 1: active, 0: deactivated, 2: on-leave
             $table->timestamps();
         });
     }

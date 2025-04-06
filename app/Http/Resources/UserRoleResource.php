@@ -10,8 +10,8 @@ class UserRoleResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'createdAt' => $this->created_at,
-            'updatedAt' => $this->updated_at,
+           // 'createdAt' => $this->created_at,
+           // 'updatedAt' => $this->updated_at,
         ];
     }
 }
