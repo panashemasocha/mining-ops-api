@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\V1;
 
 use App\Http\Requests\LoginRequest;
@@ -15,8 +16,9 @@ class AuthController extends Controller
         if ($user && Hash::check($request->pin, $user->pin)) {
             $token = $user->createToken('auth_token')->plainTextToken;
             return response()->json([
-                'token' => $token,
-                'user' => new UserResource($user),
+                'token'      => $token,
+                'user'       => new UserResource($user),
+                'expires_in' => 1440 * 60, // 24 hours in seconds
             ]);
         }
         return response()->json(['message' => 'Invalid credentials'], 401);
@@ -26,5 +28,20 @@ class AuthController extends Controller
     {
         auth()->user()->tokens()->delete();
         return response()->json(['message' => 'Logged out']);
+    }
+
+    /**
+     * Refresh token for authenticated user.
+     */
+    public function refresh()
+    {
+        $user = auth()->user();
+        $user->currentAccessToken()->delete();
+        $newToken = $user->createToken('auth_token')->plainTextToken;
+        return response()->json([
+            'token'      => $newToken,
+            'user'       => new UserResource($user),
+            'expires_in' => 1440 * 60, // 24 hours in seconds
+        ]);
     }
 }

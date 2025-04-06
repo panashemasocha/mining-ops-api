@@ -22,17 +22,23 @@ class UserController extends Controller
     {
         $data = $request->validated();
         $data['first_name'] = ucfirst($data['first_name']);
-        $data['last_name']  = ucfirst($data['last_name']);
+        $data['last_name'] = ucfirst($data['last_name']);
         $user = User::create($data);
 
         if ($user->jobPosition->name === 'Driver') {
             DriverInfo::create([
                 'user_id' => $user->id,
-                'status'  => 'off trip',
+                'status' => 'off trip',
             ]);
         }
 
-        return new UserResource($user);
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'token' => $token,
+            'user' => new UserResource($user),
+            'expires_in' => 1440 * 60,
+        ]);
     }
 
     public function show($id)
@@ -45,10 +51,10 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
         $data = $request->validated();
-        if(isset($data['first_name'])) {
+        if (isset($data['first_name'])) {
             $data['first_name'] = ucfirst($data['first_name']);
         }
-        if(isset($data['last_name'])) {
+        if (isset($data['last_name'])) {
             $data['last_name'] = ucfirst($data['last_name']);
         }
         $user->update($data);
