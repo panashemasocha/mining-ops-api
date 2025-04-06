@@ -3,6 +3,8 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -71,7 +73,7 @@ class Handler extends ExceptionHandler
                 'message' => 'The requested resource was not found',
             ], 404);
         }
-        
+
 
         return parent::render($request, $exception);
     }
