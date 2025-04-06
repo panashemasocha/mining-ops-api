@@ -13,7 +13,7 @@ class DatabaseSeeder extends Seeder
           //  JobPositionSeeder::class,
           //  DepartmentSeeder::class,
            // BranchSeeder::class,
-            UserSeeder::class,
+           // UserSeeder::class,
         ]);
     }
 }

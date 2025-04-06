@@ -41,8 +41,37 @@ class Handler extends ExceptionHandler
      */
     public function register(): void
     {
+        $this->renderable(function (NotFoundHttpException $e, Request $request) {
+            return response()->json([
+                'error' => 'Resource Not Found',
+                'message' => 'The requested resource was not found',
+            ], 404);
+        });
+        
+
         $this->reportable(function (Throwable $e) {
             //
         });
+    }
+
+
+    /**
+     * Render an exception into an HTTP response.
+     *
+     * @param \Illuminate\Http\Request  $request
+     * @param \Throwable  $exception
+     * @return \Illuminate\Http\Response
+     */
+    public function render($request, Throwable $exception)
+    {
+        // Handle ModelNotFoundException and NotFoundHttpException
+        if ($exception instanceof ModelNotFoundException || $exception instanceof NotFoundHttpException) {
+            return response()->json([
+                'error' => 'Resource Not Found',
+                'message' => 'The requested resource was not found',
+            ], 404);
+        }
+
+        return parent::render($request, $exception);
     }
 }
