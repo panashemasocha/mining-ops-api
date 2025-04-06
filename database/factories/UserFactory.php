@@ -41,7 +41,7 @@ class UserFactory extends Factory
             'role_id' => \App\Models\UserRole::factory(),
             'physical_address' => $this->faker->address,
             'date_of_birth' => $this->faker->date(),
-            'national_id' => $this->faker->optional()->numerify('##########'),
+            'national_id' => '63-' . $this->faker->unique()->numberBetween(1000000, 9999999) . '-A00',
             'gender' => $this->faker->optional()->randomElement(['male', 'female']),
             'email' => $this->faker->unique()->userName . '@mwamiresources.com',
         ];
