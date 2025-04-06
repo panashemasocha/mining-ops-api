@@ -21,12 +21,12 @@ Route::prefix('v1')->group(function () {
         Route::post('/refresh', [AuthController::class, 'refresh']);
 
         //User end points
-        Route::apiResource('users', UserController::class);
-        Route::apiResource('departments', DepartmentController::class);
-        Route::apiResource('branches', BranchController::class);
-        Route::apiResource('roles', UserRoleController::class);
-        Route::apiResource('driver-info', DriverInfoController::class);
-        Route::apiResource('job-positions', JobPositionController::class);
+        Route::apiResource('/users', UserController::class);
+        Route::apiResource('/departments', DepartmentController::class);
+        Route::apiResource('/branches', BranchController::class);
+        Route::apiResource('/roles', UserRoleController::class);
+        Route::apiResource('/driver-info', DriverInfoController::class);
+        Route::apiResource('/job-positions', JobPositionController::class);
     });
 });
 
