@@ -54,7 +54,7 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
-        
+
 
     }
 
@@ -68,7 +68,7 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
-        // Handle ModelNotFoundException and NotFoundHttpException
+
         if ($exception instanceof ModelNotFoundException || $exception instanceof NotFoundHttpException) {
             return response()->json([
                 'error' => 'Resource Not Found',
