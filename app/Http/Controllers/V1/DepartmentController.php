@@ -1,8 +1,6 @@
 <?php
 namespace App\Http\Controllers\V1;
 
-use App\Http\Requests\DepartmentStoreRequest;
-use App\Http\Requests\DepartmentUpdateRequest;
 use App\Http\Requests\StoreDepartmentRequest;
 use App\Http\Requests\UpdateDepartmentRequest;
 use App\Http\Resources\DepartmentResource;

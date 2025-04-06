@@ -6,7 +6,7 @@ use App\Http\Requests\UpdateUserRoleRequest;
 use App\Http\Resources\UserRoleResource;
 use App\Models\UserRole;
 use Illuminate\Http\Request;
-use app\Http\Controllers\Controller;
+use App\Http\Controllers\Controller;
 
 class UserRoleController extends Controller
 {

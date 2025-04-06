@@ -1,8 +1,6 @@
 <?php
 namespace App\Http\Controllers\V1;
 
-use App\Http\Requests\DriverInfoStoreRequest;
-use App\Http\Requests\DriverInfoUpdateRequest;
 use App\Http\Requests\StoreDriverInfoRequest;
 use App\Http\Requests\UpdateDriverInfoRequest;
 use App\Http\Resources\DriverInfoResource;
