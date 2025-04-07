@@ -69,7 +69,7 @@ class Handler extends ExceptionHandler
 
         // Handle AuthorizationException
         if ($exception instanceof AuthorizationException && $request->expectsJson()) {
-            return response()->json(['message' => 'Unauthorized.'], 403);
+            return response()->json(['message' => 'You are unauthorized to make this request.'], 403);
         }
 
         // Handle ValidationException
@@ -111,7 +111,7 @@ class Handler extends ExceptionHandler
     protected function unauthenticated($request, AuthenticationException $exception): Response
     {
         if ($request->expectsJson()) {
-            return response()->json(['message' => 'Unauthenticated.'], 401);
+            return response()->json(['message' => 'You are unauthenticated, please login again.'], 401);
         }
 
         // Check if the 'login' route exists before redirecting
