@@ -11,8 +11,10 @@ class CostPriceResource extends JsonResource
             'id' => $this->id,
             'commodity' => $this->commodity,
             'oreType' => $this->ore_type,
-            'qualityType' => $this->qualityType,
-            'qualityGrade' => $this->qualityGrade,
+            'quality'=> [
+                'type' =>  $this->quality_type,
+                'grade'=> $this->quality_grade,
+            ],
             'price' => $this->price,
             'dateCreated' => $this->date_created,
             'createdBy' => $this->created_by,

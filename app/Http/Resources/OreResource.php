@@ -10,8 +10,10 @@ class OreResource extends JsonResource
         return [
             'id' => $this->id,
             'type' => $this->type,
-            'qualityType' => $this->quality_type,
-            'qualityGrade'=>$this->quality_grade,
+            'quality'=> [
+                'type' =>  $this->quality_type,
+                'grade'=> $this->quality_grade,
+            ],
             'quantity'=> $this->quantity,
             'supplierId' => $this->supplier_id,
             'createdBy' => $this->created_by,
