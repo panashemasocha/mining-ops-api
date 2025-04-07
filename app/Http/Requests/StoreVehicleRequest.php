@@ -11,7 +11,8 @@ class StoreVehicleRequest extends FormRequest
      */
     public function authorize()
     {
-        return auth()->user()->role === 'management'; 
+        $user = auth()->user();
+        return $user && in_array($user->role->name, ['management', 'executive']);
     }
 
     public function rules()
