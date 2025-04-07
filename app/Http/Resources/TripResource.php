@@ -23,9 +23,11 @@ class TripResource extends JsonResource
                 'latitude' => $this->final_latitude,
                 'altitude' => $this->final_altitude,
             ],
-            'initialDiesel' => $this->initial_diesel,
-            'tripDieselAllocated' => $this->trip_diesel_allocated,
-            'topUpDiesel' => $this->top_up_diesel,
+            "dieselAllocation" => [
+                "initial" => $this->initial_diesel,
+                "allocated" => $this->trip_diesel_allocated,
+                'topUp' => $this->top_up_diesel
+            ],
             'status' => $this->status,
             'createdAt' => $this->created_at,
             'updatedAt' => $this->updated_at,
