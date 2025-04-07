@@ -64,7 +64,7 @@ class DispatchController extends Controller
 
         $vehicles = Vehicle::where('status', 'off trip')->get();
 
-        $results = [];
+        $results = [$drivers,$vehicles];
         foreach ($drivers as $driver) {
             // Assuming drivers have location data in a related table or attributes
             $driverLocation = [$driver->latitude ?? 0, $driver->longitude ?? 0];
