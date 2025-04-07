@@ -9,7 +9,7 @@ class AssignedVehicle extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['driver_id', 'vehicle_id', 'vehicle_type'];
+    protected $fillable = ['driver_id', 'vehicle_id'];
 
     public function driver()
     {

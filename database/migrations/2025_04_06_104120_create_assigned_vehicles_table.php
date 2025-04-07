@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('driver_id')->constrained('users');
             $table->foreignId('vehicle_id')->constrained('vehicles');
-            $table->string('vehicle_type'); // e.g., 'truck horse', 'trailer 1', 'trailer 2'
             $table->timestamps();
         });
     }

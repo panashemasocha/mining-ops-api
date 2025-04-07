@@ -9,7 +9,7 @@ class Vehicle extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'loading_capacity', 'last_known_longitude', 'last_known_latitude',
+        'reg_number','vehicle_type','loading_capacity', 'last_known_longitude', 'last_known_latitude',
         'last_known_altitude', 'status'
     ];
 }

@@ -29,7 +29,7 @@ class AssignedVehicleSeeder extends Seeder
             AssignedVehicle::create([
                 'driver_id' => $driver->id,
                 'vehicle_id' => $vehicles->random()->id,
-                'vehicle_type' => $this->faker->randomElement(['truck horse', 'trailer 1', 'trailer 2']),
+                
             ]);
         }
     }

@@ -21,7 +21,6 @@ class AssignedVehicleFactory extends Factory
         return [
             'driver_id' => User::factory()->create(['job_position_id' => 5]), // 'Driver'
             'vehicle_id' => Vehicle::factory()->create(),
-            'vehicle_type' => $this->faker->randomElement(['truck horse', 'trailer 1', 'trailer 2', 'tractor', 'single cab truck', 'club cab truck', 'double cab truck']),
         ];
     }
 }

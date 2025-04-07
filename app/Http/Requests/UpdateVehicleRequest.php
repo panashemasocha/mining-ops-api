@@ -17,6 +17,8 @@ class UpdateVehicleRequest extends FormRequest
     public function rules()
     {
         return [
+            'reg_number' => 'sometimes|string|max:255',
+            'vehicle_type' => 'sometimes|string|max:255',
             'loading_capacity' => 'sometimes|numeric|min:0',
             'last_known_longitude' => 'sometimes|numeric|between:-180,180',
             'last_known_latitude' => 'sometimes|numeric|between:-90,90',

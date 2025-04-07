@@ -17,12 +17,13 @@ class UpdateCostPriceRequest extends FormRequest
     public function rules()
     {
         return [
-            'commodity' => 'sometimes|string|in:loading cost,ore cost',
-            'ore_type' => 'sometimes|string|max:255',
-            'quality' => 'sometimes|string|max:255',
-            'price' => 'sometimes|numeric|min:0',
-            'date_created' => 'sometimes|date',
-            'created_by' => 'sometimes|exists:users,id',
+            'commodity'     => 'sometimes|string|in:loading cost,ore cost',
+            'ore_type'      => 'sometimes|string|max:255',
+            'quality_type'  => 'sometimes|nullable|string|max:255',
+            'quality_grade' => 'sometimes|nullable|string|max:255',
+            'price'         => 'sometimes|numeric|min:0',
+            'date_created'  => 'sometimes|date',
+            'created_by'    => 'sometimes|exists:users,id',
         ];
     }
 }

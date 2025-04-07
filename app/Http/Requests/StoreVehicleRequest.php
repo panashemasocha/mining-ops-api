@@ -17,6 +17,8 @@ class StoreVehicleRequest extends FormRequest
     public function rules()
     {
         return [
+            'reg_number' => 'required|string|max:255',
+            'vehicle_type' => 'required|string|max:255',
             'loading_capacity' => 'nullable|numeric|min:0',
             'last_known_longitude' => 'nullable|numeric|between:-180,180',
             'last_known_latitude' => 'nullable|numeric|between:-90,90',

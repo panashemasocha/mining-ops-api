@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('vehicles', function (Blueprint $table) {
             $table->id();
+            $table->string('reg_number');
+            $table->string('vehicle_type'); // e.g., 'truck horse', 'trailer 1', 'trailer 2'
             $table->decimal('loading_capacity', 8, 2)->nullable(); // in tonnes
             $table->decimal('last_known_longitude', 10, 6)->nullable();
             $table->decimal('last_known_latitude', 10, 6)->nullable();

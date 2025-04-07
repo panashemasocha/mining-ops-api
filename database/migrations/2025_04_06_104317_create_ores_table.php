@@ -14,7 +14,9 @@ return new class extends Migration
         Schema::create('ores', function (Blueprint $table) {
             $table->id();
             $table->string('type'); // e.g., 'Kyanite'
-            $table->string('quality');
+            $table->string('quality_type'); // 'Gem-Quality' or 'Industrial-Grade'
+            $table->string('quality_grade'); // 'A', 'B', or 'C' for Gem-Quality, High,Medium,Low for Industrial-Grade
+            $table->decimal('quantity', 10, 2);
             $table->foreignId('supplier_id')->constrained('suppliers');
             $table->foreignId('created_by')->constrained('users');
             $table->decimal('longitude', 10, 6);

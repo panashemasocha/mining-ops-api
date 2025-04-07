@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('commodity'); // 'loading cost', 'ore cost'
             $table->string('ore_type');
-            $table->string('quality');
+            $table->string('quality_type')->nullable(); // now nullable for loading cost
+            $table->string('quality_grade')->nullable(); // now nullable for loading cost
             $table->decimal('price', 10, 2);
             $table->date('date_created');
             $table->foreignId('created_by')->constrained('users');

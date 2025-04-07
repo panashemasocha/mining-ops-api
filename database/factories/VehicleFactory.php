@@ -17,6 +17,16 @@ class VehicleFactory extends Factory
     public function definition(): array
     {
         return [
+            'reg_number'=> $this->faker->regexify('[A-Z]{2}-[0-9]{4}'),
+            'vehicle_type' => $this->faker->randomElement([
+                // 'truck horse',
+                //  'trailer 1', 
+                //  'trailer 2', 
+                 'tractor',
+                //   'single cab truck', 
+                //   'club cab truck', 
+                //   'double cab truck'
+                ]),
             'loading_capacity' => $this->faker->randomFloat(2, 5, 50), // Random float between 5 and 50 tonnes
             'last_known_longitude' => $this->faker->longitude(25.237, 33.056), // Longitude range for Zimbabwe
             'last_known_latitude' => $this->faker->latitude(-22.421, -15.609), // Latitude range for Zimbabwe

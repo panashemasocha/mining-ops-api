@@ -11,7 +11,6 @@ class AssignedVehicleResource extends JsonResource
             'id' => $this->id,
             'driverId' => $this->driver_id,
             'vehicleId' => $this->vehicle_id,
-            'vehicleType' => $this->vehicle_type,
             'createdAt' => $this->created_at,
             'updatedAt' => $this->updated_at,
         ];

@@ -9,7 +9,7 @@ class CostPrice extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'commodity', 'ore_type', 'quality', 'price', 'date_created', 'created_by'
+        'commodity', 'ore_type', 'quality_type','quality_grade', 'price', 'date_created', 'created_by'
     ];
 
     public function creator()

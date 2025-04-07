@@ -9,7 +9,7 @@ class Ore extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'type', 'quality', 'supplier_id', 'created_by',
+        'type', 'quality_type','quality_grade','quantity','supplier_id', 'created_by',
         'longitude', 'latitude', 'altitude'
     ];
 

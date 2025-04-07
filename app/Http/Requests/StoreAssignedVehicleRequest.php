@@ -19,7 +19,6 @@ class StoreAssignedVehicleRequest extends FormRequest
         return [
             'driver_id' => 'required|exists:users,id',
             'vehicle_id' => 'required|exists:vehicles,id',
-            'vehicle_type' => 'required|string|max:255',
         ];
     }
 }

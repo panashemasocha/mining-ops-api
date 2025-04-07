@@ -15,8 +15,8 @@ class PaymentMethodSeeder extends Seeder
     public function run(): void
     {
         // Seed Payment methods
-        PaymentMethod::create(['name' => 'Cash']);
-        PaymentMethod::create(['name' => 'Bank transfer']);
-        PaymentMethod::create(['name' => 'Ecocash']);
+        PaymentMethod::create(['method' => 'Cash']);
+        PaymentMethod::create(['method' => 'Bank Transfer']);
+        PaymentMethod::create(['method' => 'Ecocash']);
     }
 }

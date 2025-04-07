@@ -18,15 +18,24 @@ class OreSeeder extends Seeder
 
     public function run()
     {
+
         $suppliers = Supplier::all();
         $users = User::whereHas('jobPosition', function ($query) {
             $query->where('name', 'Quality Controller');
         })->get();
 
+        $qualityType = $this->faker->randomElement(['Gem-Quality', 'Industrial-Grade']);
+
+        $quality_grade = $qualityType === 'Gem-Quality'
+            ? $this->faker->randomElement(['A', 'B', 'C'])
+            : $this->faker->randomElement(['High', 'Medium', 'Low']);
+ 
         for ($i = 0; $i < 10; $i++) {
             Ore::create([
                 'type' => 'Kyanite',
-                'quality' => $this->faker->randomElement(['High', 'Medium', 'Low']),
+                'quality_type'=>$qualityType,
+                'quality_grade' => $quality_grade,
+                'quantity' => $this->faker->randomFloat(2, 0.1, 1000),
                 'supplier_id' => $suppliers->random()->id,
                 'created_by' => $users->random()->id,
                 'longitude' => $this->faker->longitude(25.237, 33.056),
@@ -34,5 +43,7 @@ class OreSeeder extends Seeder
                 'altitude' => $this->faker->numberBetween(500, 1500),
             ]);
         }
+
+        //Ore::factory()->count(10)->create();
     }
 }

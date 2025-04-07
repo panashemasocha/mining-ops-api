@@ -18,7 +18,9 @@ class UpdateOreRequest extends FormRequest
     {
         return [
             'type' => 'sometimes|string|max:255',
-            'quality' => 'sometimes|string|max:255',
+            'quality_type' => 'sometimes|string|max:255',
+            'quality_grade' => 'sometimes|string|in:A,B,C,High,Medium,Low|max:255',
+            'quantity' => 'sometimes|numeric|min:1',
             'supplier_id' => 'sometimes|exists:suppliers,id',
             'created_by' => 'sometimes|exists:users,id',
             'longitude' => 'sometimes|numeric|between:25.237,33.056',

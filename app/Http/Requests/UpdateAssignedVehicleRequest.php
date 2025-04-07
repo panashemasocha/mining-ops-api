@@ -19,7 +19,7 @@ class UpdateAssignedVehicleRequest extends FormRequest
         return [
             'driver_id' => 'sometimes|exists:users,id',
             'vehicle_id' => 'sometimes|exists:vehicles,id',
-            'vehicle_type' => 'sometimes|string|max:255',
+          
         ];
     }
 }
