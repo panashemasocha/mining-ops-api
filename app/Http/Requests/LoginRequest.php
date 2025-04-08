@@ -26,4 +26,15 @@ class LoginRequest extends FormRequest
             'pin' => 'required|digits:4',
         ];
     }
+
+    /**
+     * Prepare the data for validation by converting camelCase inputs to snake_case.
+     */
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'phone_number' => $this->input('phone_number', $this->input('phoneNumber')),
+            'pin' => $this->input('pin', $this->input('pin')),
+        ]);
+    }
 }

@@ -33,4 +33,27 @@ class StoreTripRequest extends FormRequest
             'status' => 'required|in:fulfilled,pending,in-transit,failed',
         ];
     }
+
+    /**
+     * Prepare the data for validation by converting camelCase inputs to snake_case.
+     */
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'driver_id' => $this->input('driver_id', $this->input('driverId')),
+            'vehicle_id' => $this->input('vehicle_id', $this->input('vehicleId')),
+            'dispatch_id' => $this->input('dispatch_id', $this->input('dispatchId')),
+            'ore_quantity' => $this->input('ore_quantity', $this->input('oreQuantity')),
+            'initial_longitude' => $this->input('initial_longitude', $this->input('initialLongitude')),
+            'initial_latitude' => $this->input('initial_latitude', $this->input('initialLatitude')),
+            'initial_altitude' => $this->input('initial_altitude', $this->input('initialAltitude')),
+            'final_longitude' => $this->input('final_longitude', $this->input('finalLongitude')),
+            'final_latitude' => $this->input('final_latitude', $this->input('finalLatitude')),
+            'final_altitude' => $this->input('final_altitude', $this->input('finalAltitude')),
+            'initial_diesel' => $this->input('initial_diesel', $this->input('initialDiesel')),
+            'trip_diesel_allocated' => $this->input('trip_diesel_allocated', $this->input('tripDieselAllocated')),
+            'top_up_diesel' => $this->input('top_up_diesel', $this->input('topUpDiesel')),
+            'status' => $this->input('status', $this->input('status')),
+        ]);
+    }
 }

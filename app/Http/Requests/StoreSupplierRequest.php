@@ -26,4 +26,20 @@ class StoreSupplierRequest extends FormRequest
             'phone_number' => 'required|string|unique:suppliers,phone_number|regex:/^\+263\d{9}$/',
         ];
     }
+
+    /**
+     * Prepare the data for validation by converting camelCase inputs to snake_case.
+     */
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'first_name' => $this->input('first_name', $this->input('firstName')),
+            'last_name' => $this->input('last_name', $this->input('lastName')),
+            'national_id' => $this->input('national_id', $this->input('nationalId')),
+            'physical_address' => $this->input('physical_address', $this->input('physicalAddress')),
+            'created_by' => $this->input('created_by', $this->input('createdBy')),
+            'payment_method_id' => $this->input('payment_method_id', $this->input('paymentMethodId')),
+            'phone_number' => $this->input('phone_number', $this->input('phoneNumber')),
+        ]);
+    }
 }

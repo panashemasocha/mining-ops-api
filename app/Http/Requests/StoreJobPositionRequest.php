@@ -19,4 +19,15 @@ class StoreJobPositionRequest extends FormRequest
             'role_id' => 'required|exists:user_roles,id',
         ];
     }
+
+    /**
+     * Prepare the data for validation by converting camelCase inputs to snake_case.
+     */
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'name' => $this->input('name', $this->input('name')),
+            'role_id' => $this->input('role_id', $this->input('roleId')),
+        ]);
+    }
 }

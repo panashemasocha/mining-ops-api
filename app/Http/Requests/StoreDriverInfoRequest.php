@@ -26,4 +26,19 @@ class StoreDriverInfoRequest extends FormRequest
             'status' => 'required|in:active trip,off trip',
         ];
     }
+
+       /**
+     * Prepare the data for validation by converting camelCase inputs to snake_case.
+     */
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'user_id'              => $this->input('user_id', $this->input('userId')),
+            'license_number'       => $this->input('license_number', $this->input('licenseNumber')),
+            'last_known_longitude' => $this->input('last_known_longitude', $this->input('lastKnownLongitude')),
+            'last_known_latitude'  => $this->input('last_known_latitude', $this->input('lastKnownLatitude')),
+            'last_known_altitude'  => $this->input('last_known_altitude', $this->input('lastKnownAltitude')),
+            'status'               => $this->input('status', $this->input('status')),
+        ]);
+    }
 }

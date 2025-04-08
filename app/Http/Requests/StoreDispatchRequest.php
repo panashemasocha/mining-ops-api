@@ -28,4 +28,22 @@ class StoreDispatchRequest extends FormRequest
             'payment_status' => 'required|in:fully-paid,pending,partially-paid,n/a',
         ];
     }
+
+    /**
+     * Prepare the data for validation by converting camelCase inputs to snake_case.
+     */
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'ore_id' => $this->input('ore_id', $this->input('oreId')),
+            'vehicle_id' => $this->input('vehicle_id', $this->input('vehicleId')),
+            'site_clerk_id' => $this->input('site_clerk_id', $this->input('siteClerkId')),
+            'loading_method' => $this->input('loading_method', $this->input('loadingMethod')),
+            'ore_cost_per_tonne' => $this->input('ore_cost_per_tonne', $this->input('oreCostPerTonne')),
+            'loading_cost_per_tonne' => $this->input('loading_cost_per_tonne', $this->input('loadingCostPerTonne')),
+            'ore_quantity_remaining' => $this->input('ore_quantity_remaining', $this->input('oreQuantityRemaining')),
+            'status' => $this->input('status', $this->input('status')),
+            'payment_status' => $this->input('payment_status', $this->input('paymentStatus')),
+        ]);
+    }
 }
