@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Resources;
 
+use App\Models\User;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class TripResource extends JsonResource
@@ -9,9 +10,9 @@ class TripResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'driverId' => $this->driver_id,
-            'vehicleId' => $this->vehicle_id,
-            'dispatchId' => $this->dispatch_id,
+            'driver' => new UserResource(User::find($this->driver_id)),
+            'vehicle' => new VehicleResource($this->vehicle),
+            'dispatch' => new DispatchResource($this->dispatch),
             'oreQuantity' => $this->ore_quantity,
             'initialLocation' => [
                 'longitude' => $this->initial_longitude,

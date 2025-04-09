@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Resources;
 
+use App\Models\User;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class OreResource extends JsonResource
@@ -16,7 +17,7 @@ class OreResource extends JsonResource
             ],
             'quantity' => $this->quantity,
             'supplier' => new SupplierResource($this->supplier),
-            'createdBy' => $this->created_by,
+            'creator' => new UserResource(User::find($this->created_by)),
             'location' => [
                 'name' => $this->location_name,
                 'longitude' => $this->longitude,

@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Resources;
 
+use App\Models\UserRole;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class JobPositionResource extends JsonResource
@@ -10,9 +11,9 @@ class JobPositionResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'roleId' => $this->role_id,
-           // 'createdAt' => $this->created_at,
-           // 'updatedAt' => $this->updated_at,
+            'role' => new UserRoleResource(UserRole::find($this->role_id)),
+            // 'createdAt' => $this->created_at,
+            // 'updatedAt' => $this->updated_at,
         ];
     }
 }

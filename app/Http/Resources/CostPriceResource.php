@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Resources;
 
+use App\Models\User;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class CostPriceResource extends JsonResource
@@ -17,7 +18,7 @@ class CostPriceResource extends JsonResource
             ],
             'price' => $this->price,
             'dateCreated' => $this->date_created,
-            'createdBy' => $this->created_by,
+            'creator' => new UserResource(User::find($this->created_by)),
             'createdAt' => $this->created_at,
             'updatedAt' => $this->updated_at,
         ];

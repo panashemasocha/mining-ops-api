@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Resources;
 
+use App\Models\User;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class SupplierResource extends JsonResource
@@ -13,9 +14,9 @@ class SupplierResource extends JsonResource
             'lastName' => $this->last_name,
             'nationalId' => $this->national_id,
             'physicalAddress' => $this->physical_address,
-            'createdBy' => $this->created_by,
-            'paymentMethodId' => $this->payment_method_id,
+            'paymentMethod' => new PaymentMethodResource($this->payment_method),
             'phoneNumber' => $this->phone_number,
+            'creator' => new UserResource(User::find($this->created_by)),
             'createdAt' => $this->created_at,
             'updatedAt' => $this->updated_at,
         ];

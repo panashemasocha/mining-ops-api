@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Resources;
 
+use App\Models\User;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class DispatchResource extends JsonResource
@@ -9,11 +10,11 @@ class DispatchResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'oreId' => new OreResource($this->ore),
+            'ore' => new OreResource($this->ore),
             'vehicle' => new VehicleResource($this->vehicle),
-            'siteClerkId' => $this->site_clerk_id,
+            'siteClerk' => new UserResource(User::find($this->site_clerk_id)),
             'loadingMethod' => $this->loading_method,
-            'costPerTonne'=>[
+            'costPerTonne' => [
                 'ore' => $this->ore_cost_per_tonne,
                 'loading' => $this->loading_cost_per_tonne,
             ],
