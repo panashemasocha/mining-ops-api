@@ -15,7 +15,7 @@ class OreResource extends JsonResource
                 'grade' => $this->quality_grade,
             ],
             'quantity' => $this->quantity,
-            'supplier' => new SupplierResource($this->supplier_id),
+            'supplier' => new SupplierResource(1),
             'createdBy' => $this->created_by,
             'location' => [
                 'name' => $this->location_name,
