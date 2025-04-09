@@ -38,6 +38,7 @@ class OreSeeder extends Seeder
                 'quantity' => $this->faker->randomFloat(2, 0.1, 1000),
                 'supplier_id' => $suppliers->random()->id,
                 'created_by' => $users->random()->id,
+                'location_name' =>$this->faker->optional()->address(),
                 'longitude' => $this->faker->longitude(25.237, 33.056),
                 'latitude' => $this->faker->latitude(-22.421, -15.609),
                 'altitude' => $this->faker->numberBetween(500, 1500),

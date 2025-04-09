@@ -26,4 +26,20 @@ class UpdateCostPriceRequest extends FormRequest
             'created_by'    => 'sometimes|exists:users,id',
         ];
     }
+
+     /**
+     * Prepare the data for validation by converting camelCase inputs to snake_case.
+     */
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'commodity' => $this->input('commodity', $this->input('commodity')),
+            'ore_type' => $this->input('ore_type', $this->input('oreType')),
+            'quality_type' => $this->input('quality_type', $this->input('qualityType')),
+            'quality_grade' => $this->input('quality_grade', $this->input('qualityGrade')),
+            'price' => $this->input('price', $this->input('price')),
+            'date_created' => $this->input('date_created', $this->input('dateCreated')),
+            'created_by' => $this->input('created_by', $this->input('createdBy')),
+        ]);
+    }
 }

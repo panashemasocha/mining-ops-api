@@ -27,4 +27,21 @@ class UpdateVehicleRequest extends FormRequest
             'status' => 'sometimes|in:active trip,off trip',
         ];
     }
+
+
+    /**
+     * Prepare the data for validation by converting camelCase inputs to snake_case.
+     */
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'reg_number' => $this->input('reg_number', $this->input('regNumber')),
+            'vehicle_type' => $this->input('vehicle_type', $this->input('vehicleType')),
+            'loading_capacity' => $this->input('loading_capacity', $this->input('loadingCapacity')),
+            'last_known_longitude' => $this->input('last_known_longitude', $this->input('lastKnownLongitude')),
+            'last_known_latitude' => $this->input('last_known_latitude', $this->input('lastKnownLatitude')),
+            'last_known_altitude' => $this->input('last_known_altitude', $this->input('lastKnownAltitude')),
+            'status' => $this->input('status', $this->input('status')),
+        ]);
+    }
 }

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->decimal('quantity', 10, 2);
             $table->foreignId('supplier_id')->constrained('suppliers');
             $table->foreignId('created_by')->constrained('users');
+            $table->string('location_name')->nullable();
             $table->decimal('longitude', 10, 6);
             $table->decimal('latitude', 10, 6);
             $table->decimal('altitude', 10, 2);

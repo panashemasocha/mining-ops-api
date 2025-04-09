@@ -10,14 +10,15 @@ class OreResource extends JsonResource
         return [
             'id' => $this->id,
             'type' => $this->type,
-            'quality'=> [
-                'type' =>  $this->quality_type,
-                'grade'=> $this->quality_grade,
+            'quality' => [
+                'type' => $this->quality_type,
+                'grade' => $this->quality_grade,
             ],
-            'quantity'=> $this->quantity,
-            'supplierId' => $this->supplier_id,
+            'quantity' => $this->quantity,
+            'supplier' => new SupplierResource($this->supplier_id),
             'createdBy' => $this->created_by,
             'location' => [
+                'name' => $this->location_name,
                 'longitude' => $this->longitude,
                 'latitude' => $this->latitude,
                 'altitude' => $this->altitude,

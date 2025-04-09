@@ -22,4 +22,15 @@ class UpdateAssignedVehicleRequest extends FormRequest
           
         ];
     }
+
+      /**
+     * Prepare the data for validation by converting camelCase inputs to snake_case.
+     */
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'driver_id' => $this->input('driver_id', $this->input('driverId')),
+            'vehicle_id' => $this->input('vehicle_id', $this->input('vehicleId')),
+        ]);
+    }
 }

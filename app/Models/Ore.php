@@ -10,7 +10,7 @@ class Ore extends Model
     use HasFactory;
     protected $fillable = [
         'type', 'quality_type','quality_grade','quantity','supplier_id', 'created_by',
-        'longitude', 'latitude', 'altitude'
+        'location_name','longitude', 'latitude', 'altitude'
     ];
 
     public function supplier()

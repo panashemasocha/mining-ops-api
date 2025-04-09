@@ -28,6 +28,7 @@ class OreFactory extends Factory
            'quantity' => $this->faker->randomFloat(2, 0.1, 1000),
            'supplier_id' => Supplier::factory()->create(),
            'created_by' => User::factory()->create(['job_position_id' => 4]), // 'Quality Controller'
+           'location_name' =>$this->faker->optional()->address(),
            'longitude' => $this->faker->longitude(25.237, 33.056),
            'latitude' => $this->faker->latitude(-22.421, -15.609),
            'altitude' => $this->faker->numberBetween(500, 1500),

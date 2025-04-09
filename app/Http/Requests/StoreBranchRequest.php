@@ -21,4 +21,6 @@ class StoreBranchRequest extends FormRequest
             'name' => 'required|string|max:255|unique:branches,name',
         ];
     }
+
+    
 }
