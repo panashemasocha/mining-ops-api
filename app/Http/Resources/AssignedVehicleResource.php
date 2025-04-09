@@ -10,7 +10,7 @@ class AssignedVehicleResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'driverId' => new UserResource(User::find($this->driver_id)),
+            'driver' => new UserResource(User::find($this->driver_id)),
             'vehicleId' => new VehicleResource($this->vehicle),
             'createdAt' => $this->created_at,
             'updatedAt' => $this->updated_at,
