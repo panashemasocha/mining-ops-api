@@ -9,7 +9,7 @@ class DispatchResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'oreId' => $this->ore_id,
+            'oreId' => new OreResource($this->ore),
             'vehicle' => new VehicleResource($this->vehicle),
             'siteClerkId' => $this->site_clerk_id,
             'loadingMethod' => $this->loading_method,
