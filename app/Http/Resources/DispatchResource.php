@@ -10,11 +10,13 @@ class DispatchResource extends JsonResource
         return [
             'id' => $this->id,
             'oreId' => $this->ore_id,
-            'vehicleId' => $this->vehicle_id,
+            'vehicle' => new VehicleResource($this->vehicle),
             'siteClerkId' => $this->site_clerk_id,
             'loadingMethod' => $this->loading_method,
-            'oreCostPerTonne' => $this->ore_cost_per_tonne,
-            'loadingCostPerTonne' => $this->loading_cost_per_tonne,
+            'costPerTonne'=>[
+                'ore' => $this->ore_cost_per_tonne,
+                'loading' => $this->loading_cost_per_tonne,
+            ],
             'oreQuantityRemaining' => $this->ore_quantity_remaining,
             'status' => $this->status,
             'paymentStatus' => $this->payment_status,
