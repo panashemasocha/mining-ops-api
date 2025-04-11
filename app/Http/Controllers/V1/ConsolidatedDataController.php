@@ -72,20 +72,14 @@ class ConsolidatedDataController extends Controller
      */
     public function getConsolidatedData(GetConsolidatedDataRequest $request)
     {
-        $roleId = $request->role_Id;
+        $roleId = $request->role_id;
         $jobPositionId = $request->job_position_id;
         $userId = $request->id;
-
         $data = [];
 
         // Role-based precedence
         if (in_array($roleId, [1, 2, 3])) {
-            return response()->json([
-                'error' => 'first block',
-                "role" => $roleId,
-                "job position" => $jobPositionId,
-                "user id" => $userId
-            ], 403);
+            
             if ($roleId == 3 && $jobPositionId == 7) {
                 $data['ores'] = OreResource::collection($this->oreRepository->getAllOres($request->input('ores_per_page', 10)));
                 $data['dispatches'] = DispatchResource::collection($this->dispatchRepository->getAllDispatches($request->input('dispatches_per_page', 10)));
@@ -93,12 +87,7 @@ class ConsolidatedDataController extends Controller
                 $data = $this->getComprehensiveData($request);
             }
         } else {
-            return response()->json([
-                'error' => '2nd block',
-                "role" => $roleId,
-                "job position" => $jobPositionId,
-                "user id" => $userId
-            ], 403);
+           
             // Job position-based data
             switch ($jobPositionId) {
                 case 4:
