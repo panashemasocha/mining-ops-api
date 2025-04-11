@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\V1;
 
 use App\Http\Requests\GetConsolidatedDataRequest;
-use App\Models\CostPrice;
-use App\Models\UserRole;
+use App\Http\Resources\CostPriceResource;
+use App\Http\Resources\UserRoleResource;
 use App\Repositories\OreRepository;
 use App\Repositories\SupplierRepository;
 use App\Repositories\DispatchRepository;
@@ -21,11 +21,9 @@ use App\Http\Resources\SupplierResource;
 use App\Http\Resources\DispatchResource;
 use App\Http\Resources\TripResource;
 use App\Http\Resources\VehicleResource;
-use App\Http\Resources\PriceResource;
 use App\Http\Resources\DepartmentResource;
 use App\Http\Resources\BranchResource;
 use App\Http\Resources\JobPositionResource;
-use App\Http\Resources\RoleResource;
 
 class ConsolidatedDataController extends Controller
 {
@@ -124,11 +122,11 @@ class ConsolidatedDataController extends Controller
             'suppliers' => SupplierResource::collection($this->supplierRepository->getAllSuppliers($request->input('suppliers_per_page', 10))),
             'trips' => TripResource::collection($this->tripRepository->getAllTrips($request->input('trips_per_page', 10))),
             'vehicles' => VehicleResource::collection($this->vehicleRepository->getAllVehicles($request->input('vehicles_per_page', 10))),
-            'prices' => CostPrice::collection($this->priceRepository->getAllPrices()),
+            'prices' => CostPriceResource::collection($this->priceRepository->getAllPrices()),
             'departments' => DepartmentResource::collection($this->departmentRepository->getAllDepartments()),
             'branches' => BranchResource::collection($this->branchRepository->getAllBranches()),
             'jobPositions' => JobPositionResource::collection($this->jobPositionRepository->getAllJobPositions()),
-            'roles' => UserRole::collection($this->roleRepository->getAllRoles()),
+            'roles' => UserRoleResource::collection($this->roleRepository->getAllRoles()),
         ];
     }
 }
