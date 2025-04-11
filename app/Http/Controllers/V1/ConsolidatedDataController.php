@@ -165,6 +165,11 @@ class ConsolidatedDataController extends Controller
      */
     private function formatPaginatedResults($paginator, $resourceClass)
     {
+        // Ensure $paginator is a LengthAwarePaginator instance
+        if (!$paginator instanceof \Illuminate\Pagination\LengthAwarePaginator) {
+            throw new \InvalidArgumentException('Expected a LengthAwarePaginator instance.');
+        }
+    
         return [
             'data' => $resourceClass::collection($paginator->items()),
             'links' => [
@@ -184,5 +189,4 @@ class ConsolidatedDataController extends Controller
             ],
         ];
     }
-
 }
