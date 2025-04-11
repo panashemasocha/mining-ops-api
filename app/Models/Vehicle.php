@@ -12,4 +12,8 @@ class Vehicle extends Model
         'reg_number','vehicle_type','loading_capacity', 'last_known_longitude', 'last_known_latitude',
         'last_known_altitude', 'status'
     ];
+
+    public function assignedDrivers(){
+        return $this->hasMany(AssignedVehicle::class);
+    }
 }

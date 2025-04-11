@@ -5,11 +5,18 @@ use App\Http\Requests\StoreOreRequest;
 use App\Http\Requests\UpdateOreRequest;
 use App\Http\Resources\OreResource;
 use App\Models\Ore;
+use App\Repositories\OreRepository;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 class OreController extends Controller
 {
+    protected $oreRepository;
+
+    public function __construct(OreRepository $oreRepository) {
+        $this->oreRepository = $oreRepository;
+    }
+    
     public function index(Request $request)
     {
         $ores = $request->query('paging', 'true') === 'false' 

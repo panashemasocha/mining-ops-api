@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ConsolidatedDataController;
 use App\Http\Controllers\V1\AssignedVehicleController;
 use App\Http\Controllers\V1\CostPriceController;
 use App\Http\Controllers\V1\DispatchController;
@@ -56,6 +57,9 @@ Route::prefix('v1')->group(function () {
 
         // Trips
         Route::apiResource('trips', TripController::class);
+
+        // Consolidated data endpoint
+        Route::get('/consolidated-data', [ConsolidatedDataController::class, 'getConsolidatedData']);
     });
 });
 
