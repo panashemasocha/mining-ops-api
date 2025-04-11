@@ -72,16 +72,15 @@ class ConsolidatedDataController extends Controller
      */
     public function getConsolidatedData(GetConsolidatedDataRequest $request)
     {
-        $user = $request->user(); 
-        $roleId = $user->roleId;
-        $jobPosition = $user->job_position; 
-        $userId = $user->id;
+        $roleId = $request->role_Id;
+        $jobPositionId =  $request->job_position_id; 
+        $userId =  $request->id;
 
         $data = [];
 
         // Role-based precedence
         if (in_array($roleId, [1, 2, 3])) {
-            if ($roleId == 3 && $jobPosition == 'Site clerk') {
+            if ($roleId == 3 && $jobPositionId == 7) {
                 $data['ores'] = OreResource::collection($this->oreRepository->getAllOres($request->input('ores_per_page', 10)));
                 $data['dispatches'] = DispatchResource::collection($this->dispatchRepository->getAllDispatches($request->input('dispatches_per_page', 10)));
             } else {
@@ -89,16 +88,16 @@ class ConsolidatedDataController extends Controller
             }
         } else {
             // Job position-based data
-            switch ($jobPosition) {
-                case 'Quality controller':
+            switch ($jobPositionId) {
+                case 4:
                     $data['ores'] = OreResource::collection($this->oreRepository->getAllOres($request->input('ores_per_page', 10)));
                     $data['suppliers'] = SupplierResource::collection($this->supplierRepository->getAllSuppliers($request->input('suppliers_per_page', 10)));
                     break;
-                case 'Site clerk':
+                case 7:
                     $data['ores'] = OreResource::collection($this->oreRepository->getAllOres($request->input('ores_per_page', 10)));
                     $data['dispatches'] = DispatchResource::collection($this->dispatchRepository->getAllDispatches($request->input('dispatches_per_page', 10)));
                     break;
-                case 'Driver':
+                case 5:
                     $data['dispatches'] = DispatchResource::collection($this->dispatchRepository->getDispatchesForDriver($userId, $request->input('dispatches_per_page', 10)));
                     $data['trips'] = TripResource::collection($this->tripRepository->getTripsForDriver($userId, $request->input('trips_per_page', 10)));
                     break;
