@@ -75,8 +75,8 @@ class DispatchController extends Controller
                 $vehicleDistance = $this->calculateDistance($oreLocation, $vehicleLocation);
 
                 $results[] = [
-                    'driver_id' => $driver->id,
-                    'vehicle_id' => $vehicle->id,
+                    'driver' => $driver,
+                    'vehicle' => $vehicle,
                     'driver_distance' => $driverDistance,
                     'vehicle_distance' => $vehicleDistance,
                 ];
