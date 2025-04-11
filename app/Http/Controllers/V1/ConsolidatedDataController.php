@@ -113,16 +113,22 @@ class ConsolidatedDataController extends Controller
                     break;
                 case 5:
                     $data['dispatches'] = $this->formatPaginatedResults(
-                        $this->dispatchRepository->getDispatchesForDriver($userId, $request->input('dispatches_per_page', 10)),
+                        $this->dispatchRepository->getDispatchesForDriver(
+                            $userId,
+                            $request->input('dispatches_per_page', 10)
+                        ),
                         DispatchResource::class
                     );
                     $data['trips'] = $this->formatPaginatedResults(
-                        $this->tripRepository->getTripsForDriver($userId, $request->input('trips_per_page', 10)),
+                        $this->tripRepository->getTripsForDriver(
+                            $userId,
+                            $request->input('trips_per_page', 10)
+                        ),
                         TripResource::class
                     );
                     break;
                 default:
-                    return response()->json(['error' => 'Unauthorized or invalid job position'], 403);
+                    return response()->json(['error' => 'Unauthorized'], 403);
             }
         }
 
@@ -152,6 +158,7 @@ class ConsolidatedDataController extends Controller
                 $this->vehicleRepository->getAllVehicles($request->input('vehicles_per_page', 10)),
                 VehicleResource::class
             ),
+            // Non-paginated data
             'prices' => CostPriceResource::collection($this->priceRepository->getAllPrices()),
             'departments' => DepartmentResource::collection($this->departmentRepository->getAllDepartments()),
             'branches' => BranchResource::collection($this->branchRepository->getAllBranches()),
@@ -165,11 +172,10 @@ class ConsolidatedDataController extends Controller
      */
     private function formatPaginatedResults($paginator, $resourceClass)
     {
-        // Ensure $paginator is a LengthAwarePaginator instance
-        if (!$paginator instanceof \Illuminate\Pagination\LengthAwarePaginator) {
+        if (!$paginator instanceof LengthAwarePaginator) {
             throw new \InvalidArgumentException('Expected a LengthAwarePaginator instance.');
         }
-    
+
         return [
             'data' => $resourceClass::collection($paginator->items()),
             'links' => [
