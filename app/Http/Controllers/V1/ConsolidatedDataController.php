@@ -4,6 +4,7 @@ namespace App\Http\Controllers\V1;
 
 use App\Http\Requests\GetConsolidatedDataRequest;
 use App\Http\Resources\CostPriceResource;
+use App\Http\Resources\OreCollection;
 use App\Http\Resources\UserRoleResource;
 use App\Repositories\OreRepository;
 use App\Repositories\SupplierRepository;
@@ -77,7 +78,9 @@ class ConsolidatedDataController extends Controller
 
         if (in_array($roleId, [1, 2, 3])) {
             if ($roleId == 3 && $jobPositionId == 7) {
-                $data['ores'] = OreResource::collection($this->oreRepository->getAllOres($request->input('ores_per_page', 10)));
+                $data['ores'] = new OreCollection(
+                    $this->oreRepository->getAllOres($request->input('ores_per_page', 10))
+                );
                 $data['dispatches'] = DispatchResource::collection($this->dispatchRepository->getAllDispatches($request->input('dispatches_per_page', 10)));
             } else {
                 $data = $this->getComprehensiveData($request);
@@ -85,7 +88,9 @@ class ConsolidatedDataController extends Controller
         } else {
             switch ($jobPositionId) {
                 case 4:
-                    $data['ores'] = OreResource::collection($this->oreRepository->getAllOres($request->input('ores_per_page', 10)));
+                    $data['ores'] = new OreCollection(
+                        $this->oreRepository->getAllOres($request->input('ores_per_page', 10))
+                    );
                     $data['suppliers'] = SupplierResource::collection($this->supplierRepository->getAllSuppliers($request->input('suppliers_per_page', 10)));
                     break;
                 case 7:
@@ -108,7 +113,9 @@ class ConsolidatedDataController extends Controller
     {
         return [
             'dispatches' => DispatchResource::collection($this->dispatchRepository->getAllDispatches($request->input('dispatches_per_page', 10))),
-            'ores' => OreResource::collection($this->oreRepository->getAllOres($request->input('ores_per_page', 10))),
+            'ores' => new OreCollection(
+                $this->oreRepository->getAllOres($request->input('ores_per_page', 10))
+            ),
             'suppliers' => SupplierResource::collection($this->supplierRepository->getAllSuppliers($request->input('suppliers_per_page', 10))),
             'trips' => TripResource::collection($this->tripRepository->getAllTrips($request->input('trips_per_page', 10))),
             'vehicles' => VehicleResource::collection($this->vehicleRepository->getAllVehicles($request->input('vehicles_per_page', 10))),
