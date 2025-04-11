@@ -8,6 +8,6 @@ class PriceRepository
 {
     public function getAllPrices()
     {
-        return CostPrice::all();
+        return CostPrice::paginate(10);
     }
 }
