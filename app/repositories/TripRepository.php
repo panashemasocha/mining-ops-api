@@ -9,12 +9,11 @@ class TripRepository
 {
     public function getAllTrips()
     {
-        
-    return TripResource::collection( Trip::paginate(10));
+        return TripResource::collection(Trip::paginate(10));
     }
 
     public function getTripsForDriver($driverId)
     {
-        return Trip::where('driver_id', $driverId)->get();
+        return TripResource::collection(Trip::paginate(10)->where('driver_id', $driverId))->get();
     }
 }
