@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\ConsolidatedDataController;
 use App\Http\Controllers\V1\AssignedVehicleController;
 use App\Http\Controllers\V1\CostPriceController;
 use App\Http\Controllers\V1\DispatchController;

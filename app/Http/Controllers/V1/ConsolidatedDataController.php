@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\V1;
 
 use Illuminate\Http\Request;
 use App\Repositories\OreRepository;
@@ -13,6 +13,7 @@ use App\Repositories\DepartmentRepository;
 use App\Repositories\BranchRepository;
 use App\Repositories\JobPositionRepository;
 use App\Repositories\RoleRepository;
+use App\Http\Controllers\Controller;
 
 class ConsolidatedDataController extends Controller
 {
