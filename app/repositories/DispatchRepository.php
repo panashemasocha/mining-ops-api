@@ -2,13 +2,14 @@
 
 namespace App\Repositories;
 
+use App\Http\Resources\DispatchResource;
 use App\Models\Dispatch;
 
 class DispatchRepository
 {
     public function getAllDispatches()
     {
-        return Dispatch::all();
+        return DispatchResource::collection(Dispatch::paginate(10));
     }
 
     public function getDispatchesForDriver($driverId)
