@@ -24,6 +24,7 @@ use App\Http\Resources\VehicleResource;
 use App\Http\Resources\DepartmentResource;
 use App\Http\Resources\BranchResource;
 use App\Http\Resources\JobPositionResource;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class ConsolidatedDataController extends Controller
 {
@@ -50,16 +51,16 @@ class ConsolidatedDataController extends Controller
         JobPositionRepository $jobPositionRepository,
         RoleRepository $roleRepository
     ) {
-        $this->oreRepository        = $oreRepository;
-        $this->supplierRepository   = $supplierRepository;
-        $this->dispatchRepository   = $dispatchRepository;
-        $this->tripRepository       = $tripRepository;
-        $this->vehicleRepository    = $vehicleRepository;
-        $this->priceRepository      = $priceRepository;
-        $this->departmentRepository = $departmentRepository;
-        $this->branchRepository     = $branchRepository;
-        $this->jobPositionRepository= $jobPositionRepository;
-        $this->roleRepository       = $roleRepository;
+        $this->oreRepository         = $oreRepository;
+        $this->supplierRepository    = $supplierRepository;
+        $this->dispatchRepository    = $dispatchRepository;
+        $this->tripRepository        = $tripRepository;
+        $this->vehicleRepository     = $vehicleRepository;
+        $this->priceRepository       = $priceRepository;
+        $this->departmentRepository  = $departmentRepository;
+        $this->branchRepository      = $branchRepository;
+        $this->jobPositionRepository = $jobPositionRepository;
+        $this->roleRepository        = $roleRepository;
     }
 
     /**
@@ -77,7 +78,6 @@ class ConsolidatedDataController extends Controller
 
         // Role-based precedence
         if (in_array($roleId, [1, 2, 3])) {
-
             if ($roleId == 3 && $jobPositionId == 7) {
                 $oresPaginator       = $this->oreRepository->getAllOres($request->input('ores_per_page', 10));
                 $dispatchesPaginator = $this->dispatchRepository->getAllDispatches($request->input('dispatches_per_page', 10));
@@ -116,7 +116,7 @@ class ConsolidatedDataController extends Controller
             }
         }
 
-        // Add non-paginated collections as they are.
+        // Non-paginated collections (no pagination metadata expected)
         $data['prices']       = CostPriceResource::collection($this->priceRepository->getAllPrices());
         $data['departments']  = DepartmentResource::collection($this->departmentRepository->getAllDepartments());
         $data['branches']     = BranchResource::collection($this->branchRepository->getAllBranches());
@@ -161,31 +161,39 @@ class ConsolidatedDataController extends Controller
     /**
      * Helper method to transform a paginated result using a given resource.
      *
-     * @param \Illuminate\Pagination\LengthAwarePaginator $paginator
+     * @param mixed $result   Either a LengthAwarePaginator (or similar) or a plain Collection.
      * @param string $resourceClass
      * @return array
      */
-    private function transformPaginated($paginator, $resourceClass)
+    private function transformPaginated($result, $resourceClass)
     {
-        // Transform the data items using the provided resource
-        $transformedData = $resourceClass::collection($paginator)->resolve();
+        // If the result is a paginator (LengthAwarePaginator), extract pagination meta.
+        if (is_object($result) && method_exists($result, 'currentPage')) {
+            // Transform the data items using the provided resource.
+            $transformedData = $resourceClass::collection($result)->resolve();
 
-        // Manually extract pagination details
-        $pagination = [
-            'current_page'    => $paginator->currentPage(),
-            'last_page'       => $paginator->lastPage(),
-            'per_page'        => $paginator->perPage(),
-            'total'           => $paginator->total(),
-            'first_page_url'  => $paginator->url(1),
-            'last_page_url'   => $paginator->url($paginator->lastPage()),
-            'next_page_url'   => $paginator->nextPageUrl(),
-            'prev_page_url'   => $paginator->previousPageUrl(),
-        ];
+            // Extract pagination details.
+            $pagination = [
+                'current_page'   => $result->currentPage(),
+                'last_page'      => $result->lastPage(),
+                'per_page'       => $result->perPage(),
+                'total'          => $result->total(),
+                'first_page_url' => $result->url(1),
+                'last_page_url'  => $result->url($result->lastPage()),
+                'next_page_url'  => $result->nextPageUrl(),
+                'prev_page_url'  => $result->previousPageUrl(),
+            ];
 
-        return [
-            'data'  => $transformedData,
-            'links' => $pagination,
-            'meta'  => $pagination,
-        ];
+            return [
+                'data'  => $transformedData,
+                'links' => $pagination,
+                'meta'  => $pagination,
+            ];
+        } else {
+            // If it's not a paginator, assume it's a plain collection; simply return the transformed data.
+            return [
+                'data' => $resourceClass::collection($result)->resolve()
+            ];
+        }
     }
 }
