@@ -63,7 +63,7 @@ class ConsolidatedDataController extends Controller
         // Assuming authenticated user; in practice, validate user data if passed manually
         $user = $request->user(); // Requires auth middleware
         $roleId = $user->roleId;
-        $jobPosition = $user->JobPosition;
+        $jobPosition = "Driver";
         $userId = $user->id;
 
         $data = [];
