@@ -50,16 +50,16 @@ class ConsolidatedDataController extends Controller
         JobPositionRepository $jobPositionRepository,
         RoleRepository $roleRepository
     ) {
-        $this->oreRepository = $oreRepository;
-        $this->supplierRepository = $supplierRepository;
-        $this->dispatchRepository = $dispatchRepository;
-        $this->tripRepository = $tripRepository;
-        $this->vehicleRepository = $vehicleRepository;
-        $this->priceRepository = $priceRepository;
+        $this->oreRepository        = $oreRepository;
+        $this->supplierRepository   = $supplierRepository;
+        $this->dispatchRepository   = $dispatchRepository;
+        $this->tripRepository       = $tripRepository;
+        $this->vehicleRepository    = $vehicleRepository;
+        $this->priceRepository      = $priceRepository;
         $this->departmentRepository = $departmentRepository;
-        $this->branchRepository = $branchRepository;
-        $this->jobPositionRepository = $jobPositionRepository;
-        $this->roleRepository = $roleRepository;
+        $this->branchRepository     = $branchRepository;
+        $this->jobPositionRepository= $jobPositionRepository;
+        $this->roleRepository       = $roleRepository;
     }
 
     /**
@@ -70,57 +70,58 @@ class ConsolidatedDataController extends Controller
      */
     public function getConsolidatedData(GetConsolidatedDataRequest $request)
     {
-        $roleId = $request->role_id;
+        $roleId        = $request->role_id;
         $jobPositionId = $request->job_position_id;
-        $userId = $request->id;
-        $data = [];
+        $userId        = $request->id;
+        $data          = [];
 
         // Role-based precedence
         if (in_array($roleId, [1, 2, 3])) {
 
             if ($roleId == 3 && $jobPositionId == 7) {
-                $data['ores'] = OreResource::collection(
-                    $this->oreRepository->getAllOres($request->input('ores_per_page', 10))
-                )->response()->getData(true);
+                $oresPaginator       = $this->oreRepository->getAllOres($request->input('ores_per_page', 10));
+                $dispatchesPaginator = $this->dispatchRepository->getAllDispatches($request->input('dispatches_per_page', 10));
 
-                $data['dispatches'] = DispatchResource::collection(
-                    $this->dispatchRepository->getAllDispatches($request->input('dispatches_per_page', 10))
-                )->response()->getData(true);
+                $data['ores']       = $this->transformPaginated($oresPaginator, OreResource::class);
+                $data['dispatches'] = $this->transformPaginated($dispatchesPaginator, DispatchResource::class);
             } else {
                 $data = $this->getComprehensiveData($request);
             }
         } else {
-
             // Job position-based data
             switch ($jobPositionId) {
                 case 4:
-                    $data['ores'] = OreResource::collection(
-                        $this->oreRepository->getAllOres($request->input('ores_per_page', 10))
-                    )->response()->getData(true);
-                    $data['suppliers'] = SupplierResource::collection(
-                        $this->supplierRepository->getAllSuppliers($request->input('suppliers_per_page', 10))
-                    )->response()->getData(true);
+                    $oresPaginator      = $this->oreRepository->getAllOres($request->input('ores_per_page', 10));
+                    $suppliersPaginator = $this->supplierRepository->getAllSuppliers($request->input('suppliers_per_page', 10));
+
+                    $data['ores']      = $this->transformPaginated($oresPaginator, OreResource::class);
+                    $data['suppliers'] = $this->transformPaginated($suppliersPaginator, SupplierResource::class);
                     break;
                 case 7:
-                    $data['ores'] = OreResource::collection(
-                        $this->oreRepository->getAllOres($request->input('ores_per_page', 10))
-                    )->response()->getData(true);
-                    $data['dispatches'] = DispatchResource::collection(
-                        $this->dispatchRepository->getAllDispatches($request->input('dispatches_per_page', 10))
-                    )->response()->getData(true);
+                    $oresPaginator       = $this->oreRepository->getAllOres($request->input('ores_per_page', 10));
+                    $dispatchesPaginator = $this->dispatchRepository->getAllDispatches($request->input('dispatches_per_page', 10));
+
+                    $data['ores']       = $this->transformPaginated($oresPaginator, OreResource::class);
+                    $data['dispatches'] = $this->transformPaginated($dispatchesPaginator, DispatchResource::class);
                     break;
                 case 5:
-                    $data['dispatches'] = DispatchResource::collection(
-                        $this->dispatchRepository->getDispatchesForDriver($userId, $request->input('dispatches_per_page', 10))
-                    )->response()->getData(true);
-                    $data['trips'] = TripResource::collection(
-                        $this->tripRepository->getTripsForDriver($userId, $request->input('trips_per_page', 10))
-                    )->response()->getData(true);
+                    $dispatchesPaginator = $this->dispatchRepository->getDispatchesForDriver($userId, $request->input('dispatches_per_page', 10));
+                    $tripsPaginator      = $this->tripRepository->getTripsForDriver($userId, $request->input('trips_per_page', 10));
+
+                    $data['dispatches'] = $this->transformPaginated($dispatchesPaginator, DispatchResource::class);
+                    $data['trips']      = $this->transformPaginated($tripsPaginator, TripResource::class);
                     break;
                 default:
                     return response()->json(['error' => 'Unauthorized or invalid job position'], 403);
             }
         }
+
+        // Add non-paginated collections as they are.
+        $data['prices']       = CostPriceResource::collection($this->priceRepository->getAllPrices());
+        $data['departments']  = DepartmentResource::collection($this->departmentRepository->getAllDepartments());
+        $data['branches']     = BranchResource::collection($this->branchRepository->getAllBranches());
+        $data['jobPositions'] = JobPositionResource::collection($this->jobPositionRepository->getAllJobPositions());
+        $data['roles']        = UserRoleResource::collection($this->roleRepository->getAllRoles());
 
         return response()->json($data, 200);
     }
@@ -134,27 +135,57 @@ class ConsolidatedDataController extends Controller
     private function getComprehensiveData(GetConsolidatedDataRequest $request)
     {
         return [
-            'dispatches' => DispatchResource::collection(
-                $this->dispatchRepository->getAllDispatches($request->input('dispatches_per_page', 10))
-            )->response()->getData(true),
-            'ores' => OreResource::collection(
-                $this->oreRepository->getAllOres($request->input('ores_per_page', 10))
-            )->response()->getData(true),
-            'suppliers' => SupplierResource::collection(
-                $this->supplierRepository->getAllSuppliers($request->input('suppliers_per_page', 10))
-            )->response()->getData(true),
-            'trips' => TripResource::collection(
-                $this->tripRepository->getAllTrips($request->input('trips_per_page', 10))
-            )->response()->getData(true),
-            'vehicles' => VehicleResource::collection(
-                $this->vehicleRepository->getAllVehicles($request->input('vehicles_per_page', 10))
-            )->response()->getData(true),
-            // Non-paginated resources remain as collections since they don't have pagination meta.
-            'prices' => CostPriceResource::collection($this->priceRepository->getAllPrices()),
-            'departments' => DepartmentResource::collection($this->departmentRepository->getAllDepartments()),
-            'branches' => BranchResource::collection($this->branchRepository->getAllBranches()),
-            'jobPositions' => JobPositionResource::collection($this->jobPositionRepository->getAllJobPositions()),
-            'roles' => UserRoleResource::collection($this->roleRepository->getAllRoles()),
+            'dispatches' => $this->transformPaginated(
+                $this->dispatchRepository->getAllDispatches($request->input('dispatches_per_page', 10)),
+                DispatchResource::class
+            ),
+            'ores' => $this->transformPaginated(
+                $this->oreRepository->getAllOres($request->input('ores_per_page', 10)),
+                OreResource::class
+            ),
+            'suppliers' => $this->transformPaginated(
+                $this->supplierRepository->getAllSuppliers($request->input('suppliers_per_page', 10)),
+                SupplierResource::class
+            ),
+            'trips' => $this->transformPaginated(
+                $this->tripRepository->getAllTrips($request->input('trips_per_page', 10)),
+                TripResource::class
+            ),
+            'vehicles' => $this->transformPaginated(
+                $this->vehicleRepository->getAllVehicles($request->input('vehicles_per_page', 10)),
+                VehicleResource::class
+            ),
+        ];
+    }
+
+    /**
+     * Helper method to transform a paginated result using a given resource.
+     *
+     * @param \Illuminate\Pagination\LengthAwarePaginator $paginator
+     * @param string $resourceClass
+     * @return array
+     */
+    private function transformPaginated($paginator, $resourceClass)
+    {
+        // Transform the data items using the provided resource
+        $transformedData = $resourceClass::collection($paginator)->resolve();
+
+        // Manually extract pagination details
+        $pagination = [
+            'current_page'    => $paginator->currentPage(),
+            'last_page'       => $paginator->lastPage(),
+            'per_page'        => $paginator->perPage(),
+            'total'           => $paginator->total(),
+            'first_page_url'  => $paginator->url(1),
+            'last_page_url'   => $paginator->url($paginator->lastPage()),
+            'next_page_url'   => $paginator->nextPageUrl(),
+            'prev_page_url'   => $paginator->previousPageUrl(),
+        ];
+
+        return [
+            'data'  => $transformedData,
+            'links' => $pagination,
+            'meta'  => $pagination,
         ];
     }
 }
