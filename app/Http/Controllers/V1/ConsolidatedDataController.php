@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\V1;
 
+use App\Http\Requests\GetConsolidatedDataRequest;
+use App\Models\CostPrice;
+use App\Models\UserRole;
 use App\Repositories\OreRepository;
-use Illuminate\Http\Request;
 use App\Repositories\SupplierRepository;
 use App\Repositories\DispatchRepository;
 use App\Repositories\TripRepository;
@@ -14,6 +16,16 @@ use App\Repositories\BranchRepository;
 use App\Repositories\JobPositionRepository;
 use App\Repositories\RoleRepository;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\OreResource;
+use App\Http\Resources\SupplierResource;
+use App\Http\Resources\DispatchResource;
+use App\Http\Resources\TripResource;
+use App\Http\Resources\VehicleResource;
+use App\Http\Resources\PriceResource;
+use App\Http\Resources\DepartmentResource;
+use App\Http\Resources\BranchResource;
+use App\Http\Resources\JobPositionResource;
+use App\Http\Resources\RoleResource;
 
 class ConsolidatedDataController extends Controller
 {
@@ -55,15 +67,14 @@ class ConsolidatedDataController extends Controller
     /**
      * Get consolidated data based on user role and job position.
      *
-     * @param Request $request
+     * @param GetConsolidatedDataRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getConsolidatedData(Request $request)
+    public function getConsolidatedData(GetConsolidatedDataRequest $request)
     {
-        // Assuming authenticated user; in practice, validate user data if passed manually
-        $user = $request->user(); // Requires auth middleware
+        $user = $request->user(); 
         $roleId = $user->roleId;
-        $jobPosition = "Driver";
+        $jobPosition = $user->job_position; 
         $userId = $user->id;
 
         $data = [];
@@ -71,25 +82,25 @@ class ConsolidatedDataController extends Controller
         // Role-based precedence
         if (in_array($roleId, [1, 2, 3])) {
             if ($roleId == 3 && $jobPosition == 'Site clerk') {
-                $data['ores'] = $this->oreRepository->getAllOres();
-                $data['dispatches'] = $this->dispatchRepository->getAllDispatches();
+                $data['ores'] = OreResource::collection($this->oreRepository->getAllOres($request->input('ores_per_page', 10)));
+                $data['dispatches'] = DispatchResource::collection($this->dispatchRepository->getAllDispatches($request->input('dispatches_per_page', 10)));
             } else {
-                $data = $this->getComprehensiveData();
+                $data = $this->getComprehensiveData($request);
             }
         } else {
             // Job position-based data
             switch ($jobPosition) {
                 case 'Quality controller':
-                    $data['ores'] = $this->oreRepository->getAllOres();
-                    $data['suppliers'] = $this->supplierRepository->getAllSuppliers();
+                    $data['ores'] = OreResource::collection($this->oreRepository->getAllOres($request->input('ores_per_page', 10)));
+                    $data['suppliers'] = SupplierResource::collection($this->supplierRepository->getAllSuppliers($request->input('suppliers_per_page', 10)));
                     break;
                 case 'Site clerk':
-                    $data['ores'] = $this->oreRepository->getAllOres();
-                    $data['dispatches'] = $this->dispatchRepository->getAllDispatches();
+                    $data['ores'] = OreResource::collection($this->oreRepository->getAllOres($request->input('ores_per_page', 10)));
+                    $data['dispatches'] = DispatchResource::collection($this->dispatchRepository->getAllDispatches($request->input('dispatches_per_page', 10)));
                     break;
                 case 'Driver':
-                    $data['dispatches'] = $this->dispatchRepository->getDispatchesForDriver($userId);
-                    $data['trips'] = $this->tripRepository->getTripsForDriver($userId);
+                    $data['dispatches'] = DispatchResource::collection($this->dispatchRepository->getDispatchesForDriver($userId, $request->input('dispatches_per_page', 10)));
+                    $data['trips'] = TripResource::collection($this->tripRepository->getTripsForDriver($userId, $request->input('trips_per_page', 10)));
                     break;
                 default:
                     return response()->json(['error' => 'Unauthorized or invalid job position'], 403);
@@ -102,21 +113,22 @@ class ConsolidatedDataController extends Controller
     /**
      * Retrieve comprehensive data for role IDs 1, 2, or 3 (except Site clerk with roleId 3).
      *
+     * @param GetConsolidatedDataRequest $request
      * @return array
      */
-    private function getComprehensiveData()
+    private function getComprehensiveData(GetConsolidatedDataRequest $request)
     {
         return [
-            'dispatches' => $this->dispatchRepository->getAllDispatches(),
-            'ores' => $this->oreRepository->getAllOres(),
-            'suppliers' => $this->supplierRepository->getAllSuppliers(),
-            'trips' => $this->tripRepository->getAllTrips(),
-            'vehicles' => $this->vehicleRepository->getAllVehicles(),
-            'prices' => $this->priceRepository->getAllPrices(),
-            'departments' => $this->departmentRepository->getAllDepartments(),
-            'branches' => $this->branchRepository->getAllBranches(),
-            'jobPositions' => $this->jobPositionRepository->getAllJobPositions(),
-            'roles' => $this->roleRepository->getAllRoles(),
+            'dispatches' => DispatchResource::collection($this->dispatchRepository->getAllDispatches($request->input('dispatches_per_page', 10))),
+            'ores' => OreResource::collection($this->oreRepository->getAllOres($request->input('ores_per_page', 10))),
+            'suppliers' => SupplierResource::collection($this->supplierRepository->getAllSuppliers($request->input('suppliers_per_page', 10))),
+            'trips' => TripResource::collection($this->tripRepository->getAllTrips($request->input('trips_per_page', 10))),
+            'vehicles' => VehicleResource::collection($this->vehicleRepository->getAllVehicles($request->input('vehicles_per_page', 10))),
+            'prices' => CostPrice::collection($this->priceRepository->getAllPrices()),
+            'departments' => DepartmentResource::collection($this->departmentRepository->getAllDepartments()),
+            'branches' => BranchResource::collection($this->branchRepository->getAllBranches()),
+            'jobPositions' => JobPositionResource::collection($this->jobPositionRepository->getAllJobPositions()),
+            'roles' => UserRole::collection($this->roleRepository->getAllRoles()),
         ];
     }
 }

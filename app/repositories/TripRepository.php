@@ -2,18 +2,17 @@
 
 namespace App\Repositories;
 
-use App\Http\Resources\TripResource;
 use App\Models\Trip;
 
 class TripRepository
 {
-    public function getAllTrips()
+    public function getAllTrips($perPage = 10)
     {
-        return TripResource::collection(Trip::paginate(10));
+        return Trip::paginate($perPage, ['*'], 'trips_page');
     }
 
-    public function getTripsForDriver($driverId)
+    public function getTripsForDriver($driverId, $perPage = 10)
     {
-        return TripResource::collection(Trip::paginate(10)->where('driver_id', $driverId))->get();
+        return Trip::where('driver_id', $driverId)->paginate($perPage, ['*'], 'trips_page');
     }
 }

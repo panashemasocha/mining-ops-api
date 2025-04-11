@@ -6,8 +6,8 @@ use App\Models\Ore;
 
 class OreRepository
 {
-    public function getAllOres()
+    public function getAllOres($perPage = 10)
     {
-        return Ore::all();
+        return Ore::paginate($perPage, ['*'], 'ores_page');
     }
 }

@@ -6,8 +6,8 @@ use App\Models\Vehicle;
 
 class VehicleRepository
 {
-    public function getAllVehicles()
+    public function getAllVehicles($perPage = 10)
     {
-        return Vehicle::all();
+        return Vehicle::paginate($perPage,['*'],'vehicles_page');
     }
 }
