@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\V1;
 
-use Illuminate\Http\Request;
 use App\Repositories\OreRepository;
+use Illuminate\Http\Request;
 use App\Repositories\SupplierRepository;
 use App\Repositories\DispatchRepository;
 use App\Repositories\TripRepository;
