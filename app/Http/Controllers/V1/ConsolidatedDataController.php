@@ -78,13 +78,11 @@ class ConsolidatedDataController extends Controller
 
         if (in_array($roleId, [1, 2, 3])) {
             if ($roleId == 3 && $jobPositionId == 7) {
-                $data['ores'] = $this->formatPaginatedResults(
-                    $this->oreRepository->getAllOres($request->input('ores_per_page', 10)),
-                    OreResource::class
+                $data['ores'] = OreResource::collection(
+                    $this->oreRepository->getAllOres($request->input('ores_per_page', 10))
                 );
-                $data['dispatches'] = $this->formatPaginatedResults(
-                    $this->dispatchRepository->getAllDispatches($request->input('dispatches_per_page', 10)),
-                    DispatchResource::class
+                $data['dispatches'] = DispatchResource::collection(
+                    $this->dispatchRepository->getAllDispatches($request->input('dispatches_per_page', 10))
                 );
             } else {
                 $data = $this->getComprehensiveData($request);
@@ -92,39 +90,27 @@ class ConsolidatedDataController extends Controller
         } else {
             switch ($jobPositionId) {
                 case 4:
-                    $data['ores'] = $this->formatPaginatedResults(
-                        $this->oreRepository->getAllOres($request->input('ores_per_page', 10)),
-                        OreResource::class
+                    $data['ores'] = OreResource::collection(
+                        $this->oreRepository->getAllOres($request->input('ores_per_page', 10))
                     );
-                    $data['suppliers'] = $this->formatPaginatedResults(
-                        $this->supplierRepository->getAllSuppliers($request->input('suppliers_per_page', 10)),
-                        SupplierResource::class
+                    $data['suppliers'] = SupplierResource::collection(
+                        $this->supplierRepository->getAllSuppliers($request->input('suppliers_per_page', 10))
                     );
                     break;
                 case 7:
-                    $data['ores'] = $this->formatPaginatedResults(
-                        $this->oreRepository->getAllOres($request->input('ores_per_page', 10)),
-                        OreResource::class
+                    $data['ores'] = OreResource::collection(
+                        $this->oreRepository->getAllOres($request->input('ores_per_page', 10))
                     );
-                    $data['dispatches'] = $this->formatPaginatedResults(
-                        $this->dispatchRepository->getAllDispatches($request->input('dispatches_per_page', 10)),
-                        DispatchResource::class
+                    $data['dispatches'] = DispatchResource::collection(
+                        $this->dispatchRepository->getAllDispatches($request->input('dispatches_per_page', 10))
                     );
                     break;
                 case 5:
-                    $data['dispatches'] = $this->formatPaginatedResults(
-                        $this->dispatchRepository->getDispatchesForDriver(
-                            $userId,
-                            $request->input('dispatches_per_page', 10)
-                        ),
-                        DispatchResource::class
+                    $data['dispatches'] = DispatchResource::collection(
+                        $this->dispatchRepository->getDispatchesForDriver($userId, $request->input('dispatches_per_page', 10))
                     );
-                    $data['trips'] = $this->formatPaginatedResults(
-                        $this->tripRepository->getTripsForDriver(
-                            $userId,
-                            $request->input('trips_per_page', 10)
-                        ),
-                        TripResource::class
+                    $data['trips'] = TripResource::collection(
+                        $this->tripRepository->getTripsForDriver($userId, $request->input('trips_per_page', 10))
                     );
                     break;
                 default:
@@ -138,61 +124,27 @@ class ConsolidatedDataController extends Controller
     private function getComprehensiveData(GetConsolidatedDataRequest $request)
     {
         return [
-            'dispatches' => $this->formatPaginatedResults(
-                $this->dispatchRepository->getAllDispatches($request->input('dispatches_per_page', 10)),
-                DispatchResource::class
+            'dispatches' => DispatchResource::collection(
+                $this->dispatchRepository->getAllDispatches($request->input('dispatches_per_page', 10))
             ),
-            'ores' => $this->formatPaginatedResults(
-                $this->oreRepository->getAllOres($request->input('ores_per_page', 10)),
-                OreResource::class
+            'ores' => OreResource::collection(
+                $this->oreRepository->getAllOres($request->input('ores_per_page', 10))
             ),
-            'suppliers' => $this->formatPaginatedResults(
-                $this->supplierRepository->getAllSuppliers($request->input('suppliers_per_page', 10)),
-                SupplierResource::class
+            'suppliers' => SupplierResource::collection(
+                $this->supplierRepository->getAllSuppliers($request->input('suppliers_per_page', 10))
             ),
-            'trips' => $this->formatPaginatedResults(
-                $this->tripRepository->getAllTrips($request->input('trips_per_page', 10)),
-                TripResource::class
+            'trips' => TripResource::collection(
+                $this->tripRepository->getAllTrips($request->input('trips_per_page', 10))
             ),
-            'vehicles' => $this->formatPaginatedResults(
-                $this->vehicleRepository->getAllVehicles($request->input('vehicles_per_page', 10)),
-                VehicleResource::class
+            'vehicles' => VehicleResource::collection(
+                $this->vehicleRepository->getAllVehicles($request->input('vehicles_per_page', 10))
             ),
-            // Non-paginated data
+            // Non-paginated data 
             'prices' => CostPriceResource::collection($this->priceRepository->getAllPrices()),
             'departments' => DepartmentResource::collection($this->departmentRepository->getAllDepartments()),
             'branches' => BranchResource::collection($this->branchRepository->getAllBranches()),
             'jobPositions' => JobPositionResource::collection($this->jobPositionRepository->getAllJobPositions()),
             'roles' => UserRoleResource::collection($this->roleRepository->getAllRoles()),
-        ];
-    }
-
-    /**
-     * Format paginated results with data, links, and meta.
-     */
-    private function formatPaginatedResults($paginator, $resourceClass)
-    {
-        if (!$paginator instanceof LengthAwarePaginator) {
-            throw new \InvalidArgumentException('Expected a LengthAwarePaginator instance.');
-        }
-
-        return [
-            'data' => $resourceClass::collection($paginator->items()),
-            'links' => [
-                'first' => $paginator->url(1),
-                'last' => $paginator->url($paginator->lastPage()),
-                'prev' => $paginator->previousPageUrl(),
-                'next' => $paginator->nextPageUrl(),
-            ],
-            'meta' => [
-                'current_page' => $paginator->currentPage(),
-                'from' => $paginator->firstItem(),
-                'last_page' => $paginator->lastPage(),
-                'path' => $paginator->path(),
-                'per_page' => $paginator->perPage(),
-                'to' => $paginator->lastItem(),
-                'total' => $paginator->total(),
-            ],
         ];
     }
 }
