@@ -164,7 +164,7 @@ class ConsolidatedDataController extends Controller
                 $this->accountingRepository->getAllFinancials($request->input('financials_per_page', 10)),
                 GLTransaction::class
             ),
-            
+
         ];
     }
 
