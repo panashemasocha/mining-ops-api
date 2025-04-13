@@ -116,7 +116,6 @@ class ConsolidatedDataController extends Controller
             }
         }
 
-        // Non-paginated collections (no pagination metadata expected)
         $data['prices']       = CostPriceResource::collection($this->priceRepository->getAllPrices());
         $data['departments']  = DepartmentResource::collection($this->departmentRepository->getAllDepartments());
         $data['branches']     = BranchResource::collection($this->branchRepository->getAllBranches());
@@ -190,7 +189,6 @@ class ConsolidatedDataController extends Controller
                 'meta'  => $pagination,
             ];
         } else {
-            // If it's not a paginator, assume it's a plain collection; simply return the transformed data.
             return [
                 'data' => $resourceClass::collection($result)->resolve()
             ];
