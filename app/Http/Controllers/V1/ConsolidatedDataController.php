@@ -5,6 +5,8 @@ namespace App\Http\Controllers\V1;
 use App\Http\Requests\GetConsolidatedDataRequest;
 use App\Http\Resources\CostPriceResource;
 use App\Http\Resources\UserRoleResource;
+use App\Models\GLTransaction;
+use App\Repositories\AccountingRepository;
 use App\Repositories\OreRepository;
 use App\Repositories\SupplierRepository;
 use App\Repositories\DispatchRepository;
@@ -39,6 +41,8 @@ class ConsolidatedDataController extends Controller
     protected $jobPositionRepository;
     protected $roleRepository;
 
+    protected $accountingRepository;
+
     public function __construct(
         OreRepository $oreRepository,
         SupplierRepository $supplierRepository,
@@ -49,7 +53,8 @@ class ConsolidatedDataController extends Controller
         DepartmentRepository $departmentRepository,
         BranchRepository $branchRepository,
         JobPositionRepository $jobPositionRepository,
-        RoleRepository $roleRepository
+        RoleRepository $roleRepository,
+        AccountingRepository $accountingRepository,
     ) {
         $this->oreRepository         = $oreRepository;
         $this->supplierRepository    = $supplierRepository;
@@ -61,6 +66,7 @@ class ConsolidatedDataController extends Controller
         $this->branchRepository      = $branchRepository;
         $this->jobPositionRepository = $jobPositionRepository;
         $this->roleRepository        = $roleRepository;
+        $this->accountingRepository = $accountingRepository;
     }
 
     /**
@@ -153,6 +159,10 @@ class ConsolidatedDataController extends Controller
             'vehicles' => $this->transformPaginated(
                 $this->vehicleRepository->getAllVehicles($request->input('vehicles_per_page', 10)),
                 VehicleResource::class
+            ),
+            'financials' => $this->transformPaginated(
+                $this->accountingRepository->getAllFinancials($request->input('financials_per_page', 10)),
+                GLTransaction::class
             ),
         ];
     }

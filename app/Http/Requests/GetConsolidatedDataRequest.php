@@ -33,6 +33,8 @@ class GetConsolidatedDataRequest extends FormRequest
             'branches_per_page' => 'nullable|integer|min:1|max:100',
             'job_positions_per_page' => 'nullable|integer|min:1|max:100',
             'roles_per_page' => 'nullable|integer|min:1|max:100',
+            'financials_per_page' => 'nullable|integer|min:1|max:100',
+
         ];
     }
 
@@ -55,6 +57,7 @@ class GetConsolidatedDataRequest extends FormRequest
             'branches_per_page' => $this->input('branches_per_page', $this->input('branchesPerPage')),
             'job_positions_per_page' => $this->input('job_positions_per_page', $this->input('jobPositionsPerPage')),
             'roles_per_page' => $this->input('roles_per_page', $this->input('rolesPerPage')),
+            'financials_per_page' => $this->input('financials_per_page', $this->input('financialsPerPage')),
         ]);
     }
 }
