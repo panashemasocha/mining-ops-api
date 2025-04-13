@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('loading_method')->nullable(); // 'manual', 'mechanic'
             $table->decimal('ore_cost_per_tonne', 10, 2);
             $table->decimal('loading_cost_per_tonne', 10, 2);
-            $table->decimal('ore_quantity_remaining', 10, 2);
+            $table->decimal('ore_quantity', 10, 2);
             $table->string('status')->default('pending'); // 'pending', 'accepted', 'rejected'
             $table->string('payment_status')->default('n/a'); // 'fully-paid', 'pending', 'partially-paid', 'n/a'
             $table->timestamps();

@@ -18,7 +18,7 @@ class DispatchResource extends JsonResource
                 'ore' => $this->ore_cost_per_tonne,
                 'loading' => $this->loading_cost_per_tonne,
             ],
-            'oreQuantityRemaining' => $this->ore_quantity_remaining,
+            'oreQuantity' => $this->ore_quantity,
             'status' => $this->status,
             'paymentStatus' => $this->payment_status,
             'createdAt' => $this->created_at,

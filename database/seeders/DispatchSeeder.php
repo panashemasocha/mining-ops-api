@@ -34,7 +34,7 @@ class DispatchSeeder extends Seeder
                 'loading_method' => null,
                 'ore_cost_per_tonne' => $this->faker->randomFloat(2, 10, 100),
                 'loading_cost_per_tonne' => $this->faker->randomFloat(2, 5, 50),
-                'ore_quantity_remaining' => $this->faker->randomFloat(2, 10, 100),
+                'ore_quantity' => $this->faker->randomFloat(2, 10, 100),
                 'status' => 'pending',
                 'payment_status' => 'n/a',
             ]);

@@ -5,10 +5,14 @@ namespace App\Http\Controllers\V1;
 use App\Http\Requests\StoreDispatchRequest;
 use App\Http\Requests\UpdateDispatchRequest;
 use App\Http\Resources\DispatchResource;
+use App\Models\Account;
 use App\Models\Dispatch;
+use App\Models\GLEntry;
+use App\Models\GLTransaction;
 use App\Models\Ore;
 use App\Models\User;
 use App\Models\Vehicle;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -37,8 +41,74 @@ class DispatchController extends Controller
     public function update(UpdateDispatchRequest $request, $id)
     {
         $dispatch = Dispatch::findOrFail($id);
+        $oldStatus = $dispatch->status;
+
         $dispatch->update($request->validated());
+
+        // If just transitioned to 'accepted', post expenses
+        if ($oldStatus !== 'accepted' && $dispatch->status === 'accepted') {
+            $this->postMiningExpenses($dispatch, $request->input('payment_method'));
+        }
+
         return new DispatchResource($dispatch);
+    }
+
+    protected function postMiningExpenses(Dispatch $dispatch, string $paymentMethod)
+    {
+        $supplierName = $dispatch->supplier->first_name . ' ' . $dispatch->supplier->last_name;
+        $date         = Carbon::now()->toDateString();
+        $oreQty       = $dispatch->ore_quantity;
+        $oreCostAmt   = $dispatch->ore_cost_per_tonne * $oreQty;
+        $loadCostAmt  = $dispatch->loading_cost_per_tonne * $oreQty;
+
+        // Map user‐supplied payment_method to the right asset account
+        $assetAccountName = match($paymentMethod) {
+            'Cash'          => 'Cash on Hand',
+            'Bank Transfer' => 'Bank',
+            'Ecocash'       => 'Ecocash',
+            default         => 'Cash on Hand',
+        };
+
+        $asset   = Account::where('account_name', $assetAccountName)->firstOrFail();
+        $expense = Account::where('account_name', 'Mining expenses')->firstOrFail();
+
+        // 1) Ore Cost
+        $tx1 = GLTransaction::create([
+            'trans_date'  => $date,
+            'description' => "Ore ({$dispatch->ore->type}) Cost -{$supplierName}-{$dispatch->id}",
+            'created_by'  => auth()->id(),
+        ]);
+        GLEntry::create([
+            'trans_id'   => $tx1->id,
+            'account_id' => $expense->id,
+            'debit_amt'  => $oreCostAmt,
+            'credit_amt' => 0,
+        ]);
+        GLEntry::create([
+            'trans_id'   => $tx1->id,
+            'account_id' => $asset->id,
+            'debit_amt'  => 0,
+            'credit_amt' => $oreCostAmt,
+        ]);
+
+        // 2) Loading Cost
+        $tx2 = GLTransaction::create([
+            'trans_date'  => $date,
+            'description' => "Loading cost-{$supplierName}-{$dispatch->id}",
+            'created_by'  => auth()->id(),
+        ]);
+        GLEntry::create([
+            'trans_id'   => $tx2->id,
+            'account_id' => $expense->id,
+            'debit_amt'  => $loadCostAmt,
+            'credit_amt' => 0,
+        ]);
+        GLEntry::create([
+            'trans_id'   => $tx2->id,
+            'account_id' => $asset->id,
+            'debit_amt'  => 0,
+            'credit_amt' => $loadCostAmt,
+        ]);
     }
 
     public function destroy($id)

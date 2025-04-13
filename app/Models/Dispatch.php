@@ -10,7 +10,7 @@ class Dispatch extends Model
     use HasFactory;
     protected $fillable = [
         'ore_id', 'vehicle_id', 'site_clerk_id', 'loading_method',
-        'ore_cost_per_tonne', 'loading_cost_per_tonne', 'ore_quantity_remaining',
+        'ore_cost_per_tonne', 'loading_cost_per_tonne', 'ore_quantity',
         'status', 'payment_status'
     ];
 

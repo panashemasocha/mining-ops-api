@@ -11,9 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('payment_methods', function (Blueprint $table) {
+        Schema::create('accounts', function (Blueprint $table) {
             $table->id();
-            $table->string('method'); // e.g., 'Cash', 'Bank Transfer', 'Ecocash (Mobile Banking)'
+            $table->string('account_name')->unique();
+            $table->enum('account_type', ['Asset','Liability','Equity','Revenue','Expense']);
             $table->timestamps();
         });
     }
@@ -23,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('payment_methods');
+        Schema::dropIfExists('accounts');
     }
 };
