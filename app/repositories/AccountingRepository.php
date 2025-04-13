@@ -8,6 +8,6 @@ class AccountingRepository
 {
     public function getAllFinancials($perPage = 10)
     {
-        return GLTransaction::paginate($perPage, ['*'], 'ores_page');
+        return GLTransaction::paginate($perPage, ['*'], 'financials_page');
     }
 }
