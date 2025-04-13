@@ -4,8 +4,8 @@ namespace App\Http\Controllers\V1;
 
 use App\Http\Requests\GetConsolidatedDataRequest;
 use App\Http\Resources\CostPriceResource;
+use App\Http\Resources\GLTransactionResource;
 use App\Http\Resources\UserRoleResource;
-use App\Models\GLTransaction;
 use App\Repositories\AccountingRepository;
 use App\Repositories\OreRepository;
 use App\Repositories\SupplierRepository;
@@ -26,7 +26,6 @@ use App\Http\Resources\VehicleResource;
 use App\Http\Resources\DepartmentResource;
 use App\Http\Resources\BranchResource;
 use App\Http\Resources\JobPositionResource;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 class ConsolidatedDataController extends Controller
 {
@@ -162,7 +161,7 @@ class ConsolidatedDataController extends Controller
             ),
             'financials' => $this->transformPaginated(
                 $this->accountingRepository->getAllFinancials($request->input('financials_per_page', 10)),
-                GLTransaction::class
+                GLTransactionResource::class
             ),
 
         ];
