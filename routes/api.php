@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\V1\AccountingController;
 use App\Http\Controllers\V1\AssignedVehicleController;
 use App\Http\Controllers\V1\ConsolidatedDataController;
 use App\Http\Controllers\V1\CostPriceController;
 use App\Http\Controllers\V1\DispatchController;
+use App\Http\Controllers\V1\ExpenseController;
 use App\Http\Controllers\V1\JobPositionController;
 use App\Http\Controllers\V1\DriverInfoController;
 use App\Http\Controllers\V1\OreController;
@@ -60,6 +62,14 @@ Route::prefix('v1')->group(function () {
 
         // Consolidated data endpoint
         Route::get('/consolidated-data', [ConsolidatedDataController::class, 'getConsolidatedData']);
+
+        //Expenses
+        Route::get('expenses', [ExpenseController::class, 'index']);
+        Route::get('expenses/{id}', [ExpenseController::class, 'show']);
+        Route::post('expenses', [ExpenseController::class, 'store']);
+
+        // Accounting  
+        Route::get('cashbook', [AccountingController::class, 'cashbook']);
     });
 });
 
