@@ -11,7 +11,9 @@ class ViewCashbookRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->user()?->department?->name === 'Finance';
+        $user = auth()->user();
+
+        return $user?->role?->id == 1 || $user->department?->name === 'Finance';
     }
 
     /**
@@ -21,7 +23,7 @@ class ViewCashbookRequest extends FormRequest
     {
         return [
             'start_date' => 'nullable|date',
-            'end_date'   => 'nullable|date|after_or_equal:start_date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
         ];
     }
 
@@ -32,7 +34,7 @@ class ViewCashbookRequest extends FormRequest
     {
         $this->merge([
             'start_date' => $this->input('startDate', $this->input('start_date')),
-            'end_date'   => $this->input('endDate', $this->input('end_date')),
+            'end_date' => $this->input('endDate', $this->input('end_date')),
         ]);
     }
 
