@@ -61,7 +61,7 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('trips', TripController::class);
 
         // Consolidated data endpoint
-        Route::get('/consolidated-data', [ConsolidatedDataController::class, 'getConsolidatedData']);
+        Route::post('/consolidated-data', [ConsolidatedDataController::class, 'getConsolidatedData']);
 
         //Expenses
         Route::get('expenses', [ExpenseController::class, 'index']);
