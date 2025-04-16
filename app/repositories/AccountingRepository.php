@@ -27,7 +27,7 @@ class AccountingRepository
     {
         $cashAccount = Account::where('account_name', 'Cash on Hand')->first();
 
-        if (! $cashAccount) {
+        if (!$cashAccount) {
             Log::error('Cash on Hand account not found.');
             throw new \RuntimeException('Cash on Hand account not found.');
         }
@@ -45,9 +45,9 @@ class AccountingRepository
         $payments = $query->sum('credit_amt');
 
         return [
-            'cashReceipts' => $receipts,
-            'cashPayments' => $payments,
-            'balance'      => $receipts - $payments,
+            'cashReceipts' => (double) $receipts,
+            'cashPayments' => (double) $payments,
+            'balance' => $receipts - $payments,
         ];
     }
 }
