@@ -42,7 +42,7 @@ class UserStoreRequest extends FormRequest
     {
         $this->merge([
             'employee_code' => $this->input('employee_code', $this->input('employeeCode')),
-            'email' => $this->input('employee_code', $this->input('email')),
+            'email' => $this->input('email', $this->input('email')),
             'first_name' => $this->input('first_name', $this->input('firstName')),
             'last_name' => $this->input('last_name', $this->input('lastName')),
             'phone_number' => $this->input('phone_number', $this->input('phoneNumber')),
