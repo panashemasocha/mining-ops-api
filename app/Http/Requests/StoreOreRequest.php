@@ -11,7 +11,7 @@ class StoreOreRequest extends FormRequest
      */
     public function authorize()
     {
-        return auth()->user()->jobPosition->name === 'Quality Controller';
+        return auth()->user()->jobPosition->id === 4;
     }
 
     public function rules()
