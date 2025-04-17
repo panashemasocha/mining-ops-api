@@ -21,7 +21,7 @@ class AuthController extends Controller
                 'expires_in' => 1440 * 60, // 24 hours in seconds
             ]);
         }
-        return response()->json(['message' => 'Invalid credentials'], 401);
+        return response()->json(['message' => 'Wrong Phone number or pin'], 401);
     }
 
     public function logout()
