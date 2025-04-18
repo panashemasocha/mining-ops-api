@@ -1,19 +1,25 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\V1;
 
+use App\Http\Resources\PaymentMethodResource;
 use App\Models\PaymentMethod;
 use App\Http\Requests\StorePaymentMethodRequest;
 use App\Http\Requests\UpdatePaymentMethodRequest;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
 class PaymentMethodController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $paymentMethods = $request->query('paging', 'true') === 'false'
+            ? PaymentMethod::all()
+            : PaymentMethod::paginate(10);
+        return PaymentMethodResource::collection($paymentMethods);
     }
 
     /**

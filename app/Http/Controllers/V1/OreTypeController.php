@@ -1,19 +1,25 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\V1;
 
+use App\Http\Resources\OreTypeResource;
 use App\Models\OreType;
 use App\Http\Requests\StoreOreTypeRequest;
 use App\Http\Requests\UpdateOreTypeRequest;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
 class OreTypeController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $oreTypes = $request->query('paging', 'true') === 'false'
+            ? OreType::all()
+            : OreType::paginate(10);
+        return OreTypeResource::collection($oreTypes);
     }
 
     /**

@@ -1,19 +1,25 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\V1;
 
+use App\Http\Resources\OreQualityGradeResource;
 use App\Models\OreQualityGrade;
 use App\Http\Requests\StoreOreQualityGradeRequest;
 use App\Http\Requests\UpdateOreQualityGradeRequest;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
 class OreQualityGradeController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $oreQualityGrades = $request->query('paging', 'true') === 'false'
+            ? OreQualityGrade::all()
+            : OreQualityGrade::paginate(10);
+        return OreQualityGradeResource::collection($oreQualityGrades);
     }
 
     /**

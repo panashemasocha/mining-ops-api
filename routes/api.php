@@ -9,6 +9,10 @@ use App\Http\Controllers\V1\ExpenseController;
 use App\Http\Controllers\V1\JobPositionController;
 use App\Http\Controllers\V1\DriverInfoController;
 use App\Http\Controllers\V1\OreController;
+use App\Http\Controllers\V1\OreQualityGradeController;
+use App\Http\Controllers\V1\OreQualityTypeController;
+use App\Http\Controllers\V1\OreTypeController;
+use App\Http\Controllers\V1\PaymentMethodController;
 use App\Http\Controllers\V1\SupplierController;
 use App\Http\Controllers\V1\TripController;
 use App\Http\Controllers\V1\VehicleController;
@@ -56,6 +60,21 @@ Route::prefix('v1')->group(function () {
 
         // Cost Prices
         Route::apiResource('cost-prices', CostPriceController::class);
+
+        //Payment Method
+        Route::apiResource('payment-methods', PaymentMethodController::class);
+
+        Route::prefix('ore')->group(function () {
+            //Ore Type
+            Route::apiResource('type', OreTypeController::class);
+
+            Route::prefix('quality')->group(function () {
+                //Ore Quality Type
+                Route::apiResource('type', OreQualityTypeController::class);
+                //Ore Quality Grade
+                Route::apiResource('grade', OreQualityGradeController::class);
+            });
+        });
 
         // Trips
         Route::apiResource('trips', TripController::class);
