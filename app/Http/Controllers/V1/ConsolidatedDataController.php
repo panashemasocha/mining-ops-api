@@ -152,7 +152,10 @@ class ConsolidatedDataController extends Controller
     private function getComprehensiveData(GetConsolidatedDataRequest $request)
     {
         $data = [
-            'dispatches' => DispatchResource::collection($this->dispatchRepository->getAllDispatches()),
+            'dispatches' => $this->transformPaginated(
+                $this->dispatchRepository->getAllDispatches($request->input('dispatches_per_page', 10)),
+                DispatchResource::class
+            ),
             'ores' => $this->transformPaginated(
                 $this->oreRepository->getAllOres($request->input('ores_per_page', 10)),
                 OreResource::class
@@ -195,7 +198,6 @@ class ConsolidatedDataController extends Controller
     }
 
     /**
-     * 
      * Helper method to transform a paginated result using a given resource.
      *
      * @param mixed $result   Either a LengthAwarePaginator (or similar) or a plain Collection.
