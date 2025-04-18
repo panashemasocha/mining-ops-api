@@ -100,7 +100,7 @@ class ConsolidatedDataController extends Controller
                     $oresPaginator = $this->oreRepository->getAllOres($request->input('ores_per_page', 10));
 
                     $data['ores'] = $this->transformPaginated($oresPaginator, OreResource::class);
-                    $data['suppliers'] = SupplierResource::collection($this->supplierRepository->getAllSuppliers());
+                    $data['suppliers'] = ['data' => SupplierResource::collection($this->supplierRepository->getAllSuppliers())];
                     break;
                 case 7:
                     $oresPaginator = $this->oreRepository->getAllOres($request->input('ores_per_page', 10));
@@ -120,11 +120,11 @@ class ConsolidatedDataController extends Controller
                     return response()->json(['error' => 'Unauthorized or invalid job position'], 403);
             }
         }
-        $data['prices'] = CostPriceResource::collection($this->priceRepository->getAllPrices());
-        $data['departments'] = DepartmentResource::collection($this->departmentRepository->getAllDepartments());
-        $data['branches'] = BranchResource::collection($this->branchRepository->getAllBranches());
-        $data['jobPositions'] = JobPositionResource::collection($this->jobPositionRepository->getAllJobPositions());
-        $data['roles'] = UserRoleResource::collection($this->roleRepository->getAllRoles());
+        $data['prices'] = ['data' =>CostPriceResource::collection($this->priceRepository->getAllPrices())];
+        $data['departments'] =['data' => DepartmentResource::collection($this->departmentRepository->getAllDepartments())];
+        $data['branches'] = ['data' =>BranchResource::collection($this->branchRepository->getAllBranches())];
+        $data['jobPositions'] = ['data' =>JobPositionResource::collection($this->jobPositionRepository->getAllJobPositions())];
+        $data['roles'] = ['data' =>UserRoleResource::collection($this->roleRepository->getAllRoles())];
 
         return response()->json($data, 200);
     }
