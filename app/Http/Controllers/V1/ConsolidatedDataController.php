@@ -152,10 +152,7 @@ class ConsolidatedDataController extends Controller
     private function getComprehensiveData(GetConsolidatedDataRequest $request)
     {
         $data = [
-            'dispatches' => $this->transformPaginated(
-                $this->dispatchRepository->getAllDispatches($request->input('dispatches_per_page', 10)),
-                DispatchResource::class
-            ),
+            'dispatches' => DispatchResource::collection($this->dispatchRepository->getAllDispatches()),
             'ores' => $this->transformPaginated(
                 $this->oreRepository->getAllOres($request->input('ores_per_page', 10)),
                 OreResource::class
@@ -211,7 +208,7 @@ class ConsolidatedDataController extends Controller
         if ($result instanceof \Illuminate\Pagination\LengthAwarePaginator) {
             // Transform the data items using the provided resource.
             $transformedData = $resourceClass::collection($result)->resolve();
-    
+
             // Extract pagination details.
             $pagination = [
                 'current_page' => $result->currentPage(),
@@ -223,7 +220,7 @@ class ConsolidatedDataController extends Controller
                 'next_page_url' => $result->nextPageUrl(),
                 'prev_page_url' => $result->previousPageUrl(),
             ];
-    
+
             return [
                 'data' => $transformedData,
                 'links' => $pagination,
