@@ -206,11 +206,11 @@ class ConsolidatedDataController extends Controller
      */
     private function transformPaginated($result, $resourceClass)
     {
-        // If the result is a paginator (LengthAwarePaginator), extract pagination meta.
-        if (is_object($result) && method_exists($result, 'currentPage')) {
+        // Check if the result is a LengthAwarePaginator instance
+        if ($result instanceof \Illuminate\Pagination\LengthAwarePaginator) {
             // Transform the data items using the provided resource.
             $transformedData = $resourceClass::collection($result)->resolve();
-
+    
             // Extract pagination details.
             $pagination = [
                 'current_page' => $result->currentPage(),
@@ -222,13 +222,14 @@ class ConsolidatedDataController extends Controller
                 'next_page_url' => $result->nextPageUrl(),
                 'prev_page_url' => $result->previousPageUrl(),
             ];
-
+    
             return [
                 'data' => $transformedData,
                 'links' => $pagination,
                 'meta' => $pagination,
             ];
         } else {
+            // Handle non-paginated results
             return [
                 'data' => $resourceClass::collection($result)->resolve()
             ];
