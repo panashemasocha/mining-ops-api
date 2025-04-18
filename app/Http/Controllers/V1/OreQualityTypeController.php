@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\V1;
 
+use App\Http\Resources\OreQualityTypeResource;
 use App\Models\OreQualityType;
 use App\Http\Requests\StoreOreQualityTypeRequest;
 use App\Http\Requests\UpdateOreQualityTypeRequest;
-use Database\Factories\OreQualityTypeFactory;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -19,7 +19,7 @@ class OreQualityTypeController extends Controller
         $oreQualityType = $request->query('paging', 'true') === 'false'
             ? OreQualityType::all()
             : OreQualityType::paginate(10);
-        return OreQualityTypeFactory::collection($oreQualityType);
+        return OreQualityTypeResource::collection($oreQualityType);
     }
 
     /**
