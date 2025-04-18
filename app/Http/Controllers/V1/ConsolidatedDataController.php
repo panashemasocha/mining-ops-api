@@ -158,7 +158,7 @@ class ConsolidatedDataController extends Controller
                 $this->oreRepository->getAllOres($request->input('ores_per_page', 10)),
                 OreResource::class
             ),
-            'suppliers' => OreResource::collection($this->supplierRepository->getAllSuppliers()),
+            'suppliers' => ['data' => SupplierResource::collection($this->supplierRepository->getAllSuppliers())],
 
             'trips' => $this->transformPaginated(
                 $this->tripRepository->getAllTrips($request->input('trips_per_page', 10)),
