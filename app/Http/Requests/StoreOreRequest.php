@@ -17,9 +17,9 @@ class StoreOreRequest extends FormRequest
     public function rules()
     {
         return [
-            'type' => 'required|string|max:255',
-            'quality_type' => 'required|string|max:255',
-            'quality_grade' => 'required|string|in:A,B,C,High,Medium,Low|max:255',
+            'ore_type_id' => 'required|string|max:255',
+            'ore_quality_type_id' => 'required|string|max:255',
+            'ore_quality_grade_id' => 'required|string|in:A,B,C,High,Medium,Low|max:255',
             'quantity' => 'required|numeric|min:1',
             'supplier_id' => 'required|exists:suppliers,id',
             'created_by' => 'required|exists:users,id',
@@ -36,9 +36,9 @@ class StoreOreRequest extends FormRequest
     protected function prepareForValidation()
     {
         $this->merge([
-            'type' => $this->input('type', $this->input('type')),
-            'quality_type' => $this->input('quality_type', $this->input('qualityType')),
-            'quality_grade' => $this->input('quality_grade', $this->input('qualityGrade')),
+            'ore_type_id' => $this->input('ore_type_id', $this->input('oreTypeId')),
+            'ore_quality_type_id' => $this->input('ore_quality_type_id', $this->input('oreQualityTypeId')),
+            'ore_quality_grade_id' => $this->input('ore_quality_grade_id', $this->input('oreQualityGradeId')),
             'quantity' => $this->input('quantity', $this->input('quantity')),
             'supplier_id' => $this->input('supplier_id', $this->input('supplierId')),
             'created_by' => $this->input('created_by', $this->input('createdBy')),

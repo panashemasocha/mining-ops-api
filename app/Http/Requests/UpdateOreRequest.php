@@ -17,9 +17,9 @@ class UpdateOreRequest extends FormRequest
     public function rules()
     {
         return [
-            'type' => 'sometimes|string|max:255',
-            'quality_type' => 'sometimes|string|max:255',
-            'quality_grade' => 'sometimes|string|in:A,B,C,High,Medium,Low|max:255',
+            'ore_type_id' => 'sometimes|string|max:255',
+            'ore_quality_type_id' => 'sometimes|string|max:255',
+            'ore_quality_grade_id' => 'sometimes|string|in:A,B,C,High,Medium,Low|max:255',
             'quantity' => 'sometimes|numeric|min:1',
             'supplier_id' => 'sometimes|exists:suppliers,id',
             'created_by' => 'sometimes|exists:users,id',
@@ -30,16 +30,16 @@ class UpdateOreRequest extends FormRequest
         ];
     }
 
-    
+
     /**
      * Prepare the data for validation by converting camelCase inputs to snake_case.
      */
     protected function prepareForValidation()
     {
         $this->merge([
-            'type' => $this->input('type', $this->input('type')),
-            'quality_type' => $this->input('quality_type', $this->input('qualityType')),
-            'quality_grade' => $this->input('quality_grade', $this->input('qualityGrade')),
+            'ore_type_id' => $this->input('ore_type_id', $this->input('oreTypeId')),
+            'ore_quality_type_id' => $this->input('ore_quality_type_id', $this->input('oreQualityTypeId')),
+            'ore_quality_grade_id' => $this->input('ore_quality_grade_id', $this->input('oreQualityGradeId')),
             'quantity' => $this->input('quantity', $this->input('quantity')),
             'supplier_id' => $this->input('supplier_id', $this->input('supplierId')),
             'created_by' => $this->input('created_by', $this->input('createdBy')),

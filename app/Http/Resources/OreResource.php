@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Resources;
 
+use App\Models\OreQualityType;
 use App\Models\User;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -10,11 +11,9 @@ class OreResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'type' => $this->type,
-            'quality' => [
-                'type' => $this->quality_type,
-                'grade' => $this->quality_grade,
-            ],
+            'type' => new OreTypeResource($this->oreType),
+            'qualityType' => new OreQualityTypeResource($this->oreQualityType),
+            'qualityGrade' => new OreQualityGradeResource($this->oreQualityGrade),
             'quantity' => $this->quantity,
             'supplier' => new SupplierResource($this->supplier),
             'creator' => new UserResource(User::find($this->created_by)),

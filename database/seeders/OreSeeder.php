@@ -2,6 +2,9 @@
 namespace Database\Seeders;
 
 use App\Models\Ore;
+use App\Models\OreQualityGrade;
+use App\Models\OreQualityType;
+use App\Models\OreType;
 use App\Models\Supplier;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -23,6 +26,10 @@ class OreSeeder extends Seeder
             $query->where('name', 'Quality Controller');
         })->get();
 
+        $oreType = OreType::all();
+        $oreQualityType = OreQualityType::all();
+        $oreQualityGrade = OreQualityGrade::all();
+
         // prepare letters A–Z
         $letters = range('A', 'Z');
 
@@ -34,9 +41,9 @@ class OreSeeder extends Seeder
                 : $this->faker->randomElement(['High', 'Medium', 'Low']);
 
             Ore::create([
-                'type'           => 'Kyanite',
-                'quality_type'   => $qualityType,
-                'quality_grade'  => $quality_grade,
+                'ore_type_id'           => $oreType->random()->id,
+                'ore_quality_type_id'   => $oreQualityType->random()->id,
+                'ore_quality_grade_id'  => $oreQualityGrade->random()->id,
                 'quantity'       => $this->faker->randomFloat(2, 0.1, 1000),
                 'supplier_id'    => $suppliers->random()->id,
                 'created_by'     => $users->random()->id,

@@ -12,15 +12,15 @@ return new class extends Migration {
     {
         Schema::create('ores', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('type')
+            $table->foreignId('ore_type_id')
                 ->constrained('ore_types')
                 ->onUpdate('cascade')
                 ->onDelete('no action'); // e.g., 'Kyanite'
-            $table->foreignId('quality_type')
+            $table->foreignId('ore_quality_type_id')
                 ->constrained('ore_quality_types')
                 ->onUpdate('cascade')
                 ->onDelete('no action'); // 'Gem-Quality' or 'Industrial-Grade'
-            $table->foreignId('quality_grade')
+            $table->foreignId('ore_quality_grade_id')
                 ->constrained('ore_quality_grades')
                 ->onUpdate('cascade')
                 ->onDelete('no action'); // 'A', 'B', or 'C' for Gem-Quality, High,Medium,Low for Industrial-Grade
