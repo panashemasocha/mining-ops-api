@@ -198,6 +198,7 @@ class ConsolidatedDataController extends Controller
     }
 
     /**
+     * 
      * Helper method to transform a paginated result using a given resource.
      *
      * @param mixed $result   Either a LengthAwarePaginator (or similar) or a plain Collection.
