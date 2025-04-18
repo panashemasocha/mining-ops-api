@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -17,8 +16,14 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('national_id')->unique();
             $table->string('physical_address');
-            $table->foreignId('created_by')->constrained('users');
-            $table->foreignId('payment_method_id')->constrained('payment_methods');
+            $table->foreignId('created_by')
+                ->constrained('users')
+                ->onUpdate('cascade')
+                ->onDelete('no action');
+            $table->foreignId('payment_method_id')
+                ->constrained('payment_methods')
+                ->onUpdate('cascade')
+                ->onDelete('no action');
             $table->string('phone_number')->unique();
             $table->timestamps();
         });

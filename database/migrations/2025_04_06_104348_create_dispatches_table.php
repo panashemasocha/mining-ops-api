@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -13,9 +12,18 @@ return new class extends Migration
     {
         Schema::create('dispatches', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('ore_id')->constrained('ores');
-            $table->foreignId('vehicle_id')->constrained('vehicles');
-            $table->foreignId('site_clerk_id')->constrained('users');
+            $table->foreignId('ore_id')
+                ->constrained('ores')
+                ->onUpdate('cascade')
+                ->onDelete('no action');
+            $table->foreignId('vehicle_id')
+                ->constrained('vehicles')
+                ->onUpdate('cascade')
+                ->onDelete('no action');
+            $table->foreignId('site_clerk_id')
+                ->constrained('users')
+                ->onUpdate('cascade')
+                ->onDelete('no action');
             $table->string('loading_method')->nullable(); // 'manual', 'mechanic'
             $table->decimal('ore_cost_per_tonne', 10, 2);
             $table->decimal('loading_cost_per_tonne', 10, 2);

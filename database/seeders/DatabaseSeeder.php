@@ -21,14 +21,21 @@ class DatabaseSeeder extends Seeder
                 // PaymentMethodSeeder::class,
                 // SupplierSeeder::class,
 
+                OreTypeSeeder::class,    //Seed this before OreSeeder
+                OreQualityTypeSeeder::class, //Seed this before OreSeeder
+                OreQualityGradeSeeder::class //Seed this before OreSeeder
+                
                 // OreSeeder::class,
                 // CostPriceSeeder::class,
                 // DispatchSeeder::class,
                 // TripSeeder::class
 
-           // AccountSeeder::class,
-            GLTransactionSeeder::class,
-            GLEntrySeeder::class
+                // AccountSeeder::class,
+                // GLTransactionSeeder::class,
+                // GLEntrySeeder::class
+
+        
+
         ]);
     }
 }

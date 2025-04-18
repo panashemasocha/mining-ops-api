@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -19,10 +18,22 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('phone_number')->unique();
             $table->string('pin');
-            $table->foreignId('job_position_id')->constrained('job_positions');
-            $table->foreignId('branch_id')->constrained('branches');
-            $table->foreignId('department_id')->constrained('departments');
-            $table->foreignId('role_id')->constrained('user_roles');
+            $table->foreignId('job_position_id')
+                ->constrained('job_positions')
+                ->onUpdate('cascade')
+                ->onDelete('no action');
+            $table->foreignId('branch_id')
+                ->constrained('branches')
+                ->onUpdate('cascade')
+                ->onDelete('no action');
+            $table->foreignId('department_id')
+                ->constrained('departments')
+                ->onUpdate('cascade')
+                ->onDelete('no action');
+            $table->foreignId('role_id')
+                ->constrained('user_roles')
+                ->onUpdate('cascade')
+                ->onDelete('no action');
             $table->string('physical_address')->nullable();
             $table->date('date_of_birth')->nullable();
             $table->string('national_id')->nullable();
