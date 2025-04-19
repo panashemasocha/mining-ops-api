@@ -129,12 +129,13 @@ class DispatchController extends Controller
         $oreLocation = [$ore->latitude, $ore->longitude];
 
         // Find available drivers (assumes User model has a 'role' or similar relation)
-        $drivers = UserResource::collection( User::whereHas('role', function ($query) {
-            $query->where(['job_position_id', 5,'status',1]);
+        $drivers = UserResource::collection(User::whereHas('role', function ($query) {
+            $query->where('job_position_id', 5)
+                ->where('status', 1);
         })->get());
 
         $vehicles = Vehicle::where('status', 'off trip')->get();
-       // return response()->json(['vehicle' => $vehicles, 'drivers' => $drivers]);
+         return response()->json(['vehicle' => $vehicles, 'drivers' => $drivers]);
         $results = [];
         foreach ($drivers as $driver) {
             $driverLocation = [$driver->latitude ?? 0, $driver->longitude ?? 0];
