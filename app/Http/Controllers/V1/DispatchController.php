@@ -129,54 +129,73 @@ class DispatchController extends Controller
         $ore = Ore::findOrFail($request->ore_id);
         $oreLocation = [$ore->latitude, $ore->longitude];
     
-        // Fetch available drivers with Driver job position and eager load driverInfo
-        $drivers = User::where('job_position_id', 5) 
-            ->where('status', 1) 
+        // Fetch available drivers with Driver job position
+        $drivers = User::where('job_position_id', 5)
+            ->where('status', 1)
             ->with('driverInfo')
             ->get();
-    
         $driverResources = UserResource::collection($drivers)->toArray(request());
     
-        // Fetch available vehicles and convert to VehicleResource
+        // Fetch available vehicles
         $vehicles = Vehicle::where('status', 'off trip')->get();
         $vehicleResources = VehicleResource::collection($vehicles)->toArray(request());
     
         $results = [];
     
         foreach ($driverResources as $driver) {
-            // Extract driver's location from driverInfo
+            // Extract driver coordinates
             $driverLat = $driver['driverInfo']['lastKnownLocation']['latitude'] ?? 0;
             $driverLon = $driver['driverInfo']['lastKnownLocation']['longitude'] ?? 0;
-            $driverLocation = [$driverLat, $driverLon];
-            $driverDistance = $this->calculateDistance($oreLocation, $driverLocation);
-    
+            
             foreach ($vehicleResources as $vehicle) {
-                // Extract vehicle's location from lastKnownLocation
+                // Extract vehicle coordinates
                 $vehicleLat = $vehicle['lastKnownLocation']['latitude'] ?? 0;
                 $vehicleLon = $vehicle['lastKnownLocation']['longitude'] ?? 0;
-                $vehicleLocation = [$vehicleLat, $vehicleLon];
-                $vehicleDistance = $this->calculateDistance($oreLocation, $vehicleLocation);
+    
+                // Calculate distances using Haversine
+                $driverDistance = $this->calculateHaversineDistance(
+                    $oreLocation[0], $oreLocation[1], 
+                    $driverLat, $driverLon
+                );
+                
+                $vehicleDistance = $this->calculateHaversineDistance(
+                    $oreLocation[0], $oreLocation[1],
+                    $vehicleLat, $vehicleLon
+                );
     
                 $results[] = [
                     'driver' => $driver,
                     'vehicle' => $vehicle,
-                    'driver_distance' => $driverDistance,
-                    'vehicle_distance' => $vehicleDistance,
+                    'driverDistance' => round($driverDistance, 2),
+                    'vehicleDistance' => round($vehicleDistance, 2),
                 ];
             }
         }
     
-        // Sort results by driver proximity to the ore location
-        usort($results, fn($a, $b) => $a['driver_distance'] <=> $b['driver_distance']);
+        // Sort by driver proximity
+        usort($results, fn($a, $b) => $a['driverDistance'] <=> $b['driverDistance']);
     
         return response()->json($results);
     }
 
-    private function calculateDistance($point1, $point2)
+    private function calculateHaversineDistance($lat1, $lon1, $lat2, $lon2)
     {
-        // Simple Euclidean distance (replace with Haversine formula for real-world use)
-        $latDiff = $point1[0] - $point2[0];
-        $lonDiff = $point1[1] - $point2[1];
-        return sqrt($latDiff * $latDiff + $lonDiff * $lonDiff);
+        $earthRadius = 6371; // Kilometers
+    
+        $latFrom = deg2rad($lat1);
+        $lonFrom = deg2rad($lon1);
+        $latTo = deg2rad($lat2);
+        $lonTo = deg2rad($lon2);
+    
+        $latDelta = $latTo - $latFrom;
+        $lonDelta = $lonTo - $lonFrom;
+    
+        $angle = 2 * asin(sqrt(
+            pow(sin($latDelta / 2), 2) +
+            cos($latFrom) * cos($latTo) *
+            pow(sin($lonDelta / 2), 2)
+        ));
+    
+        return $angle * $earthRadius;
     }
 }
