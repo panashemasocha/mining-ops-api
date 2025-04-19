@@ -107,9 +107,9 @@ class ConsolidatedDataController extends Controller
 
             $data['ores'] = $this->transformPaginated($oresPaginator, OreResource::class);
             $data['suppliers'] = SupplierResource::collection($this->supplierRepository->getAllSuppliers() ?? collect());
-            $data['oreType'] = OreTypeResource::collection($this->oreTypeRepository->getOreTypes() ?? collect());
-            $data['oreQualityType'] = OreQualityTypeResource::collection($this->oreQualityTypeRepository->getAllOreQualityTypes());
-            $data['oreQualityGrade'] = OreQualityGradeResource::collection($this->oreQualityGradeRepository->getAllOreQualityGrade());
+          //  $data['oreType'] = OreTypeResource::collection($this->oreTypeRepository->getOreTypes() ?? collect());
+          //  $data['oreQualityType'] = OreQualityTypeResource::collection($this->oreQualityTypeRepository->getAllOreQualityTypes());
+          //  $data['oreQualityGrade'] = OreQualityGradeResource::collection($this->oreQualityGradeRepository->getAllOreQualityGrade());
 
         } else if ($jobPositionId == 5) {
             $dispatchesPaginator = $this->dispatchRepository->getDispatchesForDriver($userId, $request->input('dispatches_per_page', 10));
