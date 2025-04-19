@@ -156,7 +156,7 @@ class ConsolidatedDataController extends Controller
                 $this->oreRepository->getAllOres($request->input('ores_per_page', 10)),
                 OreResource::class
             ),
-            'suppliers' => ['data' => SupplierResource::collection($this->supplierRepository->getAllSuppliers())],
+            'suppliers' => ['data' => SupplierResource::collection($this->supplierRepository->getAllSuppliers() ?? collect())],
 
             'trips' => $this->transformPaginated(
                 $this->tripRepository->getAllTrips($request->input('trips_per_page', 10)),
@@ -206,6 +206,9 @@ class ConsolidatedDataController extends Controller
      */
     private function transformPaginated($result, $resourceClass)
     {
+        if (!$result) {
+            return ['data' => []];
+        }
         // Check if the result is a LengthAwarePaginator instance
         if ($result instanceof \Illuminate\Pagination\LengthAwarePaginator) {
             // Transform the data items using the provided resource.
