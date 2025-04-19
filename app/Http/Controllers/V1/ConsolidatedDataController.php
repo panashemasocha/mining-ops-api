@@ -108,7 +108,7 @@ class ConsolidatedDataController extends Controller
 
             $data['ores'] = $this->transformPaginated($oresPaginator, OreResource::class);
             $data['suppliers'] = SupplierResource::collection($this->supplierRepository->getAllSuppliers() ?? collect());
-           $data['oreQualityType'] = OreQualityType::collection($this->oreQualityTypeRepository->getAllOreQualityTypes());
+           $data['oreQualityType'] = OreQualityTypeResource::collection($this->oreQualityTypeRepository->getAllOreQualityTypes());
           //  $data['oreQualityGrade'] = OreQualityGradeResource::collection($this->oreQualityGradeRepository->getAllOreQualityGrade());
           //  $data['oreType'] = OreTypeResource::collection($this->oreTypeRepository->getOreTypes() ?? collect());
 
