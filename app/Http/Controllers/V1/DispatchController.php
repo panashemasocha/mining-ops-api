@@ -20,8 +20,8 @@ class DispatchController extends Controller
 {
     public function index(Request $request)
     {
-        $dispatches = $request->query('paging', 'true') === 'false' 
-            ? Dispatch::all() 
+        $dispatches = $request->query('paging', 'true') === 'false'
+            ? Dispatch::all()
             : Dispatch::paginate(10);
         return DispatchResource::collection($dispatches);
     }
@@ -56,57 +56,57 @@ class DispatchController extends Controller
     protected function postMiningExpenses(Dispatch $dispatch, string $paymentMethod)
     {
         $supplierName = $dispatch->supplier->first_name . ' ' . $dispatch->supplier->last_name;
-        $date         = Carbon::now()->toDateString();
-        $oreQty       = $dispatch->ore_quantity;
-        $oreCostAmt   = $dispatch->ore_cost_per_tonne * $oreQty;
-        $loadCostAmt  = $dispatch->loading_cost_per_tonne * $oreQty;
+        $date = Carbon::now()->toDateString();
+        $oreQty = $dispatch->ore_quantity;
+        $oreCostAmt = $dispatch->ore_cost_per_tonne * $oreQty;
+        $loadCostAmt = $dispatch->loading_cost_per_tonne * $oreQty;
 
         // Map user‐supplied payment_method to the right asset account
-        $assetAccountName = match($paymentMethod) {
-            'Cash'          => 'Cash on Hand',
+        $assetAccountName = match ($paymentMethod) {
+            'Cash' => 'Cash on Hand',
             'Bank Transfer' => 'Bank',
-            'Ecocash'       => 'Ecocash',
-            default         => 'Cash on Hand',
+            'Ecocash' => 'Ecocash',
+            default => 'Cash on Hand',
         };
 
-        $asset   = Account::where('account_name', $assetAccountName)->firstOrFail();
+        $asset = Account::where('account_name', $assetAccountName)->firstOrFail();
         $expense = Account::where('account_name', 'Mining expenses')->firstOrFail();
 
         // 1) Ore Cost
         $tx1 = GLTransaction::create([
-            'trans_date'  => $date,
+            'trans_date' => $date,
             'description' => "Ore ({$dispatch->ore->type}) Cost -{$supplierName}-{$dispatch->id}",
-            'created_by'  => auth()->id(),
+            'created_by' => auth()->id(),
         ]);
         GLEntry::create([
-            'trans_id'   => $tx1->id,
+            'trans_id' => $tx1->id,
             'account_id' => $expense->id,
-            'debit_amt'  => $oreCostAmt,
+            'debit_amt' => $oreCostAmt,
             'credit_amt' => 0,
         ]);
         GLEntry::create([
-            'trans_id'   => $tx1->id,
+            'trans_id' => $tx1->id,
             'account_id' => $asset->id,
-            'debit_amt'  => 0,
+            'debit_amt' => 0,
             'credit_amt' => $oreCostAmt,
         ]);
 
         // 2) Loading Cost
         $tx2 = GLTransaction::create([
-            'trans_date'  => $date,
+            'trans_date' => $date,
             'description' => "Loading cost-{$supplierName}-{$dispatch->id}",
-            'created_by'  => auth()->id(),
+            'created_by' => auth()->id(),
         ]);
         GLEntry::create([
-            'trans_id'   => $tx2->id,
+            'trans_id' => $tx2->id,
             'account_id' => $expense->id,
-            'debit_amt'  => $loadCostAmt,
+            'debit_amt' => $loadCostAmt,
             'credit_amt' => 0,
         ]);
         GLEntry::create([
-            'trans_id'   => $tx2->id,
+            'trans_id' => $tx2->id,
             'account_id' => $asset->id,
-            'debit_amt'  => 0,
+            'debit_amt' => 0,
             'credit_amt' => $loadCostAmt,
         ]);
     }
@@ -133,10 +133,9 @@ class DispatchController extends Controller
         })->get();
 
         $vehicles = Vehicle::where('status', 'off trip')->get();
-
+        return response()->json(['vehicle' => $vehicles, 'drivers' => $drivers]);
         $results = [];
         foreach ($drivers as $driver) {
-            // Assuming drivers have location data in a related table or attributes
             $driverLocation = [$driver->latitude ?? 0, $driver->longitude ?? 0];
             $driverDistance = $this->calculateDistance($oreLocation, $driverLocation);
 
