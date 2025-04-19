@@ -7,6 +7,6 @@ class OreQualityGradeRepository
 {
     public function getAllOreQualityGrade()
     {
-        OreQualityGrade::all();
+        return OreQualityGrade::all();
     }
 }

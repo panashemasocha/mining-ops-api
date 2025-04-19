@@ -6,6 +6,6 @@ use App\Models\OreQualityType;
 class OreQualityTypeRepository
 {
     public function getAllOreQualityTypes(){
-        OreQualityType::all();
+       return OreQualityType::all();
     }
 }

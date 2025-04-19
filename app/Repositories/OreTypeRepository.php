@@ -6,6 +6,6 @@ use App\Models\OreType;
 class OreTypeRepository
 {
     public function getOreTypes(){
-        OreType::all();
+        return OreType::all();
     }
 }
