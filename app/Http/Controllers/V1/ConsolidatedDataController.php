@@ -6,9 +6,15 @@ use App\Http\Requests\GetConsolidatedDataRequest;
 use App\Http\Requests\ViewCashbookRequest;
 use App\Http\Resources\CostPriceResource;
 use App\Http\Resources\GLTransactionResource;
+use App\Http\Resources\OreQualityGradeResource;
+use App\Http\Resources\OreQualityTypeResource;
+use App\Http\Resources\OreTypeResource;
 use App\Http\Resources\UserRoleResource;
 use App\Repositories\AccountingRepository;
+use App\Repositories\OreQualityGradeRepository;
+use App\Repositories\OreQualityTypeRepository;
 use App\Repositories\OreRepository;
+use App\Repositories\OreTypeRepository;
 use App\Repositories\SupplierRepository;
 use App\Repositories\DispatchRepository;
 use App\Repositories\TripRepository;
@@ -40,8 +46,10 @@ class ConsolidatedDataController extends Controller
     protected $branchRepository;
     protected $jobPositionRepository;
     protected $roleRepository;
-
     protected $accountingRepository;
+    protected $oreTypeRepository;
+    protected $oreQualityTypeRepository;
+    protected $oreQualityGradeRepository;
 
     public function __construct(
         OreRepository $oreRepository,
@@ -55,6 +63,9 @@ class ConsolidatedDataController extends Controller
         JobPositionRepository $jobPositionRepository,
         RoleRepository $roleRepository,
         AccountingRepository $accountingRepository,
+        OreTypeRepository $oreTypeRepository,
+        OreQualityGradeRepository $oreQualityGradeRepository,
+        OreQualityTypeRepository $oreQualityTypeRepository,
     ) {
         $this->oreRepository = $oreRepository;
         $this->supplierRepository = $supplierRepository;
@@ -67,6 +78,9 @@ class ConsolidatedDataController extends Controller
         $this->jobPositionRepository = $jobPositionRepository;
         $this->roleRepository = $roleRepository;
         $this->accountingRepository = $accountingRepository;
+        $this->oreTypeRepository = $oreTypeRepository;
+        $this->oreQualityGradeRepository = $oreQualityGradeRepository;
+        $this->oreQualityTypeRepository = $oreQualityTypeRepository;
     }
 
     /**
@@ -101,6 +115,9 @@ class ConsolidatedDataController extends Controller
 
                     $data['ores'] = $this->transformPaginated($oresPaginator, OreResource::class);
                     $data['suppliers'] = ['data' => SupplierResource::collection($this->supplierRepository->getAllSuppliers())];
+                    $data['oreType'] = OreTypeResource::collection($this->oreTypeRepository->getOreTypes());
+                    $data['oreQualityType'] = OreQualityTypeResource::collection($this->oreQualityTypeRepository->getAllOreQualityTypes());
+                    $data['oreQualityGrade'] = OreQualityGradeResource::collection($this->oreQualityGradeRepository->getAllOreQualityGrade());
                     break;
                 case 7:
                     $oresPaginator = $this->oreRepository->getAllOres($request->input('ores_per_page', 10));
