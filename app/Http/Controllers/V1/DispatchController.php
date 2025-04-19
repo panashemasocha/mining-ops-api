@@ -129,7 +129,7 @@ class DispatchController extends Controller
 
         // Find available drivers (assumes User model has a 'role' or similar relation)
         $drivers = User::whereHas('role', function ($query) {
-            $query->where('name', 'driver');
+            $query->where('job_position_id', 5);
         })->get();
 
         $vehicles = Vehicle::where('status', 'off trip')->get();
