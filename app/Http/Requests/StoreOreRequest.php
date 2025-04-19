@@ -17,9 +17,9 @@ class StoreOreRequest extends FormRequest
     public function rules()
     {
         return [
-            'ore_type_id' => 'required|string|max:255',
-            'ore_quality_type_id' => 'required|string|max:255',
-            'ore_quality_grade_id' => 'required|string|in:A,B,C,High,Medium,Low|max:255',
+            'ore_type_id' => 'required|exists:ore_types,id',
+            'ore_quality_type_id' => 'required|exists:ore_quality_types,id',
+            'ore_quality_grade_id' => 'required|exists:ore_quality_grades,id',
             'quantity' => 'required|numeric|min:1',
             'supplier_id' => 'required|exists:suppliers,id',
             'created_by' => 'required|exists:users,id',

@@ -17,9 +17,9 @@ class UpdateOreRequest extends FormRequest
     public function rules()
     {
         return [
-            'ore_type_id' => 'sometimes|string|max:255',
-            'ore_quality_type_id' => 'sometimes|string|max:255',
-            'ore_quality_grade_id' => 'sometimes|string|in:A,B,C,High,Medium,Low|max:255',
+            'ore_type_id' => 'sometimes|exists:ore_types,id',
+            'ore_quality_type_id' => 'sometimes|exists:ore_quality_types,id',
+            'ore_quality_grade_id' => 'sometimes|exists:ore_quality_grades,id',
             'quantity' => 'sometimes|numeric|min:1',
             'supplier_id' => 'sometimes|exists:suppliers,id',
             'created_by' => 'sometimes|exists:users,id',
