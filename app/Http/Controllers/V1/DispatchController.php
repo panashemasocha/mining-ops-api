@@ -6,6 +6,7 @@ use App\Http\Requests\StoreDispatchRequest;
 use App\Http\Requests\UpdateDispatchRequest;
 use App\Http\Resources\DispatchResource;
 use App\Http\Resources\UserResource;
+use App\Http\Resources\VehicleResource;
 use App\Models\Account;
 use App\Models\Dispatch;
 use App\Models\GLEntry;
@@ -124,27 +125,38 @@ class DispatchController extends Controller
         $request->validate([
             'ore_id' => 'required|exists:ores,id',
         ]);
-
+    
         $ore = Ore::findOrFail($request->ore_id);
         $oreLocation = [$ore->latitude, $ore->longitude];
-
-        // Find available drivers (assumes User model has a 'role' or similar relation)
-        $drivers = UserResource::collection(User::whereHas('role', function ($query) {
-            $query->where('job_position_id', 5)
-                ->where('status', 1);
-        })->get());
-
+    
+        // Fetch available drivers with Driver job position and eager load driverInfo
+        $drivers = User::where('job_position_id', 5) 
+            ->where('status', 1) 
+            ->with('driverInfo')
+            ->get();
+    
+        $driverResources = UserResource::collection($drivers)->toArray(request());
+    
+        // Fetch available vehicles and convert to VehicleResource
         $vehicles = Vehicle::where('status', 'off trip')->get();
-         return response()->json(['vehicle' => $vehicles, 'drivers' => $drivers]);
+        $vehicleResources = VehicleResource::collection($vehicles)->toArray(request());
+    
         $results = [];
-        foreach ($drivers as $driver) {
-            $driverLocation = [$driver->latitude ?? 0, $driver->longitude ?? 0];
+    
+        foreach ($driverResources as $driver) {
+            // Extract driver's location from driverInfo
+            $driverLat = $driver['driverInfo']['lastKnownLocation']['latitude'] ?? 0;
+            $driverLon = $driver['driverInfo']['lastKnownLocation']['longitude'] ?? 0;
+            $driverLocation = [$driverLat, $driverLon];
             $driverDistance = $this->calculateDistance($oreLocation, $driverLocation);
-
-            foreach ($vehicles as $vehicle) {
-                $vehicleLocation = [$vehicle->last_known_latitude, $vehicle->last_known_longitude];
+    
+            foreach ($vehicleResources as $vehicle) {
+                // Extract vehicle's location from lastKnownLocation
+                $vehicleLat = $vehicle['lastKnownLocation']['latitude'] ?? 0;
+                $vehicleLon = $vehicle['lastKnownLocation']['longitude'] ?? 0;
+                $vehicleLocation = [$vehicleLat, $vehicleLon];
                 $vehicleDistance = $this->calculateDistance($oreLocation, $vehicleLocation);
-
+    
                 $results[] = [
                     'driver' => $driver,
                     'vehicle' => $vehicle,
@@ -153,10 +165,10 @@ class DispatchController extends Controller
                 ];
             }
         }
-
-        // Sort by driver distance
+    
+        // Sort results by driver proximity to the ore location
         usort($results, fn($a, $b) => $a['driver_distance'] <=> $b['driver_distance']);
-
+    
         return response()->json($results);
     }
 
