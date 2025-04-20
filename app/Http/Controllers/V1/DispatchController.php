@@ -126,66 +126,66 @@ class DispatchController extends Controller
         $request->validate([
             'ore_id' => 'required|exists:ores,id',
         ]);
-
+    
         $ore = Ore::findOrFail($request->ore_id);
-        $oreLocation = [$ore->latitude, $ore->longitude];
-
-        // Fetch available drivers
+        $oreLat = $ore->latitude;
+        $oreLon = $ore->longitude;
+    
+        // 1) Only grab drivers who actually have non‑null coords
         $drivers = User::where('job_position_id', 5)
             ->where('status', 1)
-            ->with('driverInfo')
+            ->whereHas('driverInfo', function($q) {
+                $q->whereNotNull('last_known_latitude')
+                  ->whereNotNull('last_known_longitude');
+            })
+            ->with('driverInfo') 
             ->get();
-        $driverResources = UserResource::collection($drivers)->toArray(request());
-
-        // Fetch available vehicles
-        $vehicles = Vehicle::where('status', 'off trip')->get();
-        $vehicleResources = VehicleResource::collection($vehicles)->toArray(request());
-
+    
+        $vehicles = Vehicle::where('status', 'off trip')
+            // likewise ensure vehicle coords exist
+            ->whereNotNull('last_known_latitude')
+            ->whereNotNull('last_known_longitude')
+            ->get();
+    
         $results = [];
-
-        foreach ($driverResources as $driver) {
-           // driver coordinates
-            $driverLat = $driver['driverInfo']['lastKnownLocation']['latitude'] ?? null;
-            $driverLon = $driver['driverInfo']['lastKnownLocation']['longitude'] ?? null;
-
-            foreach ($vehicleResources as $vehicle) {
-                //  vehicle and ore coordinates
-                $vehicleLat = $vehicle['lastKnownLocation']['latitude'] ?? null;
-                $vehicleLon = $vehicle['lastKnownLocation']['longitude'] ?? null;
-
-                // Calculate distances
+    
+        foreach ($drivers as $driver) {
+            $driverLat = $driver->driverInfo->last_known_latitude;
+            $driverLon = $driver->driverInfo->last_known_longitude;
+    
+            foreach ($vehicles as $vehicle) {
+                $vehicleLat = $vehicle->last_known_latitude;
+                $vehicleLon = $vehicle->last_known_longitude;
+    
                 $driverToVehicleDistance = $this->calculateHaversineDistance(
-                    $driverLat,
-                    $driverLon,
-                    $vehicleLat,
-                    $vehicleLon
+                    $driverLat, $driverLon,
+                    $vehicleLat, $vehicleLon
                 );
-
+    
                 $vehicleToOreDistance = $this->calculateHaversineDistance(
-                    $oreLocation[0],
-                    $oreLocation[1],
-                    $vehicleLat,
-                    $vehicleLon
+                    $oreLat, $oreLon,
+                    $vehicleLat, $vehicleLon
                 );
-
+    
                 $results[] = [
-                    'driver' => $driver,
-                    'vehicle' => $vehicle,
-                    'driverToVehicleDistance' => round($driverToVehicleDistance, 2),
-                    'vehicleToOreDistance' => round($vehicleToOreDistance, 2),
-                    'oreLocation' => [
-                        'latitude' => $oreLocation[0],
-                        'longitude' => $oreLocation[1]
-                    ]
+                    'driver'                   => new UserResource($driver),
+                    'vehicle'                  => new VehicleResource($vehicle),
+                    'driverToVehicleDistance'  => round($driverToVehicleDistance, 2),
+                    'vehicleToOreDistance'     => round($vehicleToOreDistance, 2),
+                    'oreLocation'              => [
+                        'latitude'  => $oreLat,
+                        'longitude' => $oreLon,
+                    ],
                 ];
             }
         }
-
-        // Sort by vehicle-ore proximity
+    
+        // Sort by proximity of vehicle → ore
         usort($results, fn($a, $b) => $a['vehicleToOreDistance'] <=> $b['vehicleToOreDistance']);
-
+    
         return response()->json($results);
     }
+    
 
     private function calculateHaversineDistance($lat1, $lon1, $lat2, $lon2)
     {
