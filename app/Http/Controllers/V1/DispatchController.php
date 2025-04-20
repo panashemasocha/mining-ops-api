@@ -147,7 +147,8 @@ class DispatchController extends Controller
            // driver coordinates
             $driverLat = $driver['driverInfo']['lastKnownLocation']['latitude'] ?? null;
             $driverLon = $driver['driverInfo']['lastKnownLocation']['longitude'] ?? null;
-
+            
+             return response()->json(['driverLat'=>$driverLat,'driverLon'=>$driverLon]);
             foreach ($vehicleResources as $vehicle) {
                 //  vehicle and ore coordinates
                 $vehicleLat = $vehicle['lastKnownLocation']['latitude'] ?? null;
@@ -160,10 +161,10 @@ class DispatchController extends Controller
                 // Calculate distances
                 $driverToVehicleDistance = $this->calculateHaversineDistance(
                  
-                    $vehicleLat,
-                    $vehicleLon,
                     $driverLat,
                     $driverLon,
+                    $vehicleLat,
+                    $vehicleLon,
                 );
 
                 $vehicleToOreDistance = $this->calculateHaversineDistance(
