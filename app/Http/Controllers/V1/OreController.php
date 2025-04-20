@@ -3,24 +3,27 @@ namespace App\Http\Controllers\V1;
 
 use App\Http\Requests\StoreOreRequest;
 use App\Http\Requests\UpdateOreRequest;
+use App\Http\Resources\OreQuantityResource;
 use App\Http\Resources\OreResource;
 use App\Models\Ore;
 use App\Repositories\OreRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
 class OreController extends Controller
 {
     protected $oreRepository;
 
-    public function __construct(OreRepository $oreRepository) {
+    public function __construct(OreRepository $oreRepository)
+    {
         $this->oreRepository = $oreRepository;
     }
-    
+
     public function index(Request $request)
     {
-        $ores = $request->query('paging', 'true') === 'false' 
-            ? Ore::all() 
+        $ores = $request->query('paging', 'true') === 'false'
+            ? Ore::all()
             : Ore::paginate(10);
         return OreResource::collection($ores);
     }
@@ -49,5 +52,24 @@ class OreController extends Controller
         $ore = Ore::findOrFail($id);
         $ore->delete();
         return response()->json(['message' => 'Ore deleted'], 200);
+    }
+
+    public function quantities(Request $request)
+    {
+        $ores = Ore::select([
+            'ores.*',
+            // subquery to sum only accepted dispatches for this ore:
+            DB::raw('ores.quantity - COALESCE((
+                    SELECT SUM(d.ore_quantity)
+                    FROM dispatches AS d
+                    WHERE d.ore_id = ores.id
+                      AND d.status = "accepted"
+                ), 0) AS remaining_quantity')
+        ])
+            ->orderBy('remaining_quantity', 'asc')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return OreQuantityResource::collection($ores);
     }
 }

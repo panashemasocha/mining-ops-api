@@ -52,7 +52,6 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('suppliers', SupplierController::class);
 
         // Ore
-        Route::apiResource('ores', OreController::class);
 
         // Dispatches
         Route::apiResource('dispatches', DispatchController::class);
@@ -64,7 +63,14 @@ Route::prefix('v1')->group(function () {
         //Payment Method
         Route::apiResource('payment-methods', PaymentMethodController::class);
 
-        Route::prefix('ore')->group(function () {
+        Route::prefix('ores')->group(function () {
+
+            //Ores
+            Route::apiResource('/', OreController::class);
+
+            //Quantities
+            Route::get('quantities', [OreController::class, 'quantities']);
+
             //Ore Type
             Route::apiResource('type', OreTypeController::class);
 
