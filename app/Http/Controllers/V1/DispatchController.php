@@ -145,9 +145,10 @@ class DispatchController extends Controller
 
         foreach ($driverResources as $driver) {
            // driver coordinates
-            $driverLat = $driver['driverInfo']['lastKnownLocation'];
-            $driverLon = $driver['driverInfo']['lastKnownLocation'] ;
-            
+           if (isset($driver['driverInfo']['lastKnownLocation'])) {
+            $driverLat = $driver['driverInfo']['lastKnownLocation']['latitude']  ?? null;
+            $driverLon = $driver['driverInfo']['lastKnownLocation']['longitude'] ?? null;
+           
              return response()->json(['driverLat'=>$driverLat,'driverLon'=>$driverLon]);
             foreach ($vehicleResources as $vehicle) {
                 //  vehicle and ore coordinates
@@ -181,6 +182,7 @@ class DispatchController extends Controller
                     'vehicleToOreDistance' => round($vehicleToOreDistance, 2),
                 ];
             }
+        }
         }
 
         // Sort by vehicle-ore proximity
