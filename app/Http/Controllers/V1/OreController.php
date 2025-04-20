@@ -56,7 +56,7 @@ class OreController extends Controller
 
     public function quantities(Request $request)
     {
-        $perPage = $request->input('per_page', 15);
+        $perPage = $request->input('per_page', 10);
         $ores = Ore::select([
             'ores.*',
             DB::raw('ores.quantity - COALESCE((
