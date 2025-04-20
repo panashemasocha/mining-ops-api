@@ -69,6 +69,6 @@ class OreController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return OreQuantityResource::collection($ores);
+        return OreQuantityResource::collection($ores::paginate(15));
     }
 }
