@@ -133,38 +133,32 @@ class DispatchController extends Controller
         // Fetch available drivers
         $drivers = User::where('job_position_id', 5)
             ->where('status', 1)
-            ->with(['driverInfo', 'jobPosition'])
+            ->with('driverInfo')
             ->get();
         $driverResources = UserResource::collection($drivers)->toArray(request());
 
         // Fetch available vehicles
         $vehicles = Vehicle::where('status', 'off trip')->get();
         $vehicleResources = VehicleResource::collection($vehicles)->toArray(request());
-        return response()->json($driverResources);
+
         $results = [];
 
         foreach ($driverResources as $driver) {
            // driver coordinates
             $driverLat = $driver['driverInfo']['lastKnownLocation']['latitude'] ?? null;
             $driverLon = $driver['driverInfo']['lastKnownLocation']['longitude'] ?? null;
-            
-             return response()->json(['driverLat'=>$driverLat,'driverLon'=>$driverLon]);
+
             foreach ($vehicleResources as $vehicle) {
                 //  vehicle and ore coordinates
                 $vehicleLat = $vehicle['lastKnownLocation']['latitude'] ?? null;
                 $vehicleLon = $vehicle['lastKnownLocation']['longitude'] ?? null;
 
-                if (!$driverLat || !$driverLon || !$vehicleLat || !$vehicleLon) {
-                    continue;
-                }
-
                 // Calculate distances
                 $driverToVehicleDistance = $this->calculateHaversineDistance(
-                 
                     $driverLat,
                     $driverLon,
                     $vehicleLat,
-                    $vehicleLon,
+                    $vehicleLon
                 );
 
                 $vehicleToOreDistance = $this->calculateHaversineDistance(
@@ -179,6 +173,10 @@ class DispatchController extends Controller
                     'vehicle' => $vehicle,
                     'driverToVehicleDistance' => round($driverToVehicleDistance, 2),
                     'vehicleToOreDistance' => round($vehicleToOreDistance, 2),
+                    'oreLocation' => [
+                        'latitude' => $oreLocation[0],
+                        'longitude' => $oreLocation[1]
+                    ]
                 ];
             }
         }
