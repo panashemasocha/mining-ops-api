@@ -140,7 +140,7 @@ class DispatchController extends Controller
         // Fetch available vehicles
         $vehicles = Vehicle::where('status', 'off trip')->get();
         $vehicleResources = VehicleResource::collection($vehicles)->toArray(request());
-
+        return response()->json($drivers);
         $results = [];
 
         foreach ($driverResources as $driver) {
@@ -152,6 +152,10 @@ class DispatchController extends Controller
                 //  vehicle and ore coordinates
                 $vehicleLat = $vehicle['lastKnownLocation']['latitude'] ?? null;
                 $vehicleLon = $vehicle['lastKnownLocation']['longitude'] ?? null;
+
+                if (!$driverLat || !$driverLon || !$vehicleLat || !$vehicleLon) {
+                    continue;
+                }
 
                 // Calculate distances
                 $driverToVehicleDistance = $this->calculateHaversineDistance(
@@ -173,10 +177,6 @@ class DispatchController extends Controller
                     'vehicle' => $vehicle,
                     'driverToVehicleDistance' => round($driverToVehicleDistance, 2),
                     'vehicleToOreDistance' => round($vehicleToOreDistance, 2),
-                    'oreLocation' => [
-                        'latitude' => $oreLocation[0],
-                        'longitude' => $oreLocation[1]
-                    ]
                 ];
             }
         }
