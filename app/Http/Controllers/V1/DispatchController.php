@@ -176,10 +176,6 @@ class DispatchController extends Controller
                     'vehicle' => new VehicleResource($vehicle),
                     'driverToVehicleDistance' => round($driverToVehicleDistance, 2),
                     'vehicleToOreDistance' => round($vehicleToOreDistance, 2),
-                    'oreLocation' => [
-                        'latitude' => $oreLat,
-                        'longitude' => $oreLon,
-                    ],
                 ];
             }
         }
