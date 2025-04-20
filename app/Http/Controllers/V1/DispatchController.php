@@ -140,15 +140,14 @@ class DispatchController extends Controller
         // Fetch available vehicles
         $vehicles = Vehicle::where('status', 'off trip')->get();
         $vehicleResources = VehicleResource::collection($vehicles)->toArray(request());
-       // return response()->json($driverResources);
+        return response()->json($driverResources);
         $results = [];
 
         foreach ($driverResources as $driver) {
            // driver coordinates
-           if (isset($driver['driverInfo']['lastKnownLocation'])) {
-            $driverLat = $driver['driverInfo']['lastKnownLocation']['latitude']  ?? null;
+            $driverLat = $driver['driverInfo']['lastKnownLocation']['latitude'] ?? null;
             $driverLon = $driver['driverInfo']['lastKnownLocation']['longitude'] ?? null;
-           
+            
              return response()->json(['driverLat'=>$driverLat,'driverLon'=>$driverLon]);
             foreach ($vehicleResources as $vehicle) {
                 //  vehicle and ore coordinates
@@ -182,7 +181,6 @@ class DispatchController extends Controller
                     'vehicleToOreDistance' => round($vehicleToOreDistance, 2),
                 ];
             }
-        }
         }
 
         // Sort by vehicle-ore proximity
