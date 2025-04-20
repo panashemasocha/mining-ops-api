@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\V1;
 
+use App\Http\Requests\SeekDriverVehicleRequest;
 use App\Http\Requests\StoreDispatchRequest;
 use App\Http\Requests\UpdateDispatchRequest;
 use App\Http\Resources\DispatchResource;
@@ -120,7 +121,7 @@ class DispatchController extends Controller
         return response()->json(['message' => 'Dispatch deleted'], 200);
     }
 
-    public function seekDriverVehicle(Request $request)
+    public function seekDriverVehicle(SeekDriverVehicleRequest $request)
     {
         $request->validate([
             'ore_id' => 'required|exists:ores,id',

@@ -11,7 +11,7 @@ class StoreDispatchRequest extends FormRequest
      */
     public function authorize()
     {
-        return auth()->user()->jobPosition->name === 'Site Clerk';
+        return auth()->user()->jobPosition->id === 7;
     }
 
     public function rules()
