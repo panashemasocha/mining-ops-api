@@ -57,7 +57,7 @@ class OreController extends Controller
     public function quantities(Request $request)
     {
         $perPage = (int) $request->query('per_page', 10);
-        $ores = Ore::select([
+         $query = Ore::select([
             'ores.*',
             DB::raw('ores.quantity - COALESCE((
                     SELECT SUM(d.ore_quantity)
@@ -69,7 +69,7 @@ class OreController extends Controller
             ->orderBy('remaining_quantity', 'desc')
             ->orderBy('created_at', 'desc')
             ->get();
-        $paginator = $ores->paginate($perPage);
+        $paginator = $query->paginate($perPage);
 
         return OreQuantityResource::collection($paginator);
     }
