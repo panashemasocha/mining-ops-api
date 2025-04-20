@@ -140,7 +140,7 @@ class DispatchController extends Controller
         // Fetch available vehicles
         $vehicles = Vehicle::where('status', 'off trip')->get();
         $vehicleResources = VehicleResource::collection($vehicles)->toArray(request());
-        return response()->json($drivers);
+        return response()->json($driverResources);
         $results = [];
 
         foreach ($driverResources as $driver) {
