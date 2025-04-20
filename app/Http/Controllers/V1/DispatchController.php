@@ -133,7 +133,7 @@ class DispatchController extends Controller
         // Fetch available drivers
         $drivers = User::where('job_position_id', 5)
             ->where('status', 1)
-            ->with('driverInfo')
+            ->with(['driverInfo', 'jobPosition'])
             ->get();
         $driverResources = UserResource::collection($drivers)->toArray(request());
 
