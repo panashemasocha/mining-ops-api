@@ -68,7 +68,6 @@ class OreController extends Controller
         ])
             ->orderBy('remaining_quantity', 'desc')
             ->orderBy('created_at', 'desc')
-            ->get()
             ->paginate($perPage);
 
         return OreQuantityResource::collection($ores);
