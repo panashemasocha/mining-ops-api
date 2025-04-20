@@ -125,77 +125,88 @@ class DispatchController extends Controller
         $request->validate([
             'ore_id' => 'required|exists:ores,id',
         ]);
-    
+
         $ore = Ore::findOrFail($request->ore_id);
         $oreLocation = [$ore->latitude, $ore->longitude];
-    
-        // Fetch available drivers with Driver job position
+
+        // Fetch available drivers
         $drivers = User::where('job_position_id', 5)
             ->where('status', 1)
             ->with('driverInfo')
             ->get();
         $driverResources = UserResource::collection($drivers)->toArray(request());
-    
+
         // Fetch available vehicles
         $vehicles = Vehicle::where('status', 'off trip')->get();
         $vehicleResources = VehicleResource::collection($vehicles)->toArray(request());
-    
+
         $results = [];
-    
+
         foreach ($driverResources as $driver) {
-            // Extract driver coordinates
-            $driverLat = $driver['driverInfo']['lastKnownLocation']['latitude'] ?? 0;
-            $driverLon = $driver['driverInfo']['lastKnownLocation']['longitude'] ?? 0;
-            
+           // driver coordinates
+            $driverLat = $driver['driverInfo']['lastKnownLocation']['latitude'] ?? null;
+            $driverLon = $driver['driverInfo']['lastKnownLocation']['longitude'] ?? null;
+
             foreach ($vehicleResources as $vehicle) {
-                // Extract vehicle coordinates
-                $vehicleLat = $vehicle['lastKnownLocation']['latitude'] ?? 0;
-                $vehicleLon = $vehicle['lastKnownLocation']['longitude'] ?? 0;
-    
-                // Calculate distances using Haversine
-                $driverDistance = $this->calculateHaversineDistance(
-                    $oreLocation[0], $oreLocation[1], 
-                    $driverLat, $driverLon
+                //  vehicle and ore coordinates
+                $vehicleLat = $vehicle['lastKnownLocation']['latitude'] ?? null;
+                $vehicleLon = $vehicle['lastKnownLocation']['longitude'] ?? null;
+
+                // Calculate distances
+                $driverToVehicleDistance = $this->calculateHaversineDistance(
+                    $driverLat,
+                    $driverLon,
+                    $vehicleLat,
+                    $vehicleLon
                 );
-                
-                $vehicleDistance = $this->calculateHaversineDistance(
-                    $oreLocation[0], $oreLocation[1],
-                    $vehicleLat, $vehicleLon
+
+                $vehicleToOreDistance = $this->calculateHaversineDistance(
+                    $oreLocation[0],
+                    $oreLocation[1],
+                    $vehicleLat,
+                    $vehicleLon
                 );
-    
+
                 $results[] = [
                     'driver' => $driver,
                     'vehicle' => $vehicle,
-                    'driverDistance' => round($driverDistance, 2),
-                    'vehicleDistance' => round($vehicleDistance, 2),
+                    'driverToVehicleDistance' => round($driverToVehicleDistance, 2),
+                    'vehicleToOreDistance' => round($vehicleToOreDistance, 2),
+                    'oreLocation' => [
+                        'latitude' => $oreLocation[0],
+                        'longitude' => $oreLocation[1]
+                    ]
                 ];
             }
         }
-    
-        // Sort by driver proximity
-        usort($results, fn($a, $b) => $a['driverDistance'] <=> $b['driverDistance']);
-    
+
+        // Sort by vehicle-ore proximity
+        usort($results, fn($a, $b) => $a['vehicleToOreDistance'] <=> $b['vehicleToOreDistance']);
+
         return response()->json($results);
     }
 
     private function calculateHaversineDistance($lat1, $lon1, $lat2, $lon2)
     {
+        if (!$lat1 || !$lon1 || !$lat2 || !$lon2)
+            return null;
+
         $earthRadius = 6371; // Kilometers
-    
+
         $latFrom = deg2rad($lat1);
         $lonFrom = deg2rad($lon1);
         $latTo = deg2rad($lat2);
         $lonTo = deg2rad($lon2);
-    
+
         $latDelta = $latTo - $latFrom;
         $lonDelta = $lonTo - $lonFrom;
-    
+
         $angle = 2 * asin(sqrt(
             pow(sin($latDelta / 2), 2) +
             cos($latFrom) * cos($latTo) *
             pow(sin($lonDelta / 2), 2)
         ));
-    
+
         return $angle * $earthRadius;
     }
 }
