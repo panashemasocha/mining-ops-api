@@ -145,8 +145,8 @@ class DispatchController extends Controller
 
         foreach ($driverResources as $driver) {
            // driver coordinates
-            $driverLat = $driver['driverInfo'] ?? null;
-            $driverLon = $driver['driverInfo'] ?? null;
+            $driverLat = data_get($driver, 'driverInfo.lastKnownLocation.latitude');
+            $driverLon =data_get($driver, 'driverInfo.lastKnownLocation.longitude');
             
              return response()->json(['driverLat'=>$driverLat,'driverLon'=>$driverLon]);
             foreach ($vehicleResources as $vehicle) {
