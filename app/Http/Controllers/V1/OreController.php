@@ -58,7 +58,6 @@ class OreController extends Controller
     {
         $ores = Ore::select([
             'ores.*',
-            // subquery to sum only accepted dispatches for this ore:
             DB::raw('ores.quantity - COALESCE((
                     SELECT SUM(d.ore_quantity)
                     FROM dispatches AS d
@@ -66,7 +65,7 @@ class OreController extends Controller
                       AND d.status = "accepted"
                 ), 0) AS remaining_quantity')
         ])
-            ->orderBy('remaining_quantity', 'asc')
+            ->orderBy('remaining_quantity', 'desc')
             ->orderBy('created_at', 'desc')
             ->get();
 

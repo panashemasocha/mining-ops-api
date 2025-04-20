@@ -12,7 +12,6 @@ class OreQuantityResource extends JsonResource
     public function toArray($request)
     {
         return [
-            // embed the full ore payload via your existing OreResource:
             'ore' => new OreResource($this->resource),
             'remainingQuantity' => (int) $this->remaining_quantity,
         ];
