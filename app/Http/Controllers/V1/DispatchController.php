@@ -140,7 +140,7 @@ class DispatchController extends Controller
         // Fetch available vehicles
         $vehicles = Vehicle::where('status', 'off trip')->get();
         $vehicleResources = VehicleResource::collection($vehicles)->toArray(request());
-        return response()->json($driverResources);
+       // return response()->json($driverResources);
         $results = [];
 
         foreach ($driverResources as $driver) {
@@ -159,10 +159,11 @@ class DispatchController extends Controller
 
                 // Calculate distances
                 $driverToVehicleDistance = $this->calculateHaversineDistance(
+                 
+                    $vehicleLat,
+                    $vehicleLon,
                     $driverLat,
                     $driverLon,
-                    $vehicleLat,
-                    $vehicleLon
                 );
 
                 $vehicleToOreDistance = $this->calculateHaversineDistance(
