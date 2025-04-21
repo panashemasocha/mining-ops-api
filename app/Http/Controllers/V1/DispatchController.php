@@ -122,9 +122,6 @@ class DispatchController extends Controller
         return response()->json(['message' => 'Dispatch deleted'], 200);
     }
 
-    use Illuminate\Pagination\LengthAwarePaginator;
-    use Illuminate\Support\Collection;
-
     public function seekDriverVehicle(SeekDriverVehicleRequest $request)
     {
         $request->validate([
