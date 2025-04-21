@@ -122,6 +122,7 @@ class DispatchController extends Controller
         return response()->json(['message' => 'Dispatch deleted'], 200);
     }
 
+
     public function seekDriverVehicle(SeekDriverVehicleRequest $request)
     {
         $request->validate([
@@ -132,13 +133,14 @@ class DispatchController extends Controller
         $oreLat = $ore->latitude;
         $oreLon = $ore->longitude;
 
-        // 1) Only grab drivers who actually have non‑null coords
         $drivers = User::where('job_position_id', 5)
             ->where('status', 1)
-            ->whereHas('driverInfo', function ($q) {
-                $q->whereNotNull('last_known_latitude')
-                    ->whereNotNull('last_known_longitude');
-            })
+            ->whereHas(
+                'driverInfo',
+                fn($q) => $q
+                    ->whereNotNull('last_known_latitude')
+                    ->whereNotNull('last_known_longitude')
+            )
             ->with('driverInfo')
             ->get();
 
@@ -148,63 +150,69 @@ class DispatchController extends Controller
             ->get();
 
         $results = [];
-
         foreach ($drivers as $driver) {
-            $driverLat = $driver->driverInfo->last_known_latitude;
-            $driverLon = $driver->driverInfo->last_known_longitude;
+            $dLat = $driver->driverInfo->last_known_latitude;
+            $dLon = $driver->driverInfo->last_known_longitude;
 
             foreach ($vehicles as $vehicle) {
-                $vehicleLat = $vehicle->last_known_latitude;
-                $vehicleLon = $vehicle->last_known_longitude;
-
-                $driverToVehicleDistance = $this->calculateHaversineDistance(
-                    $driverLat,
-                    $driverLon,
-                    $vehicleLat,
-                    $vehicleLon
-                );
-
-                $vehicleToOreDistance = $this->calculateHaversineDistance(
-                    $oreLat,
-                    $oreLon,
-                    $vehicleLat,
-                    $vehicleLon
-                );
+                $vLat = $vehicle->last_known_latitude;
+                $vLon = $vehicle->last_known_longitude;
 
                 $results[] = [
                     'driver' => new UserResource($driver),
                     'vehicle' => new VehicleResource($vehicle),
-                    'driverToVehicleDistance' => round($driverToVehicleDistance, 2),
-                    'vehicleToOreDistance' => round($vehicleToOreDistance, 2),
+                    'driverToVehicleDistance' => round(
+                        $this->calculateHaversineDistance($dLat, $dLon, $vLat, $vLon),
+                        2
+                    ),
+                    'vehicleToOreDistance' => round(
+                        $this->calculateHaversineDistance($oreLat, $oreLon, $vLat, $vLon),
+                        2
+                    ),
                 ];
             }
         }
 
-        // Sort by proximity of vehicle → ore
+        // sort by vehicle → ore
         usort($results, fn($a, $b) => $a['vehicleToOreDistance'] <=> $b['vehicleToOreDistance']);
 
-        // --- Pagination setup ---
+        // pagination
         $page = (int) $request->get('page', 1);
         $perPage = 10;
         $offset = ($page - 1) * $perPage;
+        $slice = array_slice($results, $offset, $perPage);
 
-        // Slice out the items to display in current page
-        $itemsForCurrentPage = array_slice($results, $offset, $perPage);
-
-        // Create LengthAwarePaginator instance
         $paginator = new LengthAwarePaginator(
-            $itemsForCurrentPage,
-            count($results),    // total items
+            $slice,
+            count($results),
             $perPage,
             $page,
             [
                 'path' => LengthAwarePaginator::resolveCurrentPath(),
-                'query' => $request->query(), // preserve other query params
+                'query' => $request->query(),
             ]
         );
 
-        return response()->json($paginator);
+        return response()->json([
+            'data' => $paginator->items(),
+            'links' => [
+                'first' => $paginator->url(1),
+                'last' => $paginator->url($paginator->lastPage()),
+                'prev' => $paginator->previousPageUrl(),
+                'next' => $paginator->nextPageUrl(),
+            ],
+            'meta' => [
+                'current_page' => $paginator->currentPage(),
+                'from' => $paginator->firstItem(),
+                'last_page' => $paginator->lastPage(),
+                'path' => $paginator->path(),
+                'per_page' => $paginator->perPage(),
+                'to' => $paginator->lastItem(),
+                'total' => $paginator->total(),
+            ],
+        ]);
     }
+
 
 
 
