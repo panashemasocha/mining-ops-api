@@ -18,6 +18,7 @@ use App\Models\Vehicle;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class DispatchController extends Controller
 {
@@ -121,6 +122,9 @@ class DispatchController extends Controller
         return response()->json(['message' => 'Dispatch deleted'], 200);
     }
 
+    use Illuminate\Pagination\LengthAwarePaginator;
+    use Illuminate\Support\Collection;
+
     public function seekDriverVehicle(SeekDriverVehicleRequest $request)
     {
         $request->validate([
@@ -142,7 +146,6 @@ class DispatchController extends Controller
             ->get();
 
         $vehicles = Vehicle::where('status', 'off trip')
-            // likewise ensure vehicle coords exist
             ->whereNotNull('last_known_latitude')
             ->whereNotNull('last_known_longitude')
             ->get();
@@ -183,8 +186,29 @@ class DispatchController extends Controller
         // Sort by proximity of vehicle → ore
         usort($results, fn($a, $b) => $a['vehicleToOreDistance'] <=> $b['vehicleToOreDistance']);
 
-        return response()->json(['data' => $results]);
+        // --- Pagination setup ---
+        $page = (int) $request->get('page', 1);
+        $perPage = 10;
+        $offset = ($page - 1) * $perPage;
+
+        // Slice out the items to display in current page
+        $itemsForCurrentPage = array_slice($results, $offset, $perPage);
+
+        // Create LengthAwarePaginator instance
+        $paginator = new LengthAwarePaginator(
+            $itemsForCurrentPage,
+            count($results),    // total items
+            $perPage,
+            $page,
+            [
+                'path' => LengthAwarePaginator::resolveCurrentPath(),
+                'query' => $request->query(), // preserve other query params
+            ]
+        );
+
+        return response()->json($paginator);
     }
+
 
 
     private function calculateHaversineDistance($lat1, $lon1, $lat2, $lon2)
