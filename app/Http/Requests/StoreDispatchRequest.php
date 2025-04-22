@@ -26,6 +26,7 @@ class StoreDispatchRequest extends FormRequest
             'ore_quantity' => 'required|numeric|min:0',
             'status' => 'required|in:pending,accepted,rejected',
             'payment_status' => 'required|in:fully-paid,pending,partially-paid,n/a',
+            'payment_method' => 'sometimes|required|string|in:Cash,Bank Transfer,Ecocash',
         ];
     }
 
@@ -43,7 +44,8 @@ class StoreDispatchRequest extends FormRequest
             'loading_cost_per_tonne' => $this->input('loading_cost_per_tonne', $this->input('loadingCostPerTonne')),
             'ore_quantity' => $this->input('ore_quantity', $this->input('oreQuantityRemaining')),
             'status' => $this->input('status', $this->input('status')),
-            'payment_status' => $this->input('payment_status', $this->input('paymentStatus')),
+            'payment_status' => $this->input('paymentStatus', $this->input('payment_status')),
+            'payment_method' => $this->input('payment_method', $this->input('paymentMethod')),
         ]);
     }
 }

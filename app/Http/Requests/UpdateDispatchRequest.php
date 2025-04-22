@@ -41,7 +41,7 @@ class UpdateDispatchRequest extends FormRequest
             'ore_quantity' => $this->input('oreQuantity', $this->input('ore_quantity')),
             'status' => $this->input('status', $this->input('status')),
             'payment_status' => $this->input('paymentStatus', $this->input('payment_status')),
-            'payment_method' => $this->input('paymentMethod', $this->input('payment_method')),
+            'payment_method' => $this->input('payment_method', $this->input('paymentMethod')),
         ]);
     }
 }

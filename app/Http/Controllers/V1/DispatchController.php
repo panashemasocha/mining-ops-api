@@ -33,6 +33,10 @@ class DispatchController extends Controller
     public function store(StoreDispatchRequest $request)
     {
         $dispatch = Dispatch::create($request->validated());
+
+        if ($dispatch->status === 'accepted') {
+            $this->postMiningExpenses($dispatch, $request->input('payment_method'));
+        }
         return new DispatchResource($dispatch);
     }
 
