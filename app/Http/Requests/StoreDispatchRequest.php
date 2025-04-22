@@ -26,7 +26,7 @@ class StoreDispatchRequest extends FormRequest
             'ore_quantity' => 'required|numeric|min:0',
             'status' => 'required|in:pending,accepted,rejected',
             'payment_status' => 'required|in:fully-paid,pending,partially-paid,n/a',
-            'payment_method' => 'sometimes|string',
+            'payment_method' => 'sometimes|nullable|string|in:Cash,Bank Transfer,Ecocash',
         ];
     }
 
