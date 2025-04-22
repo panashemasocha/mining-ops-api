@@ -16,6 +16,7 @@ class UpdateDispatchRequest extends FormRequest
         return [
             'ore_id' => 'sometimes|exists:ores,id',
             'vehicle_id' => 'sometimes|exists:vehicles,id',
+            'driver_id' => 'required|exists:driver_info,user_id',
             'site_clerk_id' => 'sometimes|exists:users,id',
             'supplier_id' => 'sometimes|exists:suppliers,id',
             'loading_method' => 'sometimes|nullable|string|in:manual,mechanic',
@@ -25,6 +26,7 @@ class UpdateDispatchRequest extends FormRequest
             'status' => 'sometimes|in:pending,accepted,rejected',
             'payment_status' => 'sometimes|in:fully-paid,pending,partially-paid,n/a',
             'payment_method' => 'sometimes|nullable|string|in:Cash,Bank Transfer,Ecocash',
+
         ];
     }
 
@@ -33,6 +35,7 @@ class UpdateDispatchRequest extends FormRequest
         $this->merge([
             'ore_id' => $this->input('oreId', $this->input('ore_id')),
             'vehicle_id' => $this->input('vehicleId', $this->input('vehicle_id')),
+            'driver_id' => $this->input('driver_id', $this->input('driverId')),
             'site_clerk_id' => $this->input('siteClerkId', $this->input('site_clerk_id')),
             'supplier_id' => $this->input('supplierId', $this->input('supplier_id')),
             'loading_method' => $this->input('loadingMethod', $this->input('loading_method')),

@@ -20,7 +20,11 @@ return new class extends Migration {
                 ->constrained('vehicles')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
-            $table->foreignId('site_clerk_id')
+                $table->foreignId('driver_id')
+                ->constrained('users')
+                ->onUpdate('cascade')
+                ->onDelete('no action');
+                $table->foreignId('site_clerk_id')
                 ->constrained('users')
                 ->onUpdate('cascade')
                 ->onDelete('no action');

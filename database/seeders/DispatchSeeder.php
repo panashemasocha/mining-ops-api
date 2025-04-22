@@ -23,13 +23,19 @@ class DispatchSeeder extends Seeder
         $ores = Ore::all();
         $vehicles = Vehicle::all();
         $siteClerks = User::whereHas('jobPosition', function ($query) {
-            $query->where('name', 'Site Clerk');
+            $query->where('id', 7);
+
+        })->get();
+
+        $drivers = User::whereHas('jobPosition', function ($query) {
+            $query->where('id', 5);
         })->get();
 
         for ($i = 0; $i < 5; $i++) {
             Dispatch::create([
                 'ore_id' => $ores->random()->id,
                 'vehicle_id' => $vehicles->random()->id,
+                'driver_id' => $drivers->random()->id,
                 'site_clerk_id' => $siteClerks->random()->id,
                 'loading_method' => null,
                 'ore_cost_per_tonne' => $this->faker->randomFloat(2, 10, 100),

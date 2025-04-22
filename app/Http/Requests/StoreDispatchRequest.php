@@ -19,6 +19,7 @@ class StoreDispatchRequest extends FormRequest
         return [
             'ore_id' => 'required|exists:ores,id',
             'vehicle_id' => 'required|exists:vehicles,id',
+            'driver_id' => 'required|exists:driver_info,user_id',
             'site_clerk_id' => 'required|exists:users,id',
             'loading_method' => 'nullable|string|in:manual,mechanic',
             'ore_cost_per_tonne' => 'required|numeric|min:0',
@@ -38,6 +39,7 @@ class StoreDispatchRequest extends FormRequest
         $this->merge([
             'ore_id' => $this->input('ore_id', $this->input('oreId')),
             'vehicle_id' => $this->input('vehicle_id', $this->input('vehicleId')),
+            'driver_id' => $this->input('driver_id', $this->input('driverId')),
             'site_clerk_id' => $this->input('site_clerk_id', $this->input('siteClerkId')),
             'loading_method' => $this->input('loading_method', $this->input('loadingMethod')),
             'ore_cost_per_tonne' => $this->input('ore_cost_per_tonne', $this->input('oreCostPerTonne')),

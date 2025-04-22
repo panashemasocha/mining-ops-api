@@ -9,8 +9,8 @@ class Dispatch extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'ore_id', 'vehicle_id', 'site_clerk_id', 'loading_method',
-        'ore_cost_per_tonne', 'loading_cost_per_tonne', 'ore_quantity',
+        'ore_id', 'site_clerk_id', 'loading_method',
+        'ore_cost_per_tonne', 'loading_cost_per_tonne', 'ore_quantity','max_quantity_per_trip',
         'status', 'payment_status'
     ];
 
@@ -22,6 +22,12 @@ class Dispatch extends Model
     public function vehicle()
     {
         return $this->belongsTo(Vehicle::class);
+    }
+
+    
+    public function driver()
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function siteClerk()

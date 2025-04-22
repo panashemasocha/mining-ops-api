@@ -12,6 +12,7 @@ class DispatchResource extends JsonResource
             'id' => $this->id,
             'ore' => new OreResource($this->ore),
             'vehicle' => new VehicleResource($this->vehicle),
+            'driver'=> new UserResource($this->driver),
             'siteClerk' => new UserResource(User::find($this->site_clerk_id)),
             'loadingMethod' => $this->loading_method,
             'costPerTonne' => [
