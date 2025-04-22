@@ -24,7 +24,7 @@ class UpdateDispatchRequest extends FormRequest
             'ore_quantity' => 'sometimes|numeric|min:0',
             'status' => 'sometimes|in:pending,accepted,rejected',
             'payment_status' => 'sometimes|in:fully-paid,pending,partially-paid,n/a',
-            'payment_method' => 'sometimes|string|in:Cash,Bank Transfer,Ecocash',
+            'payment_method' => 'sometimes|string',
         ];
     }
 
