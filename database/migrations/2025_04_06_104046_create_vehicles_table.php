@@ -15,12 +15,12 @@ return new class extends Migration {
 
             // nullable foreign keys
             $table->foreignId('category_id')->nullable()
-                ->constrained('categories')
+                ->constrained('vehicle_categories')
                 ->noActionOnDelete()
                 ->cascadeOnUpdate();
 
             $table->foreignId('sub_type_id')->nullable()
-                ->constrained('sub_types')
+                ->constrained('vehicle_sub_types')
                 ->noActionOnDelete()
                 ->cascadeOnUpdate();
 

@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
 
             VehicleCategorySeeder::class,
             VehicleSubTypeSeeder::class,
+            MiningSiteSeeder::class,
             VehicleSeeder::class,
             AssignedVehicleSeeder::class,
             PaymentMethodSeeder::class,
@@ -41,7 +42,6 @@ class DatabaseSeeder extends Seeder
             ExcavatorUsageSeeder::class,
 
             OreLoaderSeeder::class,
-            MiningSiteSeeder::class,
 
         ]);
     }
