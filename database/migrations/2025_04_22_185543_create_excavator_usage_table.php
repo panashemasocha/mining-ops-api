@@ -16,8 +16,12 @@ return new class extends Migration {
                 ->constrained()
                 ->noActionOnDelete()
                 ->cascadeOnDelete();
-            $table->foreignId('vehicle_id')
-                ->constrained()
+            $table->foreignId('driver_id')
+                ->constrained('users')
+                ->noActionOnDelete()
+                ->cascadeOnDelete();
+                $table->foreignId('dispatch_id')
+                ->constrained('dispatches')
                 ->noActionOnDelete()
                 ->cascadeOnDelete();
             $table->dateTime('start');

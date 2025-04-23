@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\DieselAllocation;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -12,6 +13,6 @@ class DieselAllocationSeeder extends Seeder
      */
     public function run(): void
     {
-        \App\Models\DieselAllocation::factory()->count(10)->create();
+        DieselAllocation::factory()->count(10)->create();
     }
 }

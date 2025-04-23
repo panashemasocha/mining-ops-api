@@ -14,6 +14,10 @@ return new class extends Migration
         Schema::create('mining_sites', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
+            $table->decimal('longitude', 10, 6)->nullable();
+            $table->decimal('latitude', 10, 6)->nullable();
+            $table->decimal('altitude', 10, 2)->nullable();
+
             $table->timestamps();
         });
     }

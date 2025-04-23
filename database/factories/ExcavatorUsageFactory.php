@@ -2,7 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\DieselAllocation;
 use App\Models\Dispatch;
+use App\Models\ExcavatorUsage;
 use App\Models\User;
 use App\Models\Vehicle;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -37,7 +39,7 @@ class ExcavatorUsageFactory extends Factory
             },
             'start' => $this->faker->dateTimeBetween('-1 month'),
             'end' => $this->faker->dateTimeBetween('now', '+1 month'),
-            'diesel_allocation_id' => \App\Models\DieselAllocation::factory(),
+            'diesel_allocation_id' => DieselAllocation::factory(),
         ];
     }
 }

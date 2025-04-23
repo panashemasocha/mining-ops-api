@@ -18,9 +18,9 @@ class MiningSiteFactory extends Factory
     {
         return [
             'name' => $this->faker->randomElement(['Chibara']),
-            'last_known_longitude' => $this->faker->longitude(25.237, 33.056), // Longitude range for Zimbabwe
-            'last_known_latitude' => $this->faker->latitude(-22.421, -15.609), // Latitude range for Zimbabwe
-            'last_known_altitude' => $this->faker->numberBetween(500, 1500), // Altitude between 500 and 1500 meters
+            'longitude' => $this->faker->longitude(25.237, 33.056), // Longitude range for Zimbabwe
+            'latitude' => $this->faker->latitude(-22.421, -15.609), // Latitude range for Zimbabwe
+            'altitude' => $this->faker->numberBetween(500, 1500), // Altitude between 500 and 1500 meters
         ];
     }
 }

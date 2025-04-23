@@ -2,6 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\DieselAllocation;
+use App\Models\DieselAllocationType;
+use App\Models\Vehicle;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -13,9 +16,10 @@ class DieselAllocationFactory extends Factory
 
     public function definition()
     {
+        $allocationTypes = DieselAllocationType::all();
         return [
-            'vehicle_id' => \App\Models\Vehicle::factory(),
-            'type_id' => \App\Models\DieselAllocationType::factory(),
+            'vehicle_id' => Vehicle::factory(),
+            'type_id' => $allocationTypes->random()->id,
             'litres' => $this->faker->randomFloat(2, 100, 1000),
         ];
     }

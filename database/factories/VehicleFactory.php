@@ -20,11 +20,14 @@ class VehicleFactory extends Factory
      */
     public function definition(): array
     {
+        $vehiclesCat = VehicleCategory::all();
+        $vehicleSubTypes = VehicleSubType::all();
+
         return [
-            'category_id'         => VehicleCategory::factory(),
-            'sub_type_id'         => VehicleSubType::factory(),
-            'department_id'       => Department::factory(),
-            'assigned_site_id'    => MiningSite::factory(),
+            'category_id'         => $vehiclesCat->random()->id,
+            'sub_type_id'         => $vehicleSubTypes->random()->id,
+            'department_id'       => 1,
+            'assigned_site_id'    => '1',
 
             'reg_number'          => $this->faker->unique()->regexify('[A-Z]{2}-[0-9]{4}'),
             'vehicle_type'        => $this->faker->randomElement(['tractor','truck','excavator','bobcat']),
