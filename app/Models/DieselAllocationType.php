@@ -9,5 +9,9 @@ class DieselAllocationType extends Model
 {
     use HasFactory;
     protected $fillable = ['type'];
+
+    public function dieselAllocation(){
+        return $this->hasMany(DieselAllocation::class);
+    }
     
 }

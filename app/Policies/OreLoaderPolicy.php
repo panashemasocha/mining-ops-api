@@ -2,11 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\ExcavatorHours;
+use App\Models\OreLoader;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
-class ExcavatorHoursPolicy
+class OreLoaderPolicy
 {
     /**
      * Determine whether the user can view any models.
@@ -19,7 +19,7 @@ class ExcavatorHoursPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, ExcavatorHours $excavatorHours): bool
+    public function view(User $user, OreLoader $oreLoader): bool
     {
         //
     }
@@ -35,7 +35,7 @@ class ExcavatorHoursPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, ExcavatorHours $excavatorHours): bool
+    public function update(User $user, OreLoader $oreLoader): bool
     {
         //
     }
@@ -43,7 +43,7 @@ class ExcavatorHoursPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, ExcavatorHours $excavatorHours): bool
+    public function delete(User $user, OreLoader $oreLoader): bool
     {
         //
     }
@@ -51,7 +51,7 @@ class ExcavatorHoursPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, ExcavatorHours $excavatorHours): bool
+    public function restore(User $user, OreLoader $oreLoader): bool
     {
         //
     }
@@ -59,7 +59,7 @@ class ExcavatorHoursPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, ExcavatorHours $excavatorHours): bool
+    public function forceDelete(User $user, OreLoader $oreLoader): bool
     {
         //
     }

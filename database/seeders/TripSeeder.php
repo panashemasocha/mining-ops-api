@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\DieselAllocation;
 use App\Models\Trip;
 use App\Models\Dispatch;
 use App\Models\User;
@@ -25,6 +26,7 @@ class TripSeeder extends Seeder
             $query->where('name', 'Driver');
         })->get();
         $vehicles = Vehicle::all();
+        $dieselAllocations = DieselAllocation::all();
 
         for ($i = 0; $i < 5; $i++) {
             Trip::create([
@@ -38,9 +40,7 @@ class TripSeeder extends Seeder
                 'final_longitude' => $this->faker->longitude(25.237, 33.056),
                 'final_latitude' => $this->faker->latitude(-22.421, -15.609),
                 'final_altitude' => $this->faker->numberBetween(500, 1500),
-                'initial_diesel' => $this->faker->randomFloat(2, 50, 200),
-                'trip_diesel_allocated' => $this->faker->randomFloat(2, 50, 200),
-                'top_up_diesel' => $this->faker->randomFloat(2, 0, 50),
+                'diesel_allocation_id' => $dieselAllocations->random()->id,
                 'status' => 'pending',
             ]);
         }

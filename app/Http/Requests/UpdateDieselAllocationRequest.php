@@ -6,23 +6,26 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateDieselAllocationRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
-    public function authorize(): bool
+    public function authorize()
     {
-        return false;
+        return auth()->check() && auth()->user()->jobPosition->id === 7;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
-    public function rules(): array
+    public function rules()
     {
         return [
-            //
+            'vehicle_id' => 'sometimes|exists:vehicles,id',
+            'type_id' => 'sometimes|exists:diesel_allocation_types,id',
+            'litres' => 'sometimes|numeric|min:1',
         ];
+    }
+
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'vehicle_id' => $this->input('vehicleId', $this->input('vehicle_id')),
+            'type_id' => $this->input('allocationTypeId', $this->input('type_id')),
+            'litres' => $this->input('litres', $this->input('litres')),
+        ]);
     }
 }

@@ -9,15 +9,14 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class DieselAllocationFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
-    public function definition(): array
+    protected $model = DieselAllocation::class;
+
+    public function definition()
     {
         return [
-            //
+            'vehicle_id' => \App\Models\Vehicle::factory(),
+            'type_id' => \App\Models\DieselAllocationType::factory(),
+            'litres' => $this->faker->randomFloat(2, 100, 1000),
         ];
     }
 }

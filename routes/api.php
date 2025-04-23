@@ -4,10 +4,14 @@ use App\Http\Controllers\V1\AccountingController;
 use App\Http\Controllers\V1\AssignedVehicleController;
 use App\Http\Controllers\V1\ConsolidatedDataController;
 use App\Http\Controllers\V1\CostPriceController;
+use App\Http\Controllers\V1\DieselAllocationController;
+use App\Http\Controllers\V1\DieselAllocationTypeController;
 use App\Http\Controllers\V1\DispatchController;
+use App\Http\Controllers\V1\ExcavatorUsageController;
 use App\Http\Controllers\V1\ExpenseController;
 use App\Http\Controllers\V1\JobPositionController;
 use App\Http\Controllers\V1\DriverInfoController;
+use App\Http\Controllers\V1\MiningSiteController;
 use App\Http\Controllers\V1\OreController;
 use App\Http\Controllers\V1\OreQualityGradeController;
 use App\Http\Controllers\V1\OreQualityTypeController;
@@ -15,7 +19,9 @@ use App\Http\Controllers\V1\OreTypeController;
 use App\Http\Controllers\V1\PaymentMethodController;
 use App\Http\Controllers\V1\SupplierController;
 use App\Http\Controllers\V1\TripController;
+use App\Http\Controllers\V1\VehicleCategoryController;
 use App\Http\Controllers\V1\VehicleController;
+use App\Http\Controllers\V1\VehicleSubTypeController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\V1\AuthController;
 use App\Http\Controllers\V1\UserController;
@@ -45,13 +51,27 @@ Route::prefix('v1')->group(function () {
         // Vehicle
         Route::apiResource('vehicles', VehicleController::class);
 
+        // Vehicle
+        Route::apiResource('vehicles-category', VehicleCategoryController::class);
+
+        // Vehicle
+        Route::apiResource('vehicles-sub type', VehicleSubTypeController::class);
+
+        // Diesel Allocation types
+        Route::apiResource('diesel-allocation-types', DieselAllocationTypeController::class);
+
+        //Diesel Allocation
+        Route::apiResource('diesel-allocation', DieselAllocationController::class);
+
         // Assigned Vehicles
         Route::apiResource('assigned-vehicles', AssignedVehicleController::class);
 
+
+        //Excavator
+        Route::apiResource('excavator-usages', ExcavatorUsageController::class);
+
         // Supplier
         Route::apiResource('suppliers', SupplierController::class);
-
-        // Ore
 
         // Dispatches
         Route::apiResource('dispatches', DispatchController::class);
@@ -63,9 +83,9 @@ Route::prefix('v1')->group(function () {
         //Payment Method
         Route::apiResource('payment-methods', PaymentMethodController::class);
 
+        // Ores
         Route::prefix('ores')->group(function () {
-
-            //Ores
+            //Ore Parent directory
             Route::apiResource('/', OreController::class);
 
             //Quantities
@@ -82,8 +102,14 @@ Route::prefix('v1')->group(function () {
             });
         });
 
+        //Mining Site
+        Route::apiResource('mining-sites', MiningSiteController::class);
+
         // Trips
         Route::apiResource('trips', TripController::class);
+
+        //Bulk Trips
+        Route::post('/trips/bulk', [TripController::class, 'bulkStore']);
 
         // Consolidated data endpoint
         Route::post('/consolidated-data', [ConsolidatedDataController::class, 'getConsolidatedData']);
@@ -95,6 +121,7 @@ Route::prefix('v1')->group(function () {
 
         // Accounting  
         Route::get('cashbook', [AccountingController::class, 'cashbook']);
+
     });
 });
 

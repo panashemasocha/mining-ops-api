@@ -17,7 +17,14 @@ class DieselAllocationTypeFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'type' => $this->faker->randomElement([
+                'Top-Up Allocation',
+                'Fixed-Quota (Periodic) Allocation',
+                'Distance-Based Allocation',
+                'Fuel-Card / Account Allocation',
+                'Fuel-Card / Account Allocation',
+                'Reimbursement-After-The-Fact'
+            ]),
         ];
     }
 }

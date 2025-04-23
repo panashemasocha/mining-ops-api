@@ -9,5 +9,21 @@ class DieselAllocation extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['type','litres'];
+    protected $fillable = ['vehicle_id', 'type_id', 'litres'];
+
+    public function vehicle()
+    {
+        return $this->belongsTo(Vehicle::class);
+    }
+
+    public function dieselAllocationType()
+    {
+        return $this->belongsTo(DieselAllocationType::class);
+    }
+
+    public function excavatorUsage()
+    {
+        return $this->hasMany(ExcavatorUsage::class);
+    }
+
 }

@@ -12,6 +12,6 @@ class DieselAllocationSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        \App\Models\DieselAllocation::factory()->count(10)->create();
     }
 }

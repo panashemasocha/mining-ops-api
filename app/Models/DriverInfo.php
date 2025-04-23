@@ -11,7 +11,7 @@ class DriverInfo extends Model
     protected $table = 'driver_info';
 
     protected $fillable = [
-        'user_id', 'license_number', 'last_known_longitude', 'last_known_latitude',
+        'user_id', 'license_number','last_known_longitude', 'last_known_latitude',
         'last_known_altitude', 'status'
     ];
 

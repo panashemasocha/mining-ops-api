@@ -25,15 +25,16 @@ return new class extends Migration {
                 ->onUpdate('cascade')
                 ->onDelete('no action');
             $table->decimal('ore_quantity', 10, 2); // in tonnes
+            $table->foreignId('diesel_allocation_id')->nullable()
+                ->constrained('diesel_allocations')
+                ->onUpdate('cascade')
+                ->onDelete('no action');
             $table->decimal('initial_longitude', 10, 6);
             $table->decimal('initial_latitude', 10, 6);
             $table->decimal('initial_altitude', 10, 2);
             $table->decimal('final_longitude', 10, 6);
             $table->decimal('final_latitude', 10, 6);
             $table->decimal('final_altitude', 10, 2);
-            $table->decimal('initial_diesel', 10, 2); // in litres
-            $table->decimal('trip_diesel_allocated', 10, 2); // in litres
-            $table->decimal('top_up_diesel', 10, 2)->default(0); // in litres
             $table->string('status')->default('pending'); // 'fulfilled', 'pending', 'in-transit', 'failed'
             $table->timestamps();
         });

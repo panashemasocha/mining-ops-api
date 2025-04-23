@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\DieselAllocation;
 use App\Models\Dispatch;
 use App\Models\User;
 use App\Models\Vehicle;
@@ -20,9 +21,24 @@ class TripFactory extends Factory
     public function definition(): array
     {
         return [
-            'driver_id' => User::factory()->create(['job_position_id' => 5]), // 'Driver'
-            'vehicle_id' => Vehicle::factory()->create(),
-            'dispatch_id' => Dispatch::factory()->create(),
+            'driver_id' => function () {
+                $driver = User::where('job_position_id', 5)->inRandomOrder()->first();
+                return $driver
+                    ? $driver->id
+                    : User::factory()->create(['job_position_id' => 5])->id;
+            },
+            'vehicle_id' => function () {
+                $vehicle = Vehicle::inRandomOrder()->first();
+                return $vehicle
+                    ? $vehicle->id
+                    : Vehicle::factory()->create()->id;
+            },
+            'dispatch_id' => function () {
+                $dispatch = Dispatch::inRandomOrder()->first();
+                return $dispatch
+                    ? $dispatch->id
+                    : Dispatch::factory()->create()->id;
+            },
             'ore_quantity' => $this->faker->randomFloat(2, 10, 100),
             'initial_longitude' => $this->faker->longitude(25.237, 33.056),
             'initial_latitude' => $this->faker->latitude(-22.421, -15.609),
@@ -30,9 +46,7 @@ class TripFactory extends Factory
             'final_longitude' => $this->faker->longitude(25.237, 33.056),
             'final_latitude' => $this->faker->latitude(-22.421, -15.609),
             'final_altitude' => $this->faker->numberBetween(500, 1500),
-            'initial_diesel' => $this->faker->randomFloat(2, 50, 200),
-            'trip_diesel_allocated' => $this->faker->randomFloat(2, 50, 200),
-            'top_up_diesel' => $this->faker->randomFloat(2, 0, 50),
+            'diesel_allocation_id' => DieselAllocation::factory(),
             'status' => 'pending',
         ];
     }

@@ -18,13 +18,12 @@ class StoreDispatchRequest extends FormRequest
     {
         return [
             'ore_id' => 'required|exists:ores,id',
-            'vehicle_id' => 'required|exists:vehicles,id',
-            'driver_id' => 'required|exists:driver_info,user_id',
             'site_clerk_id' => 'required|exists:users,id',
             'loading_method' => 'nullable|string|in:manual,mechanic',
             'ore_cost_per_tonne' => 'required|numeric|min:0',
             'loading_cost_per_tonne' => 'required|numeric|min:0',
-            'ore_quantity' => 'required|numeric|min:0',
+            'ore_quantity' => 'required|numeric|min:1',
+            'max_quantity_per_trip' => 'required|numeric|min:1',
             'status' => 'required|in:pending,accepted,rejected',
             'payment_status' => 'required|in:fully-paid,pending,partially-paid,n/a',
             'payment_method' => 'sometimes|nullable|string|in:Cash,Bank Transfer,Ecocash',
@@ -38,13 +37,12 @@ class StoreDispatchRequest extends FormRequest
     {
         $this->merge([
             'ore_id' => $this->input('ore_id', $this->input('oreId')),
-            'vehicle_id' => $this->input('vehicle_id', $this->input('vehicleId')),
-            'driver_id' => $this->input('driver_id', $this->input('driverId')),
             'site_clerk_id' => $this->input('site_clerk_id', $this->input('siteClerkId')),
             'loading_method' => $this->input('loading_method', $this->input('loadingMethod')),
             'ore_cost_per_tonne' => $this->input('ore_cost_per_tonne', $this->input('oreCostPerTonne')),
             'loading_cost_per_tonne' => $this->input('loading_cost_per_tonne', $this->input('loadingCostPerTonne')),
             'ore_quantity' => $this->input('ore_quantity', $this->input('oreQuantityRemaining')),
+            'max_quantity_per_trip' => $this->input('max_quantity_per_trip', $this->input('maxQuantityPerTrip')),
             'status' => $this->input('status', $this->input('status')),
             'payment_status' => $this->input('paymentStatus', $this->input('payment_status')),
             'payment_method' => $this->input('payment_method', $this->input('paymentMethod')),

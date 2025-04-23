@@ -11,8 +11,6 @@ class DispatchResource extends JsonResource
         return [
             'id' => $this->id,
             'ore' => new OreResource($this->ore),
-            'vehicle' => new VehicleResource($this->vehicle),
-            'driver'=> new UserResource($this->driver),
             'siteClerk' => new UserResource(User::find($this->site_clerk_id)),
             'loadingMethod' => $this->loading_method,
             'costPerTonne' => [
@@ -20,6 +18,7 @@ class DispatchResource extends JsonResource
                 'loading' => $this->loading_cost_per_tonne,
             ],
             'oreQuantity' => $this->ore_quantity,
+            'maxQuantityPerTrip'=> $this->max_quantity_per_trip,
             'status' => $this->status,
             'paymentStatus' => $this->payment_status,
             'createdAt' => $this->created_at,

@@ -11,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('excavator_hours', function (Blueprint $table) {
+        Schema::create('mining_sites', function (Blueprint $table) {
             $table->id();
+            $table->string('name')->unique();
             $table->timestamps();
         });
     }
@@ -22,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('excavator_hours');
+        Schema::dropIfExists('mining_sites');
     }
 };

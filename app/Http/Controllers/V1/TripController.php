@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\V1;
 
+use App\Http\Requests\BulkStoreTripRequest;
 use App\Http\Requests\StoreTripRequest;
 use App\Http\Requests\UpdateTripRequest;
 use App\Http\Resources\TripResource;
@@ -43,5 +44,16 @@ class TripController extends Controller
         $trip = Trip::findOrFail($id);
         $trip->delete();
         return response()->json(['message' => 'Trip deleted'], 200);
+    }
+
+    public function bulkStore(BulkStoreTripRequest $request)
+    {
+        $tripsData = $request->validated()['trips'];
+        
+        $trips = collect($tripsData)->map(function ($tripData) {
+            return Trip::create($tripData);
+        });
+
+        return TripResource::collection($trips);
     }
 }

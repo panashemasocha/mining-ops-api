@@ -27,9 +27,7 @@ class StoreTripRequest extends FormRequest
             'final_longitude' => 'required|numeric|between:25.237,33.056',
             'final_latitude' => 'required|numeric|between:-22.421,-15.609',
             'final_altitude' => 'required|numeric|min:0|max:2000',
-            'initial_diesel' => 'required|numeric|min:0',
-            'trip_diesel_allocated' => 'required|numeric|min:0',
-            'top_up_diesel' => 'nullable|numeric|min:0',
+            'diesel_allocation_id' => 'nullable|exists:diesel_allocations,id',
             'status' => 'required|in:fulfilled,pending,in-transit,failed',
         ];
     }
@@ -50,9 +48,7 @@ class StoreTripRequest extends FormRequest
             'final_longitude' => $this->input('final_longitude', $this->input('finalLongitude')),
             'final_latitude' => $this->input('final_latitude', $this->input('finalLatitude')),
             'final_altitude' => $this->input('final_altitude', $this->input('finalAltitude')),
-            'initial_diesel' => $this->input('initial_diesel', $this->input('initialDiesel')),
-            'trip_diesel_allocated' => $this->input('trip_diesel_allocated', $this->input('tripDieselAllocated')),
-            'top_up_diesel' => $this->input('top_up_diesel', $this->input('topUpDiesel')),
+            'diesel_allocation_id' => $this->input('diesel_allocation_id', $this->input('dieselAllocationId')),
             'status' => $this->input('status', $this->input('status')),
         ]);
     }

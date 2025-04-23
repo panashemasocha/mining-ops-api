@@ -18,13 +18,12 @@ class DispatchFactory extends Factory
     {
         return [
             'ore_id' => Ore::factory()->create(),
-            'vehicle_id' => Vehicle::factory()->create(),
-            'driver_id' => User::factory()->create(['job_position_id' => 5]), // 'Driver'
             'site_clerk_id' => User::factory()->create(['job_position_id' => 7]), // 'Site Clerk'
             'loading_method' => null,
             'ore_cost_per_tonne' => $this->faker->randomFloat(2, 10, 100),
             'loading_cost_per_tonne' => $this->faker->randomFloat(2, 5, 50),
             'ore_quantity' => $this->faker->randomFloat(2, 10, 100),
+            'max_quantity_per_trip' => $this->faker->randomFloat(2, 10, 100),
             'status' => 'pending',
             'payment_status' => 'n/a',
         ];

@@ -16,15 +16,7 @@ return new class extends Migration {
                 ->constrained('ores')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
-            $table->foreignId('vehicle_id')
-                ->constrained('vehicles')
-                ->onUpdate('cascade')
-                ->onDelete('no action');
-                $table->foreignId('driver_id')
-                ->constrained('users')
-                ->onUpdate('cascade')
-                ->onDelete('no action');
-                $table->foreignId('site_clerk_id')
+            $table->foreignId('site_clerk_id')
                 ->constrained('users')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
@@ -32,6 +24,7 @@ return new class extends Migration {
             $table->decimal('ore_cost_per_tonne', 10, 2);
             $table->decimal('loading_cost_per_tonne', 10, 2);
             $table->decimal('ore_quantity', 10, 2);
+            $table->decimal('max_quantity_per_trip', 10, 2);
             $table->string('status')->default('pending'); // 'pending', 'accepted', 'rejected'
             $table->string('payment_status')->default('n/a'); // 'fully-paid', 'pending', 'partially-paid', 'n/a'
             $table->timestamps();
