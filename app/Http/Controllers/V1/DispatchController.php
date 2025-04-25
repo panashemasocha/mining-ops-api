@@ -62,12 +62,13 @@ class DispatchController extends Controller
                 $this->postMiningExpenses($dispatch, $dispatchData['payment_method'] ?? 'Cash');
             }
 
-            // 2. Bulk Insert Trips (required)
-            $tripsData = $request->input('trips', []);
-            $trips = collect($tripsData)->map(function ($trip) use ($dispatch) {
-                $trip['dispatch_id'] = $dispatch->id;
-                return Trip::create($trip);
-            });
+            // 2. Create Trips (link to dispatch)
+            $trips = collect();
+            foreach ($request->input('trips') as $tripData) {
+                $tripData['dispatch_id'] = $dispatch->id; 
+                $trip = Trip::create($tripData);
+                $trips->push($trip);
+            }
 
             // 3. Bulk Insert Diesel Allocations (optional)
             $dieselAllocations = collect();

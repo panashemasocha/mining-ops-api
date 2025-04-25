@@ -14,21 +14,24 @@ class StoreDispatchWithTripsAndAllocationsRequest extends FormRequest
 
     public function rules()
     {
-        // 1. Dispatch rules (prefixed with "dispatch.")
+        // 1. Dispatch rules 
         $dispatchRules = (new StoreDispatchRequest())->rules();
         $prefixedDispatchRules = [];
         foreach ($dispatchRules as $field => $rule) {
             $prefixedDispatchRules["dispatch.$field"] = $rule;
         }
 
-        // 2. Bulk Trip rules (prefixed with "trips.*.")
-        $tripRules = (new StoreTripRequest())->rules();
+        // 2. Trip rules 
+        $tripRules = collect((new StoreTripRequest())->rules())
+            ->except(['dispatch_id'])
+            ->toArray();
+
         $prefixedTripRules = [];
         foreach ($tripRules as $field => $rule) {
             $prefixedTripRules["trips.*.$field"] = $rule;
         }
 
-        // 3. Bulk Diesel Allocation rules (prefixed with "dieselAllocations.*.")
+        // 3. Diesel allocation rules
         $dieselRules = (new StoreDieselAllocationRequest())->rules();
         $prefixedDieselRules = [];
         foreach ($dieselRules as $field => $rule) {
@@ -49,24 +52,26 @@ class StoreDispatchWithTripsAndAllocationsRequest extends FormRequest
 
     protected function prepareForValidation()
     {
-        // Prepare dispatch data (camelCase - snake_case)
+        // Prepare dispatch data
         $dispatchData = $this->input('dispatch', []);
         $dispatchRequest = new StoreDispatchRequest();
         $dispatchRequest->merge($dispatchData);
         $dispatchRequest->prepareForValidation();
         $this->merge(['dispatch' => $dispatchRequest->all()]);
 
-        // Prepare trips data (camelCase - snake_case)
+        // Prepare trips data 
         $tripsData = $this->input('trips', []);
         foreach ($tripsData as $index => $trip) {
             $tripRequest = new StoreTripRequest();
             $tripRequest->merge($trip);
             $tripRequest->prepareForValidation();
-            $tripsData[$index] = $tripRequest->all();
+            $validatedTrip = $tripRequest->all();
+            unset($validatedTrip['dispatch_id']);
+            $tripsData[$index] = $validatedTrip;
         }
         $this->merge(['trips' => $tripsData]);
 
-        // Prepare diesel allocations (camelCase - snake_case)
+        // Prepare diesel allocations
         $dieselData = $this->input('dieselAllocations', []);
         foreach ($dieselData as $index => $allocation) {
             $dieselRequest = new StoreDieselAllocationRequest();
