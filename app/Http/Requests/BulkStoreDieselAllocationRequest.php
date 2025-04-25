@@ -11,7 +11,8 @@ class BulkStoreDieselAllocationRequest extends FormRequest
      */
     public function authorize()
     {
-        return auth()->user()->role->name === 'management';
+        $user = auth()->user();
+        return $user && in_array($user->jobPosition->id, [7]);
     }
 
     /**
