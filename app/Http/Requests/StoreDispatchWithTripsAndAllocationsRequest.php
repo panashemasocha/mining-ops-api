@@ -14,51 +14,66 @@ class StoreDispatchWithTripsAndAllocationsRequest extends FormRequest
 
     public function rules()
     {
-        // Dispatch validation rules 
+        // 1. Dispatch rules (prefixed with "dispatch.")
         $dispatchRules = (new StoreDispatchRequest())->rules();
         $prefixedDispatchRules = [];
         foreach ($dispatchRules as $field => $rule) {
             $prefixedDispatchRules["dispatch.$field"] = $rule;
         }
 
-        // Bulk trip rules (required)
-        $bulkTripRules = (new BulkStoreTripRequest())->rules();
+        // 2. Bulk Trip rules (prefixed with "trips.*.")
+        $tripRules = (new StoreTripRequest())->rules();
+        $prefixedTripRules = [];
+        foreach ($tripRules as $field => $rule) {
+            $prefixedTripRules["trips.*.$field"] = $rule;
+        }
 
-        // Bulk diesel allocation rules (optional)
-        $bulkDieselRules = (new BulkStoreDieselAllocationRequest())->rules();
-        $bulkDieselRules['dieselAllocations'] = 'nullable|array';
+        // 3. Bulk Diesel Allocation rules (prefixed with "dieselAllocations.*.")
+        $dieselRules = (new StoreDieselAllocationRequest())->rules();
+        $prefixedDieselRules = [];
+        foreach ($dieselRules as $field => $rule) {
+            $prefixedDieselRules["dieselAllocations.*.$field"] = $rule;
+        }
 
         return array_merge(
-            ['dispatch' => 'required|array'],
+            [
+                'dispatch' => 'required|array',
+                'trips' => 'required|array|min:1',
+                'dieselAllocations' => 'nullable|array',
+            ],
             $prefixedDispatchRules,
-            $bulkTripRules,
-            $bulkDieselRules
+            $prefixedTripRules,
+            $prefixedDieselRules
         );
     }
 
     protected function prepareForValidation()
     {
-        // Prepare dispatch data
+        // Prepare dispatch data (camelCase - snake_case)
         $dispatchData = $this->input('dispatch', []);
         $dispatchRequest = new StoreDispatchRequest();
         $dispatchRequest->merge($dispatchData);
         $dispatchRequest->prepareForValidation();
         $this->merge(['dispatch' => $dispatchRequest->all()]);
 
-        // Prepare trips data
+        // Prepare trips data (camelCase - snake_case)
         $tripsData = $this->input('trips', []);
-        $bulkTripRequest = new BulkStoreTripRequest();
-        $bulkTripRequest->merge(['trips' => $tripsData]);
-        $bulkTripRequest->prepareForValidation();
-        $this->merge(['trips' => $bulkTripRequest->input('trips')]);
-
-        // Prepare diesel allocations (only if present)
-        if ($this->has('dieselAllocations')) {
-            $dieselData = $this->input('dieselAllocations', []);
-            $bulkDieselRequest = new BulkStoreDieselAllocationRequest();
-            $bulkDieselRequest->merge(['dieselAllocations' => $dieselData]);
-            $bulkDieselRequest->prepareForValidation();
-            $this->merge(['dieselAllocations' => $bulkDieselRequest->input('dieselAllocations')]);
+        foreach ($tripsData as $index => $trip) {
+            $tripRequest = new StoreTripRequest();
+            $tripRequest->merge($trip);
+            $tripRequest->prepareForValidation();
+            $tripsData[$index] = $tripRequest->all();
         }
+        $this->merge(['trips' => $tripsData]);
+
+        // Prepare diesel allocations (camelCase - snake_case)
+        $dieselData = $this->input('dieselAllocations', []);
+        foreach ($dieselData as $index => $allocation) {
+            $dieselRequest = new StoreDieselAllocationRequest();
+            $dieselRequest->merge($allocation);
+            $dieselRequest->prepareForValidation();
+            $dieselData[$index] = $dieselRequest->all();
+        }
+        $this->merge(['dieselAllocations' => $dieselData]);
     }
 }
