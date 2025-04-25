@@ -53,7 +53,7 @@ Route::prefix('v1')->group(function () {
         });
 
 
-        // Diesel Allocations
+        // Vehicles
         Route::prefix('vehicles')->group(function () {
             // Index
             Route::apiResource('/', VehicleController::class);
@@ -71,12 +71,16 @@ Route::prefix('v1')->group(function () {
             // Assigned Drivers
             Route::apiResource('assigned-drivers', AssignedVehicleController::class);
 
+            //Diesel Allocations
             Route::prefix('diesel-allocations')->group(function () {
 
                 //Index
                 Route::apiResource('/', DieselAllocationController::class);
-                // Diesel Allocation types
+                //types
                 Route::apiResource('types', DieselAllocationTypeController::class);
+
+                //Bulk Insert
+                Route::post('bulk-store', [DieselAllocationController::class, 'bulkStore']);
 
             });
         });
@@ -124,11 +128,9 @@ Route::prefix('v1')->group(function () {
             // Trips
             Route::apiResource('/', TripController::class);
 
-            //Bulk Insert Trips
+            //Bulk Insert
             Route::post('bulk-store', [TripController::class, 'bulkStore']);
-
         });
-
 
         // Dispatches
         Route::prefix('dispatches')->group(function () {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\V1;
 
+use App\Http\Requests\BulkStoreDieselAllocationRequest;
 use App\Http\Resources\DieselAllocationResource;
 use App\Models\DieselAllocation;
 use App\Http\Requests\StoreDieselAllocationRequest;
@@ -45,5 +46,16 @@ class DieselAllocationController extends Controller
     {
         $dieselAllocation->delete();
         return response()->json(['message' => 'Diesel allocation deleted'], 200);
+    }
+
+    public function bulkStore(BulkStoreDieselAllocationRequest $request)
+    {
+        $dieselAllocationsData = $request->validated()['dieselAllocations'];
+        
+        $dieselAllocations = collect($dieselAllocationsData)->map(function ($dieselAllocationData) {
+            return DieselAllocation::create($dieselAllocationData);
+        });
+
+        return DieselAllocationResource::collection($dieselAllocations);
     }
 }
