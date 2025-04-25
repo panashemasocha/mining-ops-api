@@ -42,60 +42,48 @@ Route::prefix('v1')->group(function () {
         Route::post('/refresh', [AuthController::class, 'refresh']);
 
         //User
-        Route::apiResource('users', UserController::class);
-        Route::apiResource('departments', DepartmentController::class);
-        Route::apiResource('branches', BranchController::class);
-        Route::apiResource('roles', UserRoleController::class);
-        Route::apiResource('driver-info', DriverInfoController::class);
-        Route::apiResource('job-positions', JobPositionController::class);
-
-        // Vehicle
-        Route::apiResource('vehicles', VehicleController::class);
-
-        // Vehicle
-        Route::apiResource('vehicles-category', VehicleCategoryController::class);
-
-        // Vehicle
-        Route::apiResource('vehicles-sub type', VehicleSubTypeController::class);
-
-        // Diesel Allocation types
-        Route::apiResource('diesel-allocation-types', DieselAllocationTypeController::class);
-
-        //Diesel Allocation
-        Route::apiResource('diesel-allocation', DieselAllocationController::class);
-
-        // Assigned Vehicles
-        Route::apiResource('assigned-vehicles', AssignedVehicleController::class);
+        Route::prefix('users')->group(function () {
+            //Index
+            Route::apiResource('/', UserController::class);
+            Route::apiResource('departments', DepartmentController::class);
+            Route::apiResource('branches', BranchController::class);
+            Route::apiResource('roles', UserRoleController::class);
+            Route::apiResource('driver-info', DriverInfoController::class);
+            Route::apiResource('job-positions', JobPositionController::class);
+        });
 
 
-        //Excavator
-        Route::apiResource('excavator-usages', ExcavatorUsageController::class);
+        // Diesel Allocations
+        Route::prefix('vehicles')->group(function () {
+            // Index
+            Route::apiResource('/', VehicleController::class);
+            // Vehicle Category
+            Route::apiResource('categories', VehicleCategoryController::class);
+            // Vehicle Sub Category
+            Route::apiResource('sub-types', VehicleSubTypeController::class);
 
-        //Odometer Readings
-        Route::apiResource('odometer-readings',OdometerReadingController::class);
+            //Excavator
+            Route::apiResource('excavator-usages', ExcavatorUsageController::class);
 
-         // Trips
-         Route::apiResource('trips', TripController::class);
+            //Odometer Readings
+            Route::apiResource('odometer-readings', OdometerReadingController::class);
 
-         //Bulk Trips
-         Route::post('/trips/bulk', [TripController::class, 'bulkStore']);
+            // Assigned Drivers
+            Route::apiResource('assigned-drivers', AssignedVehicleController::class);
 
-        // Supplier
-        Route::apiResource('suppliers', SupplierController::class);
+            Route::prefix('diesel-allocations')->group(function () {
 
-        // Dispatches
-        Route::apiResource('dispatches', DispatchController::class);
-        Route::post('dispatches/seek-driver-vehicle', [DispatchController::class, 'seekDriverVehicle']);
+                //Index
+                Route::apiResource('/', DieselAllocationController::class);
+                // Diesel Allocation types
+                Route::apiResource('types', DieselAllocationTypeController::class);
 
-        // Cost Prices
-        Route::apiResource('cost-prices', CostPriceController::class);
-
-        //Payment Method
-        Route::apiResource('payment-methods', PaymentMethodController::class);
+            });
+        });
 
         // Ores
         Route::prefix('ores')->group(function () {
-            //Ore Parent directory
+            //Index 
             Route::apiResource('/', OreController::class);
 
             //Quantities
@@ -112,21 +100,52 @@ Route::prefix('v1')->group(function () {
             });
         });
 
+        //Accounting
+        Route::prefix('accounting')->group(function () {
+            // index  
+            Route::get('cashbook', [AccountingController::class, 'cashbook']);
+
+            //Expenses
+            Route::prefix('expenses')->group(function () {
+                Route::get('/', [ExpenseController::class, 'index']);
+                Route::get('/{id}', [ExpenseController::class, 'show']);
+                Route::post('/', [ExpenseController::class, 'store']);
+            });
+
+            // Cost Prices
+            Route::apiResource('cost-prices', CostPriceController::class);
+
+            //Payment Method
+            Route::apiResource('payment-methods', PaymentMethodController::class);
+
+        });
+
+        Route::prefix('trips')->group(function () {
+            // Trips
+            Route::apiResource('/', TripController::class);
+
+            //Bulk Insert Trips
+            Route::post('bulk-store', [TripController::class, 'bulkStore']);
+
+        });
+
+
+        // Dispatches
+        Route::prefix('dispatches')->group(function () {
+            Route::apiResource('/', DispatchController::class);
+            Route::post('seek-driver-vehicle', [DispatchController::class, 'seekDriverVehicle']);
+        });
+
         //Mining Site
         Route::apiResource('mining-sites', MiningSiteController::class);
 
-       
-
-        // Consolidated data endpoint
+        // Consolidated data
         Route::post('/consolidated-data', [ConsolidatedDataController::class, 'getConsolidatedData']);
 
-        //Expenses
-        Route::get('expenses', [ExpenseController::class, 'index']);
-        Route::get('expenses/{id}', [ExpenseController::class, 'show']);
-        Route::post('expenses', [ExpenseController::class, 'store']);
+        // Supplier
+        Route::apiResource('suppliers', SupplierController::class);
 
-        // Accounting  
-        Route::get('cashbook', [AccountingController::class, 'cashbook']);
+
 
     });
 });
