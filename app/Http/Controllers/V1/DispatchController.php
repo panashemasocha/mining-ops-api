@@ -5,7 +5,9 @@ namespace App\Http\Controllers\V1;
 use App\Http\Requests\SeekDriverVehicleRequest;
 use App\Http\Requests\StoreDispatchRequest;
 use App\Http\Requests\UpdateDispatchRequest;
+use App\Http\Resources\DieselAllocationResource;
 use App\Http\Resources\DispatchResource;
+use App\Http\Resources\TripResource;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\VehicleResource;
 use App\Models\Account;
@@ -15,6 +17,10 @@ use App\Models\GLTransaction;
 use App\Models\Ore;
 use App\Models\User;
 use App\Models\Vehicle;
+use Illuminate\Support\Facades\DB;
+use App\Http\Requests\StoreDispatchWithTripsAndAllocationsRequest;
+use App\Models\Trip;
+use App\Models\DieselAllocation;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -38,8 +44,56 @@ class DispatchController extends Controller
             $this->postMiningExpenses($dispatch, $request->input('payment_method'));
         }
 
-        
+
         return new DispatchResource($dispatch);
+    }
+
+    public function storeWithTripsAndAllocations(StoreDispatchWithTripsAndAllocationsRequest $request)
+    {
+        DB::beginTransaction();
+
+        try {
+            // 1. Create Dispatch
+            $dispatchData = $request->input('dispatch');
+            $dispatch = Dispatch::create($dispatchData);
+
+            // Post mining expenses if status is 'accepted'
+            if ($dispatch->status === 'accepted') {
+                $this->postMiningExpenses($dispatch, $dispatchData['payment_method'] ?? 'Cash');
+            }
+
+            // 2. Bulk Insert Trips (required)
+            $tripsData = $request->input('trips', []);
+            $trips = collect($tripsData)->map(function ($trip) use ($dispatch) {
+                $trip['dispatch_id'] = $dispatch->id;
+                return Trip::create($trip);
+            });
+
+            // 3. Bulk Insert Diesel Allocations (optional)
+            $dieselAllocations = collect();
+            if ($request->has('dieselAllocations')) {
+                $dieselAllocationsData = $request->input('dieselAllocations', []);
+                $dieselAllocations = collect($dieselAllocationsData)->map(function ($allocation) {
+                    return DieselAllocation::create($allocation);
+                });
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'dispatch' => new DispatchResource($dispatch),
+                'trips' => TripResource::collection($trips),
+                'dieselAllocations' => $request->has('dieselAllocations')
+                    ? DieselAllocationResource::collection($dieselAllocations)
+                    : [],
+            ], 201);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Transaction failed: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function show($id)
