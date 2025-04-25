@@ -12,6 +12,7 @@ use App\Http\Controllers\V1\ExpenseController;
 use App\Http\Controllers\V1\JobPositionController;
 use App\Http\Controllers\V1\DriverInfoController;
 use App\Http\Controllers\V1\MiningSiteController;
+use App\Http\Controllers\V1\OdometerReadingController;
 use App\Http\Controllers\V1\OreController;
 use App\Http\Controllers\V1\OreQualityGradeController;
 use App\Http\Controllers\V1\OreQualityTypeController;
@@ -70,6 +71,15 @@ Route::prefix('v1')->group(function () {
         //Excavator
         Route::apiResource('excavator-usages', ExcavatorUsageController::class);
 
+        //Odometer Readings
+        Route::apiResource('odometer-readings',OdometerReadingController::class);
+
+         // Trips
+         Route::apiResource('trips', TripController::class);
+
+         //Bulk Trips
+         Route::post('/trips/bulk', [TripController::class, 'bulkStore']);
+
         // Supplier
         Route::apiResource('suppliers', SupplierController::class);
 
@@ -105,11 +115,7 @@ Route::prefix('v1')->group(function () {
         //Mining Site
         Route::apiResource('mining-sites', MiningSiteController::class);
 
-        // Trips
-        Route::apiResource('trips', TripController::class);
-
-        //Bulk Trips
-        Route::post('/trips/bulk', [TripController::class, 'bulkStore']);
+       
 
         // Consolidated data endpoint
         Route::post('/consolidated-data', [ConsolidatedDataController::class, 'getConsolidatedData']);

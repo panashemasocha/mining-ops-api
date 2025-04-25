@@ -42,6 +42,11 @@ class Vehicle extends Model
         return $this->hasMany(DieselAllocation::class);
     }
 
+    public function odometerReading()
+    {
+        return $this->hasMany(OdometerReading::class);
+    }
+
     public function vehicleCategory()
     {
         return $this->belongsTo(VehicleCategory::class);

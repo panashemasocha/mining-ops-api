@@ -47,4 +47,9 @@ class Trip extends Model
     {
         return $this->hasMany(OreLoader::class);
     }
+
+    public function odometerReading()
+    {
+        return $this->hasMany(OdometerReading::class);
+    }
 }
