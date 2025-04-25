@@ -41,7 +41,7 @@ class StoreDispatchRequest extends FormRequest
             'loading_method' => $this->input('loading_method', $this->input('loadingMethod')),
             'ore_cost_per_tonne' => $this->input('ore_cost_per_tonne', $this->input('oreCostPerTonne')),
             'loading_cost_per_tonne' => $this->input('loading_cost_per_tonne', $this->input('loadingCostPerTonne')),
-            'ore_quantity' => $this->input('ore_quantity', $this->input('oreQuantityRemaining')),
+            'ore_quantity' => $this->input('ore_quantity', $this->input('oreQuantity')),
             'max_quantity_per_trip' => $this->input('max_quantity_per_trip', $this->input('maxQuantityPerTrip')),
             'status' => $this->input('status', $this->input('status')),
             'payment_status' => $this->input('paymentStatus', $this->input('payment_status')),

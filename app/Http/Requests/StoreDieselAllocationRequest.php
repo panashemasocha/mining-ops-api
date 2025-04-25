@@ -24,7 +24,7 @@ class StoreDieselAllocationRequest extends FormRequest
     {
         $this->merge([
             'vehicle_id' => $this->input('vehicleId', $this->input('vehicle_id')),
-            'type_id' => $this->input('allocationTypeId', $this->input('type_id')),
+            'type_id' => $this->input('typeId', $this->input('type_id')),
             'litres' => $this->input('litres', $this->input('litres')),
         ]);
     }
