@@ -10,9 +10,9 @@ class TripResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'driver' => $this->driver_id ? new UserResource(User::find($this->driver_id)) : null,
-            'vehicle' => $this->vehicle ? new VehicleResource($this->vehicle) : null,
-            'dispatch' => $this->dispatch ? new DispatchResource($this->dispatch) : null,
+            'driver' => new UserResource(User::find($this->driver_id)),
+            'vehicle' => new VehicleResource($this->vehicle),
+            'dispatch' => new DispatchResource($this->dispatch),
             'oreQuantity' => $this->ore_quantity,
             'initialLocation' => [
                 'longitude' => $this->initial_longitude,
@@ -24,7 +24,7 @@ class TripResource extends JsonResource
                 'latitude' => $this->final_latitude,
                 'altitude' => $this->final_altitude,
             ],
-            'dieselAllocation' => DieselAllocationResource::collection($this->dieselAllocation),
+            'dieselAllocations' => new DieselAllocationResource($this->dieselAllocation),
             'status' => $this->status,
             'createdAt' => $this->created_at,
             'updatedAt' => $this->updated_at,

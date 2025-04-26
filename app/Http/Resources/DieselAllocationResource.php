@@ -8,13 +8,9 @@ class DieselAllocationResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->id,
-            // 'vehicle' => $this->vehicle 
-            //     ? new VehicleResource($this->vehicle) 
-            //     : null,
-            // 'type' => $this->dieselAllocationType 
-            //     ? new DieselAllocationTypeResource($this->dieselAllocationType) 
-            //     : null,
+            'id'=> $this->id,
+            'vehicle' => new VehicleResource($this->vehicle),
+            'type'=> new DieselAllocationTypeResource($this->dieselAllocationType),
             'litres' => $this->litres,
         ];
     }
