@@ -18,7 +18,7 @@ class DieselAllocation extends Model
 
     public function dieselAllocationType()
     {
-        return $this->belongsTo(DieselAllocationType::class);
+        return $this->belongsTo(DieselAllocationType::class,'type_id');
     }
 
     public function excavatorUsage()
