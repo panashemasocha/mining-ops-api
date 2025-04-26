@@ -77,10 +77,9 @@ class DispatchController extends Controller
                 // Auto-link diesel allocation if exists
                 if (!empty($vehicleAllocationMap)) {
                     $vehicleId = $tripData['vehicle_id'];
-                    if (!isset($vehicleAllocationMap[$vehicleId])) {
-                        throw new \Exception("No diesel allocation found for vehicle $vehicleId");
+                    if (isset($vehicleAllocationMap[$vehicleId])) {
+                        $tripData['diesel_allocation_id'] = $vehicleAllocationMap[$vehicleId];
                     }
-                    $tripData['diesel_allocation_id'] = $vehicleAllocationMap[$vehicleId];
                 }
     
                 $trip = Trip::create($tripData);
