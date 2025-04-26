@@ -102,8 +102,8 @@ class DispatchController extends Controller
             DB::commit();
 
             return response()->json([
-                // 'dispatch' => new DispatchResource($dispatch),
-                // 'trips' => TripResource::collection($trips),
+                 'dispatch' => new DispatchResource($dispatch),
+                 'trips' => TripResource::collection($trips),
                 // 'dieselAllocations' => DieselAllocationResource::collection($dieselAllocations),
             ], 201);
 
