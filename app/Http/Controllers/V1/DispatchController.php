@@ -140,7 +140,7 @@ class DispatchController extends Controller
         // 1) Ore Cost
         $tx1 = GLTransaction::create([
             'trans_date' => $date,
-            'description' => "Ore ({$dispatch->ore->type}) Cost -{$supplierName}-{$dispatch->id}",
+            'description' => "Ore ({$dispatch->ore->oreType->type}) Cost -{$supplierName}-{$dispatch->id}",
             'created_by' => auth()->id(),
         ]);
         GLEntry::create([
@@ -186,10 +186,6 @@ class DispatchController extends Controller
 
     public function seekDriverVehicle(SeekDriverVehicleRequest $request)
     {
-        $request->validate([
-            'ore_id' => 'required|exists:ores,id',
-        ]);
-
         $ore = Ore::findOrFail($request->ore_id);
         $oreLat = $ore->latitude;
         $oreLon = $ore->longitude;
