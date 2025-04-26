@@ -156,8 +156,9 @@ class DispatchController extends Controller
             'credit_amt' => $oreCostAmt,
         ]);
 
-        // 2) Loading Cost
-        $tx2 = GLTransaction::create([
+      if($dispatch->loading_method === "manual"){
+          // 2) Loading Cost
+          $tx2 = GLTransaction::create([
             'trans_date' => $date,
             'description' => "Loading cost-{$supplierName}-{$dispatch->id}",
             'created_by' => auth()->id(),
@@ -174,6 +175,7 @@ class DispatchController extends Controller
             'debit_amt' => 0,
             'credit_amt' => $loadCostAmt,
         ]);
+      }
     }
 
     public function destroy($id)
