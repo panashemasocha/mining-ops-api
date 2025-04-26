@@ -10,7 +10,7 @@ class TripResource extends JsonResource
     {
         return [
             'id' => $this->id,
-         //   'driver' => $this->driver_id ? new UserResource(User::find($this->driver_id)) : null,
+            'driver' => $this->driver_id ? new UserResource(User::find($this->driver_id)) : null,
          //   'vehicle' => $this->vehicle ? new VehicleResource($this->vehicle) : null,
            // 'dispatch' => $this->dispatch ? new DispatchResource($this->dispatch) : null,
             'oreQuantity' => $this->ore_quantity,
