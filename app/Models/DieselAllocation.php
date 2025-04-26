@@ -26,4 +26,8 @@ class DieselAllocation extends Model
         return $this->hasMany(ExcavatorUsage::class);
     }
 
+    public function trips(){
+        return $this->hasMany(Trip::class);
+    }
+
 }

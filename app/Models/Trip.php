@@ -38,6 +38,11 @@ class Trip extends Model
         return $this->belongsTo(Dispatch::class);
     }
 
+    public function dieselAllocation()
+    {
+        return $this->belongsTo(DieselAllocation::class);
+    }
+
     public function oreloaders()
     {
         return $this->hasMany(OreLoader::class);
