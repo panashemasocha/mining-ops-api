@@ -9,7 +9,7 @@ class DieselAllocationResource extends JsonResource
     {
         return [
             'id'=> $this->id,
-            'vehicle' => new VehicleResource($this->vehicle),
+            'vehicleId' =>$this->vehicle_id,
             'type'=> new DieselAllocationTypeResource($this->dieselAllocationType),
             'litres' => $this->litres,
         ];
