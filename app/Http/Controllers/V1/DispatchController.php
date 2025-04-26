@@ -104,7 +104,7 @@ class DispatchController extends Controller
             return response()->json([
                  'dispatch' => new DispatchResource($dispatch),
                 // 'trips' => TripResource::collection($trips),
-                // 'dieselAllocations' => DieselAllocationResource::collection($dieselAllocations),
+                 'dieselAllocations' => DieselAllocationResource::collection($dieselAllocations),
             ], 201);
 
         } catch (\Exception $e) {
