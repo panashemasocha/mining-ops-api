@@ -74,13 +74,13 @@ class DispatchController extends Controller
             }
     
             // 4. Post expenses 
-            if ($dispatch->status === 'accepted') {
-                $this->postMiningExpenses(
-                    $dispatch, 
-                    $dispatchData['payment_method'] ?? 'Cash',
-                    $dieselAllocations
-                );
-            }
+            // if ($dispatch->status === 'accepted') {
+            //     $this->postMiningExpenses(
+            //         $dispatch, 
+            //         $dispatchData['payment_method'] ?? 'Cash',
+            //         $dieselAllocations
+            //     );
+            // }
     
             DB::commit();
     
@@ -181,7 +181,7 @@ class DispatchController extends Controller
         }
     
         // 3) Diesel Allocations (if any)
-       /* if ($dieselAllocations && $dieselAllocations->isNotEmpty()) {
+        if ($dieselAllocations && $dieselAllocations->isNotEmpty()) {
             $dieselExpense = Account::where('account_name', 'Diesel expenses')->firstOrFail();
             $dieselPrice = CostPrice::where('commodity', 'diesel cost')
                 ->latest('date_created')
@@ -211,7 +211,7 @@ class DispatchController extends Controller
                 ]);
             }
         }
-        */
+        
     }
 
     public function destroy($id)
