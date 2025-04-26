@@ -52,28 +52,32 @@ class DispatchController extends Controller
     public function storeWithTripsAndAllocations(StoreDispatchWithTripsAndAllocationsRequest $request)
     {
         DB::beginTransaction();
-    
+
         try {
             // 1. Create Dispatch
             $dispatch = Dispatch::create($request->input('dispatch'));
-    
+
             // 2. Create Diesel Allocations First
             $dieselAllocations = collect();
             $vehicleAllocationMap = [];
-            
+
             if ($request->has('dieselAllocations')) {
                 foreach ($request->input('dieselAllocations') as $allocationData) {
+                    // Explicitly validate allocation data
                     $allocation = DieselAllocation::create($allocationData);
+                    if (!$allocation->id) {
+                        throw new \Exception("Failed to create diesel allocation for vehicle {$allocationData['vehicle_id']}");
+                    }
                     $dieselAllocations->push($allocation);
                     $vehicleAllocationMap[$allocation->vehicle_id] = $allocation->id;
                 }
             }
-    
+
             // 3. Create Trips with Allocation Mapping
             $trips = collect();
             foreach ($request->input('trips') as $tripData) {
                 $tripData['dispatch_id'] = $dispatch->id;
-                
+
                 // Auto-link diesel allocation if exists
                 if (!empty($vehicleAllocationMap)) {
                     $vehicleId = $tripData['vehicle_id'];
@@ -81,11 +85,11 @@ class DispatchController extends Controller
                         $tripData['diesel_allocation_id'] = $vehicleAllocationMap[$vehicleId];
                     }
                 }
-    
+
                 $trip = Trip::create($tripData);
                 $trips->push($trip);
             }
-    
+
             // 4. Post mining expenses
             if ($dispatch->status === 'accepted') {
                 $this->postMiningExpenses(
@@ -94,15 +98,15 @@ class DispatchController extends Controller
                     $dieselAllocations
                 );
             }
-    
+
             DB::commit();
-    
+
             return response()->json([
                 'dispatch' => new DispatchResource($dispatch),
                 'trips' => TripResource::collection($trips),
                 'dieselAllocations' => DieselAllocationResource::collection($dieselAllocations),
             ], 201);
-    
+
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
@@ -139,13 +143,13 @@ class DispatchController extends Controller
         if (!$dispatch->ore->supplier) {
             throw new \Exception("Supplier not found for dispatch #{$dispatch->id}");
         }
-    
+
         $supplierName = $dispatch->ore->supplier->first_name . ' ' . $dispatch->ore->supplier->last_name;
         $date = Carbon::now()->toDateString();
         $oreQty = $dispatch->ore_quantity;
         $oreCostAmt = $dispatch->ore_cost_per_tonne * $oreQty;
         $loadCostAmt = $dispatch->loading_cost_per_tonne * $oreQty;
-    
+
         // Map payment method to asset account
         $assetAccountName = match ($paymentMethod) {
             'Cash' => 'Cash on Hand',
@@ -153,17 +157,17 @@ class DispatchController extends Controller
             'Ecocash' => 'Ecocash',
             default => 'Cash on Hand',
         };
-    
+
         $asset = Account::where('account_name', $assetAccountName)->firstOrFail();
         $miningExpense = Account::where('account_name', 'Mining expenses')->firstOrFail();
-    
+
         // 1) Ore Cost Transaction
         $txOre = GLTransaction::create([
             'trans_date' => $date,
             'description' => "Ore ({$dispatch->ore->oreType->type}) Cost -{$supplierName}-{$dispatch->id}",
             'created_by' => auth()->id(),
         ]);
-        
+
         GLEntry::create([
             'trans_id' => $txOre->id,
             'account_id' => $miningExpense->id,
@@ -176,7 +180,7 @@ class DispatchController extends Controller
             'debit_amt' => 0,
             'credit_amt' => $oreCostAmt,
         ]);
-    
+
         // 2) Loading Cost (if manual)
         if ($dispatch->loading_method === "manual") {
             $txLoading = GLTransaction::create([
@@ -184,7 +188,7 @@ class DispatchController extends Controller
                 'description' => "Loading cost-{$supplierName}-{$dispatch->id}",
                 'created_by' => auth()->id(),
             ]);
-            
+
             GLEntry::create([
                 'trans_id' => $txLoading->id,
                 'account_id' => $miningExpense->id,
@@ -198,37 +202,41 @@ class DispatchController extends Controller
                 'credit_amt' => $loadCostAmt,
             ]);
         }
-    
+
         // 3) Diesel Allocations (if any)
         if ($dieselAllocations && $dieselAllocations->isNotEmpty()) {
             $dieselExpense = Account::where('account_name', 'Diesel expenses')->firstOrFail();
             $dieselPrice = CostPrice::where('commodity', 'diesel cost')
                 ->latest('date_created')
                 ->firstOrFail();
-    
+
             foreach ($dieselAllocations as $allocation) {
-                // Ensure vehicle relationship is loaded
+                // Ensure it's a model instance and has an ID
+                if (!$allocation instanceof DieselAllocation || !$allocation->id) {
+                    throw new \Exception("Invalid diesel allocation data");
+                }
+
+                // Load vehicle relationship
                 $allocation->load('vehicle');
-    
                 if (!$allocation->vehicle) {
                     throw new \Exception("Vehicle not found for diesel allocation #{$allocation->id}");
                 }
-    
+
                 $cost = $allocation->litres * $dieselPrice->price;
-                
+
                 $txDiesel = GLTransaction::create([
                     'trans_date' => $date,
                     'description' => "Diesel cost - {$allocation->vehicle->reg_number} - {$allocation->litres}L",
                     'created_by' => auth()->id(),
                 ]);
-    
+
                 GLEntry::create([
                     'trans_id' => $txDiesel->id,
                     'account_id' => $dieselExpense->id,
                     'debit_amt' => $cost,
                     'credit_amt' => 0,
                 ]);
-    
+
                 GLEntry::create([
                     'trans_id' => $txDiesel->id,
                     'account_id' => $asset->id,
