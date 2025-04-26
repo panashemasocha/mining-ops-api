@@ -24,9 +24,7 @@ class TripResource extends JsonResource
                 'latitude' => $this->final_latitude,
                 'altitude' => $this->final_altitude,
             ],
-            'dieselAllocation' => $this->dieselAllocation
-                ? DieselAllocationResource::collection($this->dieselAllocation)
-                : null,
+            'dieselAllocation' => DieselAllocationResource::collection($this->dieselAllocation),
             'status' => $this->status,
             'createdAt' => $this->created_at,
             'updatedAt' => $this->updated_at,
