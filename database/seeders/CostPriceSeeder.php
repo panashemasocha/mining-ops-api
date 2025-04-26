@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders;
 
 use App\Models\CostPrice;
@@ -17,37 +18,52 @@ class CostPriceSeeder extends Seeder
 
     public function run()
     {
-        //CostPrice::factory()->count(7)->create();
+        // Fetch all management users
         $users = User::whereHas('role', function ($query) {
             $query->where('name', 'management');
         })->get();
 
-        $commodity = $this->faker->randomElement(['loading cost', 'ore cost']);
+        // Define the list of commodities to seed
+        $commodities = ['loading cost', 'ore cost', 'diesel cost'];
 
-        if ($commodity === 'loading cost') {
-            $price = 2;
+        foreach ($commodities as $commodity) {
+            // Set defaults
+            $price = null;
             $qualityType = null;
             $qualityGrade = null;
-            $oreType = 'Kyanite';
-        } else {
-            $price = $this->faker->randomElement([7.5, 6, 10, 7.5, 8, 11]);
-            $qualityType = $this->faker->randomElement(['Gem-Quality', 'Industrial-Grade']);
-            $qualityGrade = $qualityType === 'Gem-Quality'
-                ? $this->faker->randomElement(['A', 'B', 'C'])
-                : $this->faker->randomElement(['High', 'Medium', 'Low']);
-            $oreType = 'Kyanite';
-        }
+            $oreType = null;
 
-        for ($i = 0; $i < 5; $i++) {
-            CostPrice::create([
-                'commodity' => $this->faker->randomElement(['loading cost', 'ore cost']),
-                'ore_type' => $oreType,
-                'quality_type'  => $qualityType,
-                'quality_grade' => $qualityGrade,
-                'price' => $price,
-                'date_created' => $this->faker->date(),
-                'created_by' => $users->random()->id,
-            ]);
+            // Determine parameters based on commodity
+            switch ($commodity) {
+                case 'loading cost':
+                    $price = 2;
+                    break;
+
+                case 'ore cost':
+                    $price = $this->faker->randomElement([7.5, 6, 10, 7.5, 8, 11]);
+                    $qualityType = $this->faker->randomElement(['Gem-Quality', 'Industrial-Grade']);
+                    $qualityGrade = $qualityType === 'Gem-Quality'
+                        ? $this->faker->randomElement(['A', 'B', 'C'])
+                        : $this->faker->randomElement(['High', 'Medium', 'Low']);
+                    $oreType = 'Kyanite';
+                    break;
+
+                case 'diesel cost':
+                    $price = 1.46;
+                    break;
+            }
+
+            for ($i = 0; $i < 1; $i++) {
+                CostPrice::create([
+                    'commodity'     => $commodity,
+                    'ore_type'      => $oreType,
+                    'quality_type'  => $qualityType,
+                    'quality_grade' => $qualityGrade,
+                    'price'         => $price,
+                    'date_created'  => $this->faker->date(),
+                    'created_by'    => $users->random()->id,
+                ]);
+            }
         }
     }
 }

@@ -18,6 +18,7 @@ class AccountSeeder extends Seeder
             ['Bank', 'Asset'],
             ['Ecocash', 'Asset'],
             ['Mining expenses', 'Expense'],
+            ['Diesel expenses', 'Expense'],
         ];
 
         foreach ($accounts as [$name, $type]) {

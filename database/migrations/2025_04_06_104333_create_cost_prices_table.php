@@ -12,8 +12,8 @@ return new class extends Migration {
     {
         Schema::create('cost_prices', function (Blueprint $table) {
             $table->id();
-            $table->string('commodity'); // 'loading cost', 'ore cost'
-            $table->string('ore_type');
+            $table->string('commodity'); // 'loading cost', 'ore cost','diesel cost'
+            $table->string('ore_type')->nullable();
             $table->string('quality_type')->nullable(); // now nullable for loading cost
             $table->string('quality_grade')->nullable(); // now nullable for loading cost
             $table->decimal('price', 10, 2);

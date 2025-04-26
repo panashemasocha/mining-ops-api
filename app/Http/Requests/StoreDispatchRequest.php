@@ -19,7 +19,7 @@ class StoreDispatchRequest extends FormRequest
         return [
             'ore_id' => 'required|exists:ores,id',
             'site_clerk_id' => 'required|exists:users,id',
-            'loading_method' => 'nullable|string|in:manual,mechanic',
+            'loading_method' => 'required|string|in:manual,mechanic',
             'ore_cost_per_tonne' => 'required|numeric|min:0',
             'loading_cost_per_tonne' => 'required|numeric|min:0',
             'ore_quantity' => 'required|numeric|min:1',

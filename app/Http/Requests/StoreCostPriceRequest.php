@@ -17,10 +17,10 @@ class StoreCostPriceRequest extends FormRequest
     public function rules()
     {
         return [
-            'commodity' => 'required|string|in:loading cost,ore cost',
-            'ore_type' => 'required|string|max:255',
-            'quality_type' => 'sometimes|nullable|string|max:255',
-            'quality_grade' => 'sometimes|nullable|string|max:255',
+            'commodity' => 'required|string|in:loading cost,ore cost,diesel cost',
+            'ore_type' => 'nullable|string|max:255',
+            'quality_type' => 'nullable|string|max:255',
+            'quality_grade' => 'nullable|string|max:255',
             'price' => 'required|numeric|min:0',
             'date_created' => 'required|date',
             'created_by' => 'required|exists:users,id',

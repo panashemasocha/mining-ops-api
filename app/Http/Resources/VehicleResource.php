@@ -35,7 +35,7 @@ class VehicleResource extends JsonResource
                 'latitude'  => $this->last_known_latitude,
                 'altitude'  => $this->last_known_altitude,
             ],
-
+            "dieselAllocation" => new DieselAllocationResource($this->dieselAllocation),
             'status'               => $this->status,
             'createdAt'            => $this->created_at,
             'updatedAt'            => $this->updated_at,

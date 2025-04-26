@@ -65,7 +65,7 @@ class DispatchController extends Controller
             // 2. Create Trips (link to dispatch)
             $trips = collect();
             foreach ($request->input('trips') as $tripData) {
-                $tripData['dispatch_id'] = $dispatch->id; 
+                $tripData['dispatch_id'] = $dispatch->id;
                 $trip = Trip::create($tripData);
                 $trips->push($trip);
             }
@@ -156,24 +156,27 @@ class DispatchController extends Controller
             'credit_amt' => $oreCostAmt,
         ]);
 
-        // 2) Loading Cost
-        $tx2 = GLTransaction::create([
-            'trans_date' => $date,
-            'description' => "Loading cost-{$supplierName}-{$dispatch->id}",
-            'created_by' => auth()->id(),
-        ]);
-        GLEntry::create([
-            'trans_id' => $tx2->id,
-            'account_id' => $expense->id,
-            'debit_amt' => $loadCostAmt,
-            'credit_amt' => 0,
-        ]);
-        GLEntry::create([
-            'trans_id' => $tx2->id,
-            'account_id' => $asset->id,
-            'debit_amt' => 0,
-            'credit_amt' => $loadCostAmt,
-        ]);
+        if ($dispatch->loading_method === "manual") {
+            // 2) Loading Cost
+            $tx2 = GLTransaction::create([
+                'trans_date' => $date,
+                'description' => "Loading cost-{$supplierName}-{$dispatch->id}",
+                'created_by' => auth()->id(),
+            ]);
+            GLEntry::create([
+                'trans_id' => $tx2->id,
+                'account_id' => $expense->id,
+                'debit_amt' => $loadCostAmt,
+                'credit_amt' => 0,
+            ]);
+            GLEntry::create([
+                'trans_id' => $tx2->id,
+                'account_id' => $asset->id,
+                'debit_amt' => 0,
+                'credit_amt' => $loadCostAmt,
+            ]);
+        }
+
     }
 
     public function destroy($id)
