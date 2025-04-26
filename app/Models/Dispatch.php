@@ -23,4 +23,6 @@ class Dispatch extends Model
     {
         return $this->belongsTo(User::class, 'site_clerk_id');
     }
+
+    
 }

@@ -120,7 +120,7 @@ class DispatchController extends Controller
 
     protected function postMiningExpenses(Dispatch $dispatch, string $paymentMethod)
     {
-        $supplierName = $dispatch->supplier->first_name . ' ' . $dispatch->supplier->last_name;
+        $supplierName = $dispatch->ore->supplier->first_name . ' ' . $dispatch->ore->supplier->last_name;
         $date = Carbon::now()->toDateString();
         $oreQty = $dispatch->ore_quantity;
         $oreCostAmt = $dispatch->ore_cost_per_tonne * $oreQty;
