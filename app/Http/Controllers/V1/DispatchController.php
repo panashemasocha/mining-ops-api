@@ -49,7 +49,7 @@ class DispatchController extends Controller
         return new DispatchResource($dispatch);
     }
 
-    public function storeWithTripsAndAllocations(StoreDispatchWithTripsAndAllocationsRequest $request)
+    public function storeWithTripsAndDieselAllocations(StoreDispatchWithTripsAndAllocationsRequest $request)
     {
         DB::beginTransaction();
 
@@ -63,7 +63,6 @@ class DispatchController extends Controller
 
             if ($request->has('dieselAllocations')) {
                 foreach ($request->input('dieselAllocations') as $allocationData) {
-                    // Explicitly validate allocation data
                     $allocation = DieselAllocation::create($allocationData);
                     if (!$allocation->id) {
                         throw new \Exception("Failed to create diesel allocation for vehicle {$allocationData['vehicle_id']}");

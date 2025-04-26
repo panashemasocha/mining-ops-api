@@ -136,7 +136,7 @@ Route::prefix('v1')->group(function () {
         Route::prefix('dispatches')->group(function () {
             Route::apiResource('/', DispatchController::class);
             Route::post('seek-driver-vehicle', [DispatchController::class, 'seekDriverVehicle']);
-            Route::post('bulk-store', [DispatchController::class, 'storeWithTripsAndAllocations']);
+            Route::post('bulk-store', [DispatchController::class, 'storeWithTripsAndDieselAllocations']);
         });
 
         //Mining Site
