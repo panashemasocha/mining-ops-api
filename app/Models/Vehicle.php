@@ -37,7 +37,7 @@ class Vehicle extends Model
         return $this->hasMany(AssignedVehicle::class);
     }
 
-    public function dieselAllocation()
+    public function dieselAllocations()
     {
         return $this->hasMany(DieselAllocation::class);
     }
