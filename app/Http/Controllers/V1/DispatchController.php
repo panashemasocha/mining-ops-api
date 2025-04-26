@@ -55,31 +55,43 @@ class DispatchController extends Controller
     
         try {
             // 1. Create Dispatch
-            $dispatchData = $request->input('dispatch');
-            $dispatch = Dispatch::create($dispatchData);
+            $dispatch = Dispatch::create($request->input('dispatch'));
     
-            // 2. Create Trips
-            $trips = collect();
-            foreach ($request->input('trips') as $tripData) {
-                $tripData['dispatch_id'] = $dispatch->id;
-                $trip = Trip::create($tripData);
-                $trips->push($trip);
-            }
-    
-            // 3. Create Diesel Allocations (if provided)
+            // 2. Create Diesel Allocations First
             $dieselAllocations = collect();
+            $vehicleAllocationMap = [];
+            
             if ($request->has('dieselAllocations')) {
                 foreach ($request->input('dieselAllocations') as $allocationData) {
                     $allocation = DieselAllocation::create($allocationData);
                     $dieselAllocations->push($allocation);
+                    $vehicleAllocationMap[$allocation->vehicle_id] = $allocation->id;
                 }
             }
     
-            // 4. Post expenses AFTER creating all records
+            // 3. Create Trips with Allocation Mapping
+            $trips = collect();
+            foreach ($request->input('trips') as $tripData) {
+                $tripData['dispatch_id'] = $dispatch->id;
+                
+                // Auto-link diesel allocation if exists
+                if (!empty($vehicleAllocationMap)) {
+                    $vehicleId = $tripData['vehicle_id'];
+                    if (!isset($vehicleAllocationMap[$vehicleId])) {
+                        throw new \Exception("No diesel allocation found for vehicle $vehicleId");
+                    }
+                    $tripData['diesel_allocation_id'] = $vehicleAllocationMap[$vehicleId];
+                }
+    
+                $trip = Trip::create($tripData);
+                $trips->push($trip);
+            }
+    
+            // 4. Post mining expenses
             if ($dispatch->status === 'accepted') {
                 $this->postMiningExpenses(
-                    $dispatch, 
-                    $dispatchData['payment_method'] ?? 'Cash',
+                    $dispatch,
+                    $request->input('dispatch.payment_method', 'Cash'),
                     $dieselAllocations
                 );
             }
