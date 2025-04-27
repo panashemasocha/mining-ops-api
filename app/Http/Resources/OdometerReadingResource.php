@@ -10,8 +10,8 @@ class OdometerReadingResource extends JsonResource
     {
         return [
             'id'                => $this->id,
-            'vehicle'           => new VehicleResource($this->vehicle),
-            'trip'              => $this->whenLoaded('trip', fn() => new TripResource($this->trip)),
+            'vehicleId'           => $this->vehicle_id,
+            'tripId'              => $this->trip_id,
             'initialValue'      => $this->initial_value,
             'tripEndValue'      => $this->trip_end_value,
             'readingUnit'       => $this->reading_unit,
