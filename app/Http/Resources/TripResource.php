@@ -27,7 +27,7 @@ class TripResource extends JsonResource
                 'altitude' => $this->final_altitude,
             ],
             'dieselAllocation' => new DieselAllocationResource($this->dieselAllocation),
-            'oreLoader'        => new OreLoaderResource($this->oreLoader),
+            // 'oreLoader'        => new OreLoaderResource($this->oreLoader),
             'odometerReading'  => new OdometerReadingResource($this->odometerReading),
             'status' => $this->status,
             'createdAt' => $this->created_at,
