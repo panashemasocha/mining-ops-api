@@ -18,9 +18,16 @@ class StoreOdometerReadingRequest extends FormRequest
             'vehicle_id' => 'required|exists:vehicles,id',
             'trip_id' => 'nullable|exists:trips,id',
             'initial_value' => 'required|integer|min:0',
-            'trip_end_value' => 'required|integer|min:0',
+            'trip_end_value'  => 'required|integer|min:0|gt:initial_value',
             'reading_unit' => 'required|in:Kilometre,Mile',
             'meter_not_working' => 'sometimes|boolean',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'trip_end_value.gt' => 'The trip end value must be greater than the initial value.',
         ];
     }
 
