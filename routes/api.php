@@ -14,6 +14,7 @@ use App\Http\Controllers\V1\DriverInfoController;
 use App\Http\Controllers\V1\MiningSiteController;
 use App\Http\Controllers\V1\OdometerReadingController;
 use App\Http\Controllers\V1\OreController;
+use App\Http\Controllers\V1\OreLoaderController;
 use App\Http\Controllers\V1\OreQualityGradeController;
 use App\Http\Controllers\V1\OreQualityTypeController;
 use App\Http\Controllers\V1\OreTypeController;
@@ -89,6 +90,9 @@ Route::prefix('v1')->group(function () {
         Route::prefix('ores')->group(function () {
             //Index 
             Route::apiResource('/', OreController::class);
+
+            //Ore Loaders
+            Route::apiResource('loaders', OreLoaderController::class);
 
             //Quantities
             Route::get('quantities', [OreController::class, 'quantities']);
