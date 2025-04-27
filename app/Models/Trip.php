@@ -30,7 +30,7 @@ class Trip extends Model
 
     public function vehicle()
     {
-        return $this->belongsTo(Vehicle::class,'vehicle_id');
+        return $this->belongsTo(Vehicle::class, 'vehicle_id');
     }
 
     public function dispatch()
@@ -43,13 +43,13 @@ class Trip extends Model
         return $this->belongsTo(DieselAllocation::class);
     }
 
-    public function oreloaders()
+    public function oreLoader()
     {
-        return $this->hasMany(OreLoader::class);
+        return $this->hasOne(OreLoader::class);
     }
 
     public function odometerReading()
     {
-        return $this->hasMany(OdometerReading::class);
+        return $this->hasOne(OdometerReading::class);
     }
 }
