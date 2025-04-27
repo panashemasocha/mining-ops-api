@@ -29,9 +29,9 @@ return new class extends Migration {
                 ->constrained('diesel_allocations')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
-            $table->decimal('initial_longitude', 10, 6);
-            $table->decimal('initial_latitude', 10, 6);
-            $table->decimal('initial_altitude', 10, 2);
+            $table->decimal('initial_longitude', 10, 6)->nullable();
+            $table->decimal('initial_latitude', 10, 6)->nullable();
+            $table->decimal('initial_altitude', 10, 2)->nullable();
             $table->decimal('final_longitude', 10, 6);
             $table->decimal('final_latitude', 10, 6);
             $table->decimal('final_altitude', 10, 2);
