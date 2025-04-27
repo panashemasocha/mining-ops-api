@@ -1,6 +1,8 @@
 <?php
 namespace App\Http\Resources;
 
+use App\Models\OdometerReading;
+use App\Models\OreLoader;
 use App\Models\User;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -25,6 +27,8 @@ class TripResource extends JsonResource
                 'altitude' => $this->final_altitude,
             ],
             'dieselAllocation' => new DieselAllocationResource($this->dieselAllocation),
+            'oreLoader' => new OreLoaderResource(OreLoader::firstWhere('trip_id'== $this->id)),
+            'odometerReading'=>new OdometerReadingResource(OdometerReading::firstWhere('trip_id'== $this->id)),
             'status' => $this->status,
             'createdAt' => $this->created_at,
             'updatedAt' => $this->updated_at,
