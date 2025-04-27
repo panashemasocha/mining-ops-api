@@ -14,4 +14,5 @@ class VehicleCategory extends Model
     {
         return $this->hasMany(VehicleSubType::class);
     }
+    
 }

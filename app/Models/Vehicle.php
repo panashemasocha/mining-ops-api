@@ -10,8 +10,8 @@ class Vehicle extends Model
     use HasFactory;
     protected $fillable = [
         'reg_number',
-        'category',
-        'sub_type',
+        'category_id',
+        'sub_type_id',
         'department',
         'assigned_site',
         'vehicle_type',
@@ -49,12 +49,12 @@ class Vehicle extends Model
 
     public function vehicleCategory()
     {
-        return $this->belongsTo(VehicleCategory::class);
+        return $this->belongsTo(VehicleCategory::class,'vehicle_category_id');
     }
 
     public function vehicleSubType()
     {
-        return $this->belongsTo(VehicleSubType::class);
+        return $this->belongsTo(VehicleSubType::class,'sub_type_id');
     }
 
     public function department()
