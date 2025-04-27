@@ -103,6 +103,7 @@ class ConsolidatedDataController extends Controller
 
             $data['ores'] = $this->transformPaginated($oresPaginator, OreResource::class);
             $data['dispatches'] = $this->transformPaginated($dispatchesPaginator, DispatchResource::class);
+            $data['prices'] = CostPriceResource::collection($this->priceRepository->getAllPrices());
         } else if ($jobPositionId == 4) {
             $oresPaginator = $this->oreRepository->getAllOres($request->input('ores_per_page', 10));
 
