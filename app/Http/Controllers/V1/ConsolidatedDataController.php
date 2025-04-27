@@ -12,6 +12,8 @@ use App\Http\Resources\OreTypeResource;
 use App\Http\Resources\UserRoleResource;
 use App\Models\OreQualityType;
 use App\Repositories\AccountingRepository;
+use App\Repositories\DieselAllocationTypeRepository;
+use App\Repositories\DieselAllocationTypeResource;
 use App\Repositories\OreQualityGradeRepository;
 use App\Repositories\OreQualityTypeRepository;
 use App\Repositories\OreRepository;
@@ -43,6 +45,7 @@ class ConsolidatedDataController extends Controller
     protected $tripRepository;
     protected $vehicleRepository;
     protected $priceRepository;
+    protected $dieselAllocationTypeRepository;
     protected $departmentRepository;
     protected $branchRepository;
     protected $jobPositionRepository;
@@ -67,6 +70,7 @@ class ConsolidatedDataController extends Controller
         OreTypeRepository $oreTypeRepository,
         OreQualityGradeRepository $oreQualityGradeRepository,
         OreQualityTypeRepository $oreQualityTypeRepository,
+        DieselAllocationTypeRepository $dieselAllocationTypeRepository,
     ) {
         $this->oreRepository = $oreRepository;
         $this->supplierRepository = $supplierRepository;
@@ -82,6 +86,7 @@ class ConsolidatedDataController extends Controller
         $this->oreTypeRepository = $oreTypeRepository;
         $this->oreQualityGradeRepository = $oreQualityGradeRepository;
         $this->oreQualityTypeRepository = $oreQualityTypeRepository;
+        $this->dieselAllocationTypeRepository = $dieselAllocationTypeRepository;
     }
 
     /**
@@ -104,14 +109,15 @@ class ConsolidatedDataController extends Controller
             $data['ores'] = $this->transformPaginated($oresPaginator, OreResource::class);
             $data['dispatches'] = $this->transformPaginated($dispatchesPaginator, DispatchResource::class);
             $data['prices'] = CostPriceResource::collection($this->priceRepository->getAllPrices());
+            $data['dieselAllocationTypes'] = \App\Http\Resources\DieselAllocationTypeResource::collection($this->dieselAllocationTypeRepository->getAllDieselAllocationTypes());
         } else if ($jobPositionId == 4) {
             $oresPaginator = $this->oreRepository->getAllOres($request->input('ores_per_page', 10));
 
             $data['ores'] = $this->transformPaginated($oresPaginator, OreResource::class);
             $data['suppliers'] = ['data' => SupplierResource::collection($this->supplierRepository->getAllSuppliers())];
-            $data['oreTypes'] =  ['data' => OreTypeResource::collection($this->oreTypeRepository->getOreTypes())];
-            $data['oreQualityTypes'] =  ['data' => OreQualityTypeResource::collection($this->oreQualityTypeRepository->getAllOreQualityTypes())];
-            $data['oreQualityGrades'] =  ['data' => OreQualityGradeResource::collection($this->oreQualityGradeRepository->getAllOreQualityGrade())];
+            $data['oreTypes'] = ['data' => OreTypeResource::collection($this->oreTypeRepository->getOreTypes())];
+            $data['oreQualityTypes'] = ['data' => OreQualityTypeResource::collection($this->oreQualityTypeRepository->getAllOreQualityTypes())];
+            $data['oreQualityGrades'] = ['data' => OreQualityGradeResource::collection($this->oreQualityGradeRepository->getAllOreQualityGrade())];
 
         } else if ($jobPositionId == 5) {
             $dispatchesPaginator = $this->dispatchRepository->getDispatchesForDriver($userId, $request->input('dispatches_per_page', 10));
