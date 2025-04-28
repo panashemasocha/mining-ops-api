@@ -101,11 +101,11 @@ class DispatchController extends Controller
             DB::commit();
 
             return response()->json([
-                 'dispatch' => new DispatchResource($dispatch),
-                 'trips' => TripResource::collection($trips),
-                 'dieselAllocations' => $dieselAllocations->isNotEmpty() 
-                     ? DieselAllocationResource::collection($dieselAllocations) 
-                     : [],
+                'dispatch' => new DispatchResource($dispatch),
+                'trips' => TripResource::collection($trips),
+                'dieselAllocations' => $dieselAllocations->isNotEmpty()
+                    ? DieselAllocationResource::collection($dieselAllocations)
+                    : [],
             ], 201);
 
         } catch (\Exception $e) {
@@ -272,7 +272,9 @@ class DispatchController extends Controller
             ->with('driverInfo')
             ->get();
 
-        $vehicles = Vehicle::where('status', 'off trip')
+        $vehicles = Vehicle::with('vehicleSubType')
+            ->where('status', 'off trip')
+            ->where('sub_type_id', $request->sub_type_id)
             ->whereNotNull('last_known_latitude')
             ->whereNotNull('last_known_longitude')
             ->get();

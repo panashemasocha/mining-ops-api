@@ -18,6 +18,7 @@ class SeekDriverVehicleRequest extends FormRequest
     {
         return [
             'ore_id' => 'required|exists:ores,id',
+            'sub_type_id' => 'required|string'
         ];
     }
 
@@ -28,6 +29,7 @@ class SeekDriverVehicleRequest extends FormRequest
     {
         $this->merge([
             'ore_id' => $this->input('ore_id', $this->input('oreId')),
+            'sub_type_id' => $this->input('sub_type_id', $this->input('vehicleSubTypeId')),
         ]);
     }
 }
