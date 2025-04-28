@@ -20,7 +20,7 @@ return new class extends Migration {
                 ->constrained('users')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
-            $table->string('loading_method')->nullable(); // 'manual', 'mechanic'
+            $table->string('loading_method')->nullable(); // 'manual', 'mechanical'
             $table->decimal('ore_cost_per_tonne', 10, 2);
             $table->decimal('loading_cost_per_tonne', 10, 2);
             $table->decimal('ore_quantity', 10, 2);

@@ -17,7 +17,7 @@ class UpdateDispatchRequest extends FormRequest
             'ore_id' => 'sometimes|exists:ores,id',
             'site_clerk_id' => 'sometimes|exists:users,id',
             'supplier_id' => 'sometimes|exists:suppliers,id',
-            'loading_method' => 'sometimes|nullable|string|in:manual,mechanic',
+            'loading_method' => 'sometimes|nullable|string|in:manual,mechanical',
             'ore_cost_per_tonne' => 'sometimes|numeric|min:0',
             'loading_cost_per_tonne' => 'sometimes|numeric|min:0',
             'ore_quantity' => 'sometimes|numeric|min:1',
