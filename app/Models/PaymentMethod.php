@@ -9,4 +9,9 @@ class PaymentMethod extends Model
 {
     use HasFactory;
     protected $fillable = ['method'];
+
+    public function suppliers()
+    {
+        return $this->hasMany(Supplier::class);
+    }
 }
