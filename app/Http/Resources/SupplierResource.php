@@ -14,7 +14,7 @@ class SupplierResource extends JsonResource
             'lastName' => $this->last_name,
             'nationalId' => $this->national_id,
             'physicalAddress' => $this->physical_address,
-            'paymentMethod' => new PaymentMethodResource($this->payment_method),
+            'paymentMethod' => new PaymentMethodResource($this->paymentMethod),
             'phoneNumber' => $this->phone_number,
             'creator' => new UserResource(User::find($this->created_by)),
             'createdAt' => $this->created_at,
