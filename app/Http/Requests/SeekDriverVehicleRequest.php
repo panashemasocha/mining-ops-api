@@ -18,7 +18,7 @@ class SeekDriverVehicleRequest extends FormRequest
     {
         return [
             'ore_id' => 'required|exists:ores,id',
-            'sub_type_id' => 'required|string'
+            'sub_type_id' => 'required|numeric'
         ];
     }
 
