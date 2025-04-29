@@ -42,7 +42,7 @@ class DatabaseSeeder extends Seeder
                 //  ExcavatorUsageSeeder::class,
                 //   TripSeeder::class,
                 //  OreLoaderSeeder::class,
-            OdometerReadingSeeder::class,
+            //OdometerReadingSeeder::class,
             FundingRequestSeeder::class
 
         ]);

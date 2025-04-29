@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\JobPosition;
 use App\Models\UserRole;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

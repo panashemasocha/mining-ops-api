@@ -9,6 +9,7 @@ use App\Http\Controllers\V1\DieselAllocationTypeController;
 use App\Http\Controllers\V1\DispatchController;
 use App\Http\Controllers\V1\ExcavatorUsageController;
 use App\Http\Controllers\V1\ExpenseController;
+use App\Http\Controllers\V1\FundingRequestController;
 use App\Http\Controllers\V1\JobPositionController;
 use App\Http\Controllers\V1\DriverInfoController;
 use App\Http\Controllers\V1\MiningSiteController;
@@ -119,6 +120,9 @@ Route::prefix('v1')->group(function () {
                 Route::get('/{id}', [ExpenseController::class, 'show']);
                 Route::post('/', [ExpenseController::class, 'store']);
             });
+
+            //Request Funding
+            Route::apiResource('funding-request',FundingRequestController::class);
 
             // Cost Prices
             Route::apiResource('cost-prices', CostPriceController::class);

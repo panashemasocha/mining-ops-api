@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Account;
+use App\Models\GLEntry;
 use App\Models\GLTransaction;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

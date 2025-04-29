@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Dispatch;
 use App\Models\Ore;
 use App\Models\User;
 use App\Models\Vehicle;

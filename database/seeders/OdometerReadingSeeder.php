@@ -13,6 +13,6 @@ class OdometerReadingSeeder extends Seeder
      */
     public function run(): void
     {
-        OdometerReading::factory()->count(10)->create();
+        OdometerReading::factory()->count(3)->create();
     }
 }
