@@ -118,16 +118,12 @@ class ConsolidatedDataController extends Controller
                     $this->dispatchRepository->getDispatches($startDate, $endDate)
                 )
             ];
-            $data['prices'] = [
-                'data' => CostPriceResource::collection(
-                    $this->priceRepository->getAllPrices()
-                )
-            ];
-            $data['dieselAllocationTypes'] = [
-                'data' => \App\Http\Resources\DieselAllocationTypeResource::collection(
-                    $this->dieselAllocationTypeRepository->getAllDieselAllocationTypes()
-                )
-            ];
+            $data['prices'] = CostPriceResource::collection(
+                $this->priceRepository->getAllPrices()
+            );
+            $data['dieselAllocationTypes'] = \App\Http\Resources\DieselAllocationTypeResource::collection(
+                $this->dieselAllocationTypeRepository->getAllDieselAllocationTypes()
+            );
         } else if ($jobPositionId == 4) {
 
             $data['ores'] = [
