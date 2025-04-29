@@ -180,13 +180,28 @@ class ConsolidatedDataController extends Controller
     private function getComprehensiveData(GetConsolidatedDataRequest $request, $startDate, $endDate)
     {
         $data = [
-            'dispatches' => DispatchResource::collection($this->dispatchRepository->getDispatches($startDate, $endDate)),
-            'ores' => OreResource::collection(
-                $this->oreRepository->getOres($startDate, $endDate)
-            ),
-            'suppliers' => ['data' => SupplierResource::collection($this->supplierRepository->getAllSuppliers() ?? collect())],
+            'dispatches' => [
+                'data' => DispatchResource::collection(
+                    $this->dispatchRepository->getDispatches($startDate, $endDate)
+                )
+            ],
+            'ores' => [
+                'data' => OreResource::collection(
+                    $this->oreRepository->getOres($startDate, $endDate)
+                )
+            ],
+            'suppliers' =>
+                [
+                    'data' => SupplierResource::collection(
+                        $this->supplierRepository->getAllSuppliers() ?? collect()
+                    )
+                ],
 
-            'trips' => TripResource::collection($this->tripRepository->getTrips($startDate, $endDate)),
+            'trips' => [
+                'data' => TripResource::collection(
+                    $this->tripRepository->getTrips($startDate, $endDate)
+                )
+            ],
 
             // 'vehicles' => $this->transformPaginated(
             //     $this->vehicleRepository->getAllVehicles($request->input('vehicles_per_page', 10)),
@@ -214,11 +229,11 @@ class ConsolidatedDataController extends Controller
 
         $data['cashbook'] = $cashbookTotals;
 
-        $data['prices'] = CostPriceResource::collection($this->priceRepository->getAllPrices());
-        $data['departments'] = DepartmentResource::collection($this->departmentRepository->getAllDepartments());
-        $data['branches'] = BranchResource::collection($this->branchRepository->getAllBranches());
-        $data['jobPositions'] = JobPositionResource::collection($this->jobPositionRepository->getAllJobPositions());
-        $data['roles'] = UserRoleResource::collection($this->roleRepository->getAllRoles());
+       // $data['prices'] = CostPriceResource::collection($this->priceRepository->getAllPrices());
+        //$data['departments'] = DepartmentResource::collection($this->departmentRepository->getAllDepartments());
+       // $data['branches'] = BranchResource::collection($this->branchRepository->getAllBranches());
+       // $data['jobPositions'] = JobPositionResource::collection($this->jobPositionRepository->getAllJobPositions());
+       // $data['roles'] = UserRoleResource::collection($this->roleRepository->getAllRoles());
 
         return $data;
     }
