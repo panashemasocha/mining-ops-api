@@ -6,8 +6,10 @@ use App\Models\Ore;
 
 class OreRepository
 {
-    public function getAllOres($perPage = 10)
+    public function getOres(string $startDate, string $endDate)
     {
-        return Ore::paginate($perPage, ['*'], 'ores_page');
+        return Ore::whereBetween('date_created', [$startDate, $endDate])
+            ->orderBy('date_created', 'desc')
+            ->get();
     }
 }

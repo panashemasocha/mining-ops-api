@@ -36,6 +36,7 @@ use App\Http\Resources\VehicleResource;
 use App\Http\Resources\DepartmentResource;
 use App\Http\Resources\BranchResource;
 use App\Http\Resources\JobPositionResource;
+use Carbon\Carbon;
 
 class ConsolidatedDataController extends Controller
 {
@@ -100,34 +101,39 @@ class ConsolidatedDataController extends Controller
         $roleId = $request->role_id;
         $jobPositionId = $request->job_position_id;
         $userId = $request->id;
+        $startDate = $request->input(
+            'start_date',
+            Carbon::now()->toDateString()
+        );
+        $endDate = $request->input(
+            'end_date',
+            Carbon::now()->toDateString()
+        );
         $data = [];
 
         if ($roleId == 3 && $jobPositionId == 7) {
-            $oresPaginator = $this->oreRepository->getAllOres($request->input('ores_per_page', 10));
-            $dispatchesPaginator = $this->dispatchRepository->getAllDispatches($request->input('dispatches_per_page', 10));
-
-            $data['ores'] = $this->transformPaginated($oresPaginator, OreResource::class);
-            $data['dispatches'] = $this->transformPaginated($dispatchesPaginator, DispatchResource::class);
+            $data['ores'] = OreResource::collection(
+                $this->oreRepository->getOres($startDate, $endDate)
+            );
+            $data['dispatches'] = DispatchResource::collection($this->dispatchRepository->getDispatches($startDate, $endDate));
             $data['prices'] = CostPriceResource::collection($this->priceRepository->getAllPrices());
             $data['dieselAllocationTypes'] = \App\Http\Resources\DieselAllocationTypeResource::collection($this->dieselAllocationTypeRepository->getAllDieselAllocationTypes());
         } else if ($jobPositionId == 4) {
-            $oresPaginator = $this->oreRepository->getAllOres($request->input('ores_per_page', 10));
 
-            $data['ores'] = $this->transformPaginated($oresPaginator, OreResource::class);
+            $data['ores'] = OreResource::collection(
+                $this->oreRepository->getOres($startDate, $endDate)
+            );
             $data['suppliers'] = ['data' => SupplierResource::collection($this->supplierRepository->getAllSuppliers())];
             $data['oreTypes'] = ['data' => OreTypeResource::collection($this->oreTypeRepository->getOreTypes())];
             $data['oreQualityTypes'] = ['data' => OreQualityTypeResource::collection($this->oreQualityTypeRepository->getAllOreQualityTypes())];
             $data['oreQualityGrades'] = ['data' => OreQualityGradeResource::collection($this->oreQualityGradeRepository->getAllOreQualityGrade())];
 
         } else if ($jobPositionId == 5) {
-            $dispatchesPaginator = $this->dispatchRepository->getDispatchesForDriver($userId, $request->input('dispatches_per_page', 10));
-            $tripsPaginator = $this->tripRepository->getTripsForDriver($userId, $request->input('trips_per_page', 10));
-
-            $data['dispatches'] = $this->transformPaginated($dispatchesPaginator, DispatchResource::class);
-            $data['trips'] = $this->transformPaginated($tripsPaginator, TripResource::class);
+            $data['dispatches'] = DispatchResource::collection($this->dispatchRepository->getDispatchesForDriver($userId, $startDate, $endDate));
+            $data['trips'] = TripResource::collection($this->tripRepository->getTripsForDriver($userId, $startDate, $endDate));
 
         } else if (in_array($roleId, [1, 2, 3])) {
-            $data = $this->getComprehensiveData($request);
+            $data = $this->getComprehensiveData($request, $startDate, $endDate);
         } else {
             return response()->json(['error' => 'Unauthorized or invalid job position'], 403);
         }
@@ -153,27 +159,21 @@ class ConsolidatedDataController extends Controller
      * @param GetConsolidatedDataRequest $request
      * @return array
      */
-    private function getComprehensiveData(GetConsolidatedDataRequest $request)
+    private function getComprehensiveData(GetConsolidatedDataRequest $request, $startDate, $endDate)
     {
         $data = [
-            'dispatches' => $this->transformPaginated(
-                $this->dispatchRepository->getAllDispatches($request->input('dispatches_per_page', 10)),
-                DispatchResource::class
-            ),
-            'ores' => $this->transformPaginated(
-                $this->oreRepository->getAllOres($request->input('ores_per_page', 10)),
-                OreResource::class
+            'dispatches' => DispatchResource::collection($this->dispatchRepository->getDispatches($startDate, $endDate)),
+            'ores' => OreResource::collection(
+                $this->oreRepository->getOres($startDate, $endDate)
             ),
             'suppliers' => ['data' => SupplierResource::collection($this->supplierRepository->getAllSuppliers() ?? collect())],
 
-            'trips' => $this->transformPaginated(
-                $this->tripRepository->getAllTrips($request->input('trips_per_page', 10)),
-                TripResource::class
-            ),
-            'vehicles' => $this->transformPaginated(
-                $this->vehicleRepository->getAllVehicles($request->input('vehicles_per_page', 10)),
-                VehicleResource::class
-            ),
+            'trips' => TripResource::collection($this->tripRepository->getTrips($startDate, $endDate)),
+
+            // 'vehicles' => $this->transformPaginated(
+            //     $this->vehicleRepository->getAllVehicles($request->input('vehicles_per_page', 10)),
+            //     VehicleResource::class
+            // ),
             'financials' => $this->transformPaginated(
                 $this->accountingRepository->getAllFinancials($request->input('financials_per_page', 10)),
                 GLTransactionResource::class
