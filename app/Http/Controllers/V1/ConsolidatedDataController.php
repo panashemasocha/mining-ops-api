@@ -118,6 +118,11 @@ class ConsolidatedDataController extends Controller
                     $this->dispatchRepository->getDispatches($startDate, $endDate)
                 )
             ];
+            $data['trips'] = [
+                'data' => TripResource::collection(
+                    $this->tripRepository->getTrips($startDate, $endDate)
+                )
+            ];
             $data['prices'] = CostPriceResource::collection(
                 $this->priceRepository->getAllPrices()
             );
@@ -229,11 +234,11 @@ class ConsolidatedDataController extends Controller
 
         $data['cashbook'] = $cashbookTotals;
 
-       // $data['prices'] = CostPriceResource::collection($this->priceRepository->getAllPrices());
+        // $data['prices'] = CostPriceResource::collection($this->priceRepository->getAllPrices());
         //$data['departments'] = DepartmentResource::collection($this->departmentRepository->getAllDepartments());
-       // $data['branches'] = BranchResource::collection($this->branchRepository->getAllBranches());
-       // $data['jobPositions'] = JobPositionResource::collection($this->jobPositionRepository->getAllJobPositions());
-       // $data['roles'] = UserRoleResource::collection($this->roleRepository->getAllRoles());
+        // $data['branches'] = BranchResource::collection($this->branchRepository->getAllBranches());
+        // $data['jobPositions'] = JobPositionResource::collection($this->jobPositionRepository->getAllJobPositions());
+        // $data['roles'] = UserRoleResource::collection($this->roleRepository->getAllRoles());
 
         return $data;
     }
