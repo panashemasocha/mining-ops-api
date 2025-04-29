@@ -12,9 +12,10 @@ class FundingRequestController extends Controller
 {
     public function index(Request $request)
     {
+        $query = FundingRequest::orderBy('updated_at', 'desc');
         $requests = $request->query('paging', 'true') === 'false'
-            ? FundingRequest::all()
-            : FundingRequest::paginate(10);
+            ? $query->get()
+            : $query->paginate(10);
 
         return FundingRequestResource::collection($requests);
     }

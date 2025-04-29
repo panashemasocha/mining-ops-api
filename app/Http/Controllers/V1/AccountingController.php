@@ -38,4 +38,6 @@ class AccountingController extends Controller
             'balance'       => $balance,
         ]);
     }
+
+    
 }
