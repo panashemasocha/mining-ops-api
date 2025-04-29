@@ -44,7 +44,6 @@ class CostPriceFactory extends Factory
             'quality_type'  => $qualityType,
             'quality_grade' => $qualityGrade,
             'price'         => $price,
-            'date_created'  => $this->faker->date(),
             'created_by'    => User::factory()->create(['role_id' => 2]), // 'management'
         ];
     }

@@ -16,8 +16,8 @@ class TripRepository
      */
     public function getTrips(string $startDate, string $endDate)
     {
-        return Trip::whereBetween('date_created', [$startDate, $endDate])
-            ->orderBy('date_created', 'desc')
+        return Trip::whereBetween('created_at', [$startDate, $endDate])
+            ->orderBy('created_at', 'desc')
             ->get();
     }
 
@@ -33,8 +33,8 @@ class TripRepository
     public function getTripsForDriver(int $driverId, string $startDate, string $endDate)
     {
         return Trip::where('driver_id', $driverId)
-            ->whereBetween('date_created', [$startDate, $endDate])
-            ->orderBy('date_created', 'desc')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->orderBy('created_at', 'desc')
             ->get();
     }
 }

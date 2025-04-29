@@ -60,7 +60,6 @@ class CostPriceSeeder extends Seeder
                     'quality_type'  => $qualityType,
                     'quality_grade' => $qualityGrade,
                     'price'         => $price,
-                    'date_created'  => $this->faker->date(),
                     'created_by'    => $users->random()->id,
                 ]);
             }

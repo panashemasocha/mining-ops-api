@@ -22,7 +22,6 @@ class StoreCostPriceRequest extends FormRequest
             'quality_type' => 'nullable|string|max:255',
             'quality_grade' => 'nullable|string|max:255',
             'price' => 'required|numeric|min:0',
-            'date_created' => 'required|date',
             'created_by' => 'required|exists:users,id',
         ];
     }
@@ -38,7 +37,6 @@ class StoreCostPriceRequest extends FormRequest
             'quality_type' => $this->input('quality_type', $this->input('qualityType')),
             'quality_grade' => $this->input('quality_grade', $this->input('qualityGrade')),
             'price' => $this->input('price', $this->input('price')),
-            'date_created' => $this->input('date_created', $this->input('dateCreated')),
             'created_by' => $this->input('created_by', $this->input('createdBy')),
         ]);
     }

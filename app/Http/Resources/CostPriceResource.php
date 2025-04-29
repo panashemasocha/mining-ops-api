@@ -17,7 +17,6 @@ class CostPriceResource extends JsonResource
                 'grade' => $this->quality_grade,
             ],
             'price' => $this->price,
-            'dateCreated' => $this->date_created,
             'creator' => new UserResource(User::find($this->created_by)),
             'createdAt' => $this->created_at,
             'updatedAt' => $this->updated_at,

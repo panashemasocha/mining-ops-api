@@ -208,7 +208,7 @@ class DispatchController extends Controller
         if ($dieselAllocations && $dieselAllocations->isNotEmpty()) {
             $dieselExpense = Account::where('account_name', 'Diesel expenses')->firstOrFail();
             $dieselPrice = CostPrice::where('commodity', 'diesel cost')
-                ->latest('date_created')
+                ->latest('created_at')
                 ->firstOrFail();
 
             foreach ($dieselAllocations as $allocation) {

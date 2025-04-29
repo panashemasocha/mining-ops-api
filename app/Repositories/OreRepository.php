@@ -8,8 +8,8 @@ class OreRepository
 {
     public function getOres(string $startDate, string $endDate)
     {
-        return Ore::whereBetween('date_created', [$startDate, $endDate])
-            ->orderBy('date_created', 'desc')
+        return Ore::whereBetween('created_at', [$startDate, $endDate])
+            ->orderBy('created_at', 'desc')
             ->get();
     }
 }
