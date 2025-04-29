@@ -108,25 +108,51 @@ class ConsolidatedDataController extends Controller
         $data = [];
 
         if ($roleId == 3 && $jobPositionId == 7) {
-            $data['ores'] = OreResource::collection(
-                $this->oreRepository->getOres($startDate, $endDate)
-            );
-            $data['dispatches'] = DispatchResource::collection($this->dispatchRepository->getDispatches($startDate, $endDate));
-            $data['prices'] = CostPriceResource::collection($this->priceRepository->getAllPrices());
-            $data['dieselAllocationTypes'] = \App\Http\Resources\DieselAllocationTypeResource::collection($this->dieselAllocationTypeRepository->getAllDieselAllocationTypes());
+            $data['ores'] = [
+                'data' => OreResource::collection(
+                    $this->oreRepository->getOres($startDate, $endDate)
+                )
+            ];
+            $data['dispatches'] = [
+                'data' => DispatchResource::collection(
+                    $this->dispatchRepository->getDispatches($startDate, $endDate)
+                )
+            ];
+            $data['prices'] = [
+                'data' => CostPriceResource::collection(
+                    $this->priceRepository->getAllPrices()
+                )
+            ];
+            $data['dieselAllocationTypes'] = [
+                'data' => \App\Http\Resources\DieselAllocationTypeResource::collection(
+                    $this->dieselAllocationTypeRepository->getAllDieselAllocationTypes()
+                )
+            ];
         } else if ($jobPositionId == 4) {
 
-            $data['ores'] = OreResource::collection(
-                $this->oreRepository->getOres($startDate, $endDate)
-            );
+            $data['ores'] = [
+                'data' => OreResource::collection(
+                    $this->oreRepository->getOres($startDate, $endDate)
+                )
+            ];
             $data['suppliers'] = ['data' => SupplierResource::collection($this->supplierRepository->getAllSuppliers())];
             $data['oreTypes'] = ['data' => OreTypeResource::collection($this->oreTypeRepository->getOreTypes())];
             $data['oreQualityTypes'] = ['data' => OreQualityTypeResource::collection($this->oreQualityTypeRepository->getAllOreQualityTypes())];
             $data['oreQualityGrades'] = ['data' => OreQualityGradeResource::collection($this->oreQualityGradeRepository->getAllOreQualityGrade())];
 
         } else if ($jobPositionId == 5) {
-            $data['dispatches'] = DispatchResource::collection($this->dispatchRepository->getDispatchesForDriver($userId, $startDate, $endDate));
-            $data['trips'] = TripResource::collection($this->tripRepository->getTripsForDriver($userId, $startDate, $endDate));
+            $data['dispatches'] = [
+                'data' =>
+                    DispatchResource::collection(
+                        $this->dispatchRepository->getDispatchesForDriver($userId, $startDate, $endDate)
+                    )
+            ];
+            $data['trips'] = [
+                'data' =>
+                    TripResource::collection(
+                        $this->tripRepository->getTripsForDriver($userId, $startDate, $endDate)
+                    )
+            ];
 
         } else if (in_array($roleId, [1, 2, 3])) {
             $data = $this->getComprehensiveData($request, $startDate, $endDate);
