@@ -101,14 +101,10 @@ class ConsolidatedDataController extends Controller
         $roleId = $request->role_id;
         $jobPositionId = $request->job_position_id;
         $userId = $request->id;
-        $startDate = $request->input(
-            'start_date',
-            Carbon::now()->toDateString()
-        );
-        $endDate = $request->input(
-            'end_date',
-            Carbon::now()->toDateString()
-        );
+        $startDate = $request->input('start_date')
+            ?? Carbon::now()->toDateString();
+        $endDate = $request->input('end_date')
+            ?? Carbon::now()->toDateString();
         $data = [];
 
         if ($roleId == 3 && $jobPositionId == 7) {
