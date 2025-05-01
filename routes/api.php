@@ -9,6 +9,7 @@ use App\Http\Controllers\V1\DieselAllocationTypeController;
 use App\Http\Controllers\V1\DispatchController;
 use App\Http\Controllers\V1\ExcavatorUsageController;
 use App\Http\Controllers\V1\ExpenseController;
+use App\Http\Controllers\V1\FleetStatisticalDataController;
 use App\Http\Controllers\V1\FundingRequestController;
 use App\Http\Controllers\V1\JobPositionController;
 use App\Http\Controllers\V1\DriverInfoController;
@@ -54,6 +55,7 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('job-positions', JobPositionController::class);
         });
 
+        Route::post('fleet-stats', [FleetStatisticalDataController::class, 'getFleetStatistics']);
 
         // Vehicles
         Route::prefix('vehicles')->group(function () {
@@ -122,7 +124,7 @@ Route::prefix('v1')->group(function () {
             });
 
             //Request Funding
-            Route::apiResource('funding-request',FundingRequestController::class);
+            Route::apiResource('funding-request', FundingRequestController::class);
 
             // Cost Prices
             Route::apiResource('cost-prices', CostPriceController::class);
