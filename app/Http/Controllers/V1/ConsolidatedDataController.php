@@ -9,11 +9,8 @@ use App\Http\Resources\GLTransactionResource;
 use App\Http\Resources\OreQualityGradeResource;
 use App\Http\Resources\OreQualityTypeResource;
 use App\Http\Resources\OreTypeResource;
-use App\Http\Resources\UserRoleResource;
-use App\Models\OreQualityType;
 use App\Repositories\AccountingRepository;
 use App\Repositories\DieselAllocationTypeRepository;
-use App\Repositories\DieselAllocationTypeResource;
 use App\Repositories\OreQualityGradeRepository;
 use App\Repositories\OreQualityTypeRepository;
 use App\Repositories\OreRepository;
@@ -32,10 +29,6 @@ use App\Http\Resources\OreResource;
 use App\Http\Resources\SupplierResource;
 use App\Http\Resources\DispatchResource;
 use App\Http\Resources\TripResource;
-use App\Http\Resources\VehicleResource;
-use App\Http\Resources\DepartmentResource;
-use App\Http\Resources\BranchResource;
-use App\Http\Resources\JobPositionResource;
 use Carbon\Carbon;
 
 class ConsolidatedDataController extends Controller

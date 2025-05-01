@@ -35,7 +35,8 @@ class VehicleResource extends JsonResource
                 'latitude'  => $this->last_known_latitude,
                 'altitude'  => $this->last_known_altitude,
             ],
-            "dieselAllocations" =>  DieselAllocationResource::collection($this->dieselAllocations),
+          //  "dieselAllocations" =>  DieselAllocationResource::collection($this->dieselAllocations),
+            
             'status'               => $this->status,
             'createdAt'            => $this->created_at,
             'updatedAt'            => $this->updated_at,

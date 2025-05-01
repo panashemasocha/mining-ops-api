@@ -6,8 +6,20 @@ use App\Models\Vehicle;
 
 class VehicleRepository
 {
-    public function getAllVehicles($perPage = 10)
+    public function getAllVehicles()
     {
-        return Vehicle::paginate($perPage,['*'],'vehicles_page');
+        return Vehicle::all();
+    }
+    
+    /**
+     * Get a vehicle by its ID
+     *
+     * @param int $id
+     * @return \App\Models\Vehicle|null
+     */
+    public function getVehicleById(int $id)
+    {
+        // This explicitly returns the vehicle instance or null
+        return Vehicle::where('id', $id)->first();
     }
 }
