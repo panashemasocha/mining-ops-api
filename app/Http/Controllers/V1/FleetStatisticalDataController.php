@@ -134,36 +134,33 @@ class FleetStatisticalDataController extends Controller
      */
     private function getMonthlyStatistics(array $months): array
     {
-        $monthlyStats = [];
+        $list = [];
 
         foreach ($months as $month) {
             $trips = $this->tripRepository->getTrips($month['startDate'], $month['endDate']);
 
-            // Group trips by vehicle
-            $tripsByVehicle = $trips
-                ->countBy('vehicle_id')
-                ->toArray();
+            // count by vehicle_id
+            $byVehicle = $trips->countBy('vehicle_id')->toArray();
+            $maxCount = !empty($byVehicle) ? max($byVehicle) : 0;
+            $maxVid = !empty($byVehicle) ? array_search($maxCount, $byVehicle) : null;
+            $reg = null;
 
-            // Find vehicle with most trips
-            $mostTripsVehicleId = !empty($tripsByVehicle) ? array_search(max($tripsByVehicle), $tripsByVehicle) : null;
-            $mostTripsCount = !empty($tripsByVehicle) ? max($tripsByVehicle) : 0;
-
-            $mostTripsVehicleReg = null;
-            if ($mostTripsVehicleId) {
-                $vehicle = $this->vehicleRepository->getVehicleById($mostTripsVehicleId);
-                $mostTripsVehicleReg = $vehicle ? $vehicle->reg_number : null;
+            if ($maxVid) {
+                $veh = $this->vehicleRepository->getVehicleById($maxVid);
+                $reg = $veh ? $veh->reg_number : null;
             }
 
-            $monthlyStats[$month['name']] = [
+            $list[] = [
+                'month' => $month['name'],
+                'totalTrips' => $trips->count(),
                 'mostTrips' => [
-                    'count' => $mostTripsCount,
-                    'vehicle' => $mostTripsVehicleReg,
+                    'count' => $maxCount,
+                    'vehicle' => $reg,
                 ],
-                'totalTrips' => $trips->count()
             ];
         }
 
-        return $monthlyStats;
+        return $list;
     }
 
     /**
@@ -221,60 +218,50 @@ class FleetStatisticalDataController extends Controller
      */
     private function getDieselStatistics(array $months): array
     {
-        $monthlyDieselStats = [];
-        $excavationVehicles = $this->vehicleRepository->getAllVehicles()->where('sub_type_id', 4);
-        $excavationVehicleIds = $excavationVehicles->pluck('id')->toArray();
+        $list = [];
+
+        // pre‐fetch all excavation IDs
+        $excavationIds = $this->vehicleRepository
+            ->getAllVehicles()
+            ->where('sub_type_id', 4)
+            ->pluck('id')
+            ->toArray();
 
         foreach ($months as $month) {
-            $dieselAllocations = $this->dieselAllocationRepository->getDieselAllocations($month['startDate'], $month['endDate']);
+            $allocs = $this->dieselAllocationRepository
+                ->getDieselAllocations($month['startDate'], $month['endDate']);
 
-            // Total diesel used this month
-            $totalDiesel = $dieselAllocations->sum('litres');
+            $totalDiesel = $allocs->sum('litres');
 
-            // Group by vehicle to find highest usage
-            $dieselByVehicle = [];
-            foreach ($dieselAllocations->groupBy('vehicle_id') as $vehicleId => $allocations) {
-                $totalLitres = $allocations->sum('litres');
-                $vehicle = $this->vehicleRepository->getVehicleById($vehicleId);
-
-                if ($vehicle) {
-                    $dieselByVehicle[$vehicleId] = [
-                        'regNumber' => $vehicle->reg_number,
-                        'litres' => $totalLitres
-                    ];
+            // group & find highest by vehicle
+            $byVeh = [];
+            foreach ($allocs->groupBy('vehicle_id') as $vid => $group) {
+                $sum = $group->sum('litres');
+                $veh = $this->vehicleRepository->getVehicleById($vid);
+                if ($veh) {
+                    $byVeh[$vid] = ['regNumber' => $veh->reg_number, 'litres' => $sum];
                 }
             }
 
-            // Find vehicle with highest diesel usage
-            $highestUsage = ['litres' => 0, 'regNumber' => null];
-            foreach ($dieselByVehicle as $vehicleData) {
-                if ($vehicleData['litres'] > $highestUsage['litres']) {
-                    $highestUsage['litres'] = $vehicleData['litres'];
-                    $highestUsage['regNumber'] = $vehicleData['regNumber'];
+            $highest = ['litres' => 0, 'regNumber' => null];
+            foreach ($byVeh as $d) {
+                if ($d['litres'] > $highest['litres']) {
+                    $highest = $d;
                 }
             }
 
-            // Calculate diesel used for excavation (ore loading)
-            $excavationDiesel = $dieselAllocations->whereIn('vehicle_id', $excavationVehicleIds)->sum('litres');
+            $excavationDiesel = $allocs->whereIn('vehicle_id', $excavationIds)->sum('litres');
 
-
-            $monthlyDieselStats[$month['name']] = [
+            $list[] = [
+                'month' => $month['name'],
                 'dieselUsed' => $totalDiesel,
-                'highestUsagePerVehicle' => $highestUsage,
+                'highestUsagePerVehicle' => $highest,
                 'excavationDiesel' => $excavationDiesel,
-                
             ];
         }
 
-        // Total diesel allocated to excavation vehicles (across all months)
-        // $totalExcavationDiesel = 0;
-        // foreach ($monthlyDieselStats as $monthStats) {
-        //     $totalExcavationDiesel += $monthStats['excavationDiesel'];
-        // }
-
         return [
-            'monthlyStats' => $monthlyDieselStats,
-          //  'totalLoadingOreDieselVolume' => $totalExcavationDiesel
+            'monthlyStats' => $list,
         ];
     }
 
