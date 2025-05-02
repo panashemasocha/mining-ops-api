@@ -258,24 +258,23 @@ class FleetStatisticalDataController extends Controller
             $excavationDiesel = $dieselAllocations->whereIn('vehicle_id', $excavationVehicleIds)->sum('litres');
 
 
-            $monthlyDieselStats = [
-                'month'=>$month['name'],
+            $monthlyDieselStats[$month['name']] = [
                 'dieselUsed' => $totalDiesel,
                 'highestUsagePerVehicle' => $highestUsage,
                 'excavationDiesel' => $excavationDiesel,
-
+                
             ];
         }
 
         // Total diesel allocated to excavation vehicles (across all months)
-        // $totalExcavationDiesel = 0;
-        // foreach ($monthlyDieselStats as $monthStats) {
-        //     $totalExcavationDiesel += $monthStats['excavationDiesel'];
-        // }
+        $totalExcavationDiesel = 0;
+        foreach ($monthlyDieselStats as $monthStats) {
+            $totalExcavationDiesel += $monthStats['excavationDiesel'];
+        }
 
         return [
             'monthlyStats' => $monthlyDieselStats,
-           // 'totalLoadingOreDieselVolume' => $totalExcavationDiesel
+            'totalLoadingOreDieselVolume' => $totalExcavationDiesel
         ];
     }
 
