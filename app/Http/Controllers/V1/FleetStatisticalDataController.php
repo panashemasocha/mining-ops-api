@@ -66,9 +66,9 @@ class FleetStatisticalDataController extends Controller
         $vehicles = $this->vehicleRepository->getAllVehicles();
 
         $inTransit = $vehicles->where('status', 'active trip')->count();
-        $available = $vehicles->where('status', 'available')->count();
+        $available = $vehicles->where('status', 'off trip')->count();
         $maintenance = $vehicles->where('status', 'maintenance')->count();
-        $outOfService = $vehicles->where('status', 'out of service')->count();
+        $inactive = $vehicles->where('status', 'inactive')->count();
 
         $subTypeStats = [];
         $vehicleSubTypes = [
@@ -83,9 +83,9 @@ class FleetStatisticalDataController extends Controller
             $subTypeStats[$type] = [
                 'total' => $vehicles->where('sub_type_id', $id)->count(),
                 'inTransit' => $vehicles->where('sub_type_id', $id)->where('status', 'active trip')->count(),
-                'available' => $vehicles->where('sub_type_id', $id)->where('status', 'available')->count(),
+                'available' => $vehicles->where('sub_type_id', $id)->where('status', 'off trip')->count(),
                 'maintenance' => $vehicles->where('sub_type_id', $id)->where('status', 'maintenance')->count(),
-                'outOfService' => $vehicles->where('sub_type_id', $id)->where('status', 'out of service')->count()
+                'inactive' => $vehicles->where('sub_type_id', $id)->where('status', 'inactive')->count()
             ];
         }
 
@@ -94,7 +94,7 @@ class FleetStatisticalDataController extends Controller
             'inTransit' => $inTransit,
             'available' => $available,
             'maintenance' => $maintenance,
-            'outOfService' => $outOfService,
+            'inactive' => $inactive,
             'bySubType' => $subTypeStats
         ];
     }
@@ -257,19 +257,13 @@ class FleetStatisticalDataController extends Controller
             // Calculate diesel used for excavation (ore loading)
             $excavationDiesel = $dieselAllocations->whereIn('vehicle_id', $excavationVehicleIds)->sum('litres');
 
-            // Get diesel allocations associated with excavator usage
-            $excavatorUsageDieselIds = \App\Models\ExcavatorUsage::whereDate('created_at', '>=', $month['startDate'])
-                ->whereDate('created_at', '<=', $month['endDate'])
-                ->pluck('diesel_allocation_id')
-                ->toArray();
 
-            $oreLoadingDiesel = $dieselAllocations->whereIn('id', $excavatorUsageDieselIds)->sum('litres');
-
-            $monthlyDieselStats[$month['name']] = [
+            $monthlyDieselStats = [
+                'month'=>$month['name'],
                 'dieselUsed' => $totalDiesel,
                 'highestUsagePerVehicle' => $highestUsage,
                 'excavationDiesel' => $excavationDiesel,
-                'oreLoadingDiesel' => $oreLoadingDiesel
+
             ];
         }
 

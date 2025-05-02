@@ -53,7 +53,7 @@ return new class extends Migration {
             $table->decimal('last_known_latitude', 10, 6)->nullable();
             $table->decimal('last_known_altitude', 10, 2)->nullable();
 
-            $table->enum('status', ['active', 'inactive', 'maintenance', 'decommissioned', 'active trip', 'off trip'])->default('off trip');
+            $table->enum('status', ['inactive', 'maintenance', 'active trip', 'off trip'])->default('off trip');
 
             $table->timestamps();
         });
