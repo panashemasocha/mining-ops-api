@@ -13,7 +13,22 @@ return new class extends Migration {
         Schema::create('gl_transactions', function (Blueprint $table) {
             $table->id();
             $table->date('trans_date');
+            $table->foreignId('supplier_id')
+                ->nullable()
+                ->constrained('suppliers')
+                ->onUpdate('cascade')
+                ->onDelete('no action');
+            $table->foreignId('trip_id')
+                ->nullable()
+                ->constrained('trips')
+                ->onUpdate('cascade')
+                ->onDelete('no action');
+            $table->enum('trans_type', [
+                'purchase invoice',
+                'vendor payment',
+            ]);
             $table->string('description');
+
             $table->foreignId('created_by')
                 ->constrained('users')
                 ->onUpdate('cascade')
