@@ -172,44 +172,50 @@ class FleetStatisticalDataController extends Controller
     {
         $vehicles = $this->vehicleRepository->getAllVehicles();
         $vehicleMileage = [];
-
+    
         foreach ($vehicles as $vehicle) {
-            $odometerReadings = $vehicle->odometerReading;
-            $totalMileage = $odometerReadings->sum('distance_travelled');
-
+            $readings = $vehicle->odometerReading;
+    
+            // Sum up (trip_end_value - initial_value) for each reading
+            $totalMileage = $readings->reduce(function ($carry, $r) {
+                return $carry + max(0, ($r->trip_end_value - $r->initial_value));
+            }, 0);
+    
+            $unit = $readings->first()->reading_unit ?? 'Kilometre';
+    
             $vehicleMileage[$vehicle->id] = [
-                'regNumber' => $vehicle->reg_number,
-                'mileage' => $totalMileage
+                'regNumber'   => $vehicle->reg_number,
+                'mileage'     => $totalMileage,
+                'readingUnit' => $unit,
             ];
         }
-
-        // Find highest and lowest mileage
-        $highest = ['mileage' => 0, 'regNumber' => null];
-        $lowest = ['mileage' => PHP_INT_MAX, 'regNumber' => null];
-
-        foreach ($vehicleMileage as $vehicleData) {
-            if ($vehicleData['mileage'] > $highest['mileage']) {
-                $highest['mileage'] = $vehicleData['mileage'];
-                $highest['regNumber'] = $vehicleData['regNumber'];
+    
+        // Initialize highest/lowest
+        $highest = ['mileage' => 0, 'regNumber' => null, 'readingUnit' => null];
+        $lowest  = ['mileage' => PHP_INT_MAX, 'regNumber' => null, 'readingUnit' => null];
+    
+        foreach ($vehicleMileage as $data) {
+            // Highest
+            if ($data['mileage'] > $highest['mileage']) {
+                $highest = $data;
             }
-
-            if ($vehicleData['mileage'] < $lowest['mileage'] && $vehicleData['mileage'] > 0) {
-                $lowest['mileage'] = $vehicleData['mileage'];
-                $lowest['regNumber'] = $vehicleData['regNumber'];
+            // Lowest 
+            if ($data['mileage'] > 0 && $data['mileage'] < $lowest['mileage']) {
+                $lowest = $data;
             }
         }
-
-        // If no vehicles have mileage, set lowest to 0
+    
+        // If no readings at all, set lowest to zero with no unit
         if ($lowest['mileage'] === PHP_INT_MAX) {
-            $lowest['mileage'] = 0;
+            $lowest = ['mileage' => 0, 'regNumber' => null, 'readingUnit' => null];
         }
-
+    
         return [
             'highestMileage' => $highest,
-            'lowestMileage' => $lowest
+            'lowestMileage'  => $lowest,
         ];
     }
-
+    
     /**
      * Get diesel statistics for the last 3 months
      *
