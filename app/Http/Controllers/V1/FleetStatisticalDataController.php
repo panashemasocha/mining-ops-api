@@ -267,14 +267,14 @@ class FleetStatisticalDataController extends Controller
         }
 
         // Total diesel allocated to excavation vehicles (across all months)
-        $totalExcavationDiesel = 0;
-        foreach ($monthlyDieselStats as $monthStats) {
-            $totalExcavationDiesel += $monthStats['excavationDiesel'];
-        }
+        // $totalExcavationDiesel = 0;
+        // foreach ($monthlyDieselStats as $monthStats) {
+        //     $totalExcavationDiesel += $monthStats['excavationDiesel'];
+        // }
 
         return [
             'monthlyStats' => $monthlyDieselStats,
-            'totalLoadingOreDieselVolume' => $totalExcavationDiesel
+          //  'totalLoadingOreDieselVolume' => $totalExcavationDiesel
         ];
     }
 
