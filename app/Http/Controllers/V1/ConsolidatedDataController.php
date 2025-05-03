@@ -9,6 +9,9 @@ use App\Http\Resources\GLTransactionResource;
 use App\Http\Resources\OreQualityGradeResource;
 use App\Http\Resources\OreQualityTypeResource;
 use App\Http\Resources\OreTypeResource;
+use App\Http\Resources\VehicleCategoryResource;
+use App\Http\Resources\VehicleSubTypeResource;
+use App\Models\VehicleSubType;
 use App\Repositories\AccountingRepository;
 use App\Repositories\DieselAllocationTypeRepository;
 use App\Repositories\OreQualityGradeRepository;
@@ -18,6 +21,7 @@ use App\Repositories\OreTypeRepository;
 use App\Repositories\SupplierRepository;
 use App\Repositories\DispatchRepository;
 use App\Repositories\TripRepository;
+use App\Repositories\VehicleCategoryRepository;
 use App\Repositories\VehicleRepository;
 use App\Repositories\PriceRepository;
 use App\Repositories\DepartmentRepository;
@@ -29,6 +33,7 @@ use App\Http\Resources\OreResource;
 use App\Http\Resources\SupplierResource;
 use App\Http\Resources\DispatchResource;
 use App\Http\Resources\TripResource;
+use App\Repositories\VehicleSubTypeRepository;
 use Carbon\Carbon;
 
 class ConsolidatedDataController extends Controller
@@ -49,6 +54,10 @@ class ConsolidatedDataController extends Controller
     protected $oreQualityTypeRepository;
     protected $oreQualityGradeRepository;
 
+    protected $vehicleCategoryRepository;
+
+    protected $vehicleSubTypeRepository;
+
     public function __construct(
         OreRepository $oreRepository,
         SupplierRepository $supplierRepository,
@@ -65,6 +74,8 @@ class ConsolidatedDataController extends Controller
         OreQualityGradeRepository $oreQualityGradeRepository,
         OreQualityTypeRepository $oreQualityTypeRepository,
         DieselAllocationTypeRepository $dieselAllocationTypeRepository,
+        VehicleCategoryRepository $vehicleCategoryRepository,
+        VehicleSubTypeRepository $vehicleSubTypeRepository,
     ) {
         $this->oreRepository = $oreRepository;
         $this->supplierRepository = $supplierRepository;
@@ -81,6 +92,8 @@ class ConsolidatedDataController extends Controller
         $this->oreQualityGradeRepository = $oreQualityGradeRepository;
         $this->oreQualityTypeRepository = $oreQualityTypeRepository;
         $this->dieselAllocationTypeRepository = $dieselAllocationTypeRepository;
+        $this->vehicleCategoryRepository = $vehicleCategoryRepository;
+        $this->vehicleSubTypeRepository = $vehicleSubTypeRepository;
     }
 
     /**
@@ -198,6 +211,17 @@ class ConsolidatedDataController extends Controller
             'trips' => [
                 'data' => TripResource::collection(
                     $this->tripRepository->getTrips($startDate, $endDate)
+                )
+            ],
+
+            'vehicleSubType' => [
+                'data' => VehicleSubTypeResource::collection(
+                    $this->vehicleSubTypeRepository->getAllSubTypes()
+                )
+            ],
+            'vehicleCateogry' => [
+                'data' => VehicleCategoryResource::collection(
+                    $this->vehicleCategoryRepository->getAllCategories()
                 )
             ],
 
