@@ -6,6 +6,7 @@ use App\Http\Requests\GetConsolidatedDataRequest;
 use App\Http\Requests\ViewCashbookRequest;
 use App\Http\Resources\CostPriceResource;
 use App\Http\Resources\GLTransactionResource;
+use App\Http\Resources\MiningSiteResource;
 use App\Http\Resources\OreQualityGradeResource;
 use App\Http\Resources\OreQualityTypeResource;
 use App\Http\Resources\OreTypeResource;
@@ -14,6 +15,7 @@ use App\Http\Resources\VehicleSubTypeResource;
 use App\Models\VehicleSubType;
 use App\Repositories\AccountingRepository;
 use App\Repositories\DieselAllocationTypeRepository;
+use App\Repositories\MiningSiteRepository;
 use App\Repositories\OreQualityGradeRepository;
 use App\Repositories\OreQualityTypeRepository;
 use App\Repositories\OreRepository;
@@ -58,6 +60,8 @@ class ConsolidatedDataController extends Controller
 
     protected $vehicleSubTypeRepository;
 
+    protected $miningSiteRepository;
+
     public function __construct(
         OreRepository $oreRepository,
         SupplierRepository $supplierRepository,
@@ -76,6 +80,7 @@ class ConsolidatedDataController extends Controller
         DieselAllocationTypeRepository $dieselAllocationTypeRepository,
         VehicleCategoryRepository $vehicleCategoryRepository,
         VehicleSubTypeRepository $vehicleSubTypeRepository,
+        MiningSiteRepository $miningSiteRepository,
     ) {
         $this->oreRepository = $oreRepository;
         $this->supplierRepository = $supplierRepository;
@@ -94,6 +99,7 @@ class ConsolidatedDataController extends Controller
         $this->dieselAllocationTypeRepository = $dieselAllocationTypeRepository;
         $this->vehicleCategoryRepository = $vehicleCategoryRepository;
         $this->vehicleSubTypeRepository = $vehicleSubTypeRepository;
+        $this->miningSiteRepository = $miningSiteRepository;
     }
 
     /**
@@ -224,6 +230,12 @@ class ConsolidatedDataController extends Controller
                     $this->vehicleCategoryRepository->getAllCategories()
                 )
             ],
+            'miningSites' => [
+                'data' => MiningSiteResource::collection(
+                    $this->miningSiteRepository->getAllSites()
+                )
+            ],
+
 
             // 'vehicles' => $this->transformPaginated(
             //     $this->vehicleRepository->getAllVehicles($request->input('vehicles_per_page', 10)),

@@ -13,7 +13,7 @@ class Vehicle extends Model
         'category_id',
         'sub_type_id',
         'department',
-        'assigned_site',
+        'assigned_site_id',
         'vehicle_type',
         'make',
         'model',
