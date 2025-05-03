@@ -214,12 +214,12 @@ class ConsolidatedDataController extends Controller
                 )
             ],
 
-            'vehicleSubType' => [
+            'vehicleSubTypes' => [
                 'data' => VehicleSubTypeResource::collection(
                     $this->vehicleSubTypeRepository->getAllSubTypes()
                 )
             ],
-            'vehicleCateogry' => [
+            'vehicleCategories' => [
                 'data' => VehicleCategoryResource::collection(
                     $this->vehicleCategoryRepository->getAllCategories()
                 )
