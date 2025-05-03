@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('account_name')->unique();
             $table->enum('account_type', ['Asset','Liability','Equity','Revenue','Expense']);
+            $table->tinyInteger('status')->default(1); // 1: active, 0: inactive
             $table->timestamps();
         });
     }

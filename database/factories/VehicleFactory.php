@@ -51,7 +51,7 @@ class VehicleFactory extends Factory
             'last_known_altitude' => $this->faker->numberBetween(500, 1500),
 
             'status'              => $this->faker->randomElement([
-                'active','inactive','maintenance','decommissioned','active trip','off trip'
+                'inactive', 'maintenance', 'active trip', 'off trip'
             ]),
         ];
     }

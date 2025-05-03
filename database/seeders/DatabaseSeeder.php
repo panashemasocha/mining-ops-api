@@ -17,33 +17,34 @@ class DatabaseSeeder extends Seeder
                 // DriverInfoSeeder::class,
 
                 // VehicleCategorySeeder::class,
-
+                 //  DieselAllocationTypeSeeder::class,
+                 
                 // VehicleSubTypeSeeder::class,
                 // MiningSiteSeeder::class,
-                //  VehicleSeeder::class,
-                // AssignedVehicleSeeder::class,
-                // PaymentMethodSeeder::class,
-                // SupplierSeeder::class,
+                 VehicleSeeder::class,
+                AssignedVehicleSeeder::class,
+                PaymentMethodSeeder::class,
+                SupplierSeeder::class,
 
-                // OreTypeSeeder::class,    
-                // OreQualityTypeSeeder::class, 
-                // OreQualityGradeSeeder::class,
+                OreTypeSeeder::class,    
+                OreQualityTypeSeeder::class, 
+                OreQualityGradeSeeder::class,
 
-                // OreSeeder::class,
-                // CostPriceSeeder::class,
-                // DispatchSeeder::class,
+                OreSeeder::class,
+                CostPriceSeeder::class,
+                DispatchSeeder::class,
 
-                // AccountSeeder::class,
-                // GLTransactionSeeder::class,
-                // GLEntrySeeder::class,
+                AccountSeeder::class,
+                //GLTransactionSeeder::class,
+               // GLEntrySeeder::class,
 
-                //  DieselAllocationTypeSeeder::class,
+               
                 // DieselAllocationSeeder::class,
                 //  ExcavatorUsageSeeder::class,
                 //   TripSeeder::class,
                 //  OreLoaderSeeder::class,
             //OdometerReadingSeeder::class,
-            FundingRequestSeeder::class
+           // FundingRequestSeeder::class
 
         ]);
     }

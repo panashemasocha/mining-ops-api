@@ -13,11 +13,13 @@ return new class extends Migration {
         Schema::create('vehicles', function (Blueprint $table) {
             $table->id();
 
+            $table->unsignedBigInteger('category_id')->nullable();
             // nullable foreign keys
-            $table->foreignId('category_id')->nullable()
-                ->constrained('vehicle_categories')
-                ->noActionOnDelete()
-                ->cascadeOnUpdate();
+            $table->foreign('category_id', 'fk_vehicles_category1')
+                ->references('id')
+                ->on('vehicle_categories')
+                ->onDelete('no action')
+                ->onUpdate('cascade');
 
             $table->foreignId('sub_type_id')->nullable()
                 ->constrained('vehicle_sub_types')

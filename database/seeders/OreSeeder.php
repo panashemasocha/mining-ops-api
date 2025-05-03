@@ -33,7 +33,7 @@ class OreSeeder extends Seeder
         // prepare letters A–Z
         $letters = range('A', 'Z');
 
-        for ($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < 2; $i++) {
             // pick quality type/grade fresh each iteration
             $qualityType = $this->faker->randomElement(['Gem-Quality', 'Industrial-Grade']);
             $quality_grade = $qualityType === 'Gem-Quality'

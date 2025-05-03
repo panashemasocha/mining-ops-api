@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Account extends Model
 {
     use HasFactory;
-    protected $fillable = ['account_name','account_type'];
+    protected $fillable = ['account_name','account_type','status'];
 
     public function entries()
     {
