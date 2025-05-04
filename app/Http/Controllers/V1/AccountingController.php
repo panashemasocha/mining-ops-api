@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ViewCashbookRequest;
 use App\Models\Account;
 use App\Models\GLEntry;
+use Illuminate\Http\Request;
 
 class AccountingController extends Controller
 {
@@ -39,11 +40,39 @@ class AccountingController extends Controller
         ]);
     }
 
-    public function accounts(ViewAccountsRequest $request)
+    /**
+     * Return all accounts with their current balance.
+     */
+    public function accountsWithBalances(Request $request)
     {
-        
-    }
+        $accounts = Account::withSum('entries as total_debits', 'debit_amt')
+            ->withSum('entries as total_credits', 'credit_amt')
+            ->get()
+            ->map(function (Account $account) {
+                $debits = (float) $account->total_debits;
+                $credits = (float) $account->total_credits;
 
+                // Assets & Expenses carry a debit balance;
+                // Liabilities, Equity & Revenue carry a credit balance.
+                if (in_array($account->account_type, ['Asset', 'Expense'], true)) {
+                    $balance = $debits - $credits;
+                } else {
+                    $balance = $credits - $debits;
+                }
+
+                return [
+                    'id' => $account->id,
+                    'accountName' => $account->account_name,
+                    'accountType' => $account->account_type,
+                    'status' => $account->status === 1 ? 'Active' : 'Inactive',
+                    'balance' => number_format($balance, 2, '.', ''),
+                    'createdAt' => $account->created_at->toDateTimeString(),
+                    'updatedAt' => $account->updated_at->toDateTimeString(),
+                ];
+            });
+
+        return response()->json($accounts);
+    }
 
 
 }

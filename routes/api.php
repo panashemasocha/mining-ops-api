@@ -113,7 +113,11 @@ Route::prefix('v1')->group(function () {
 
         //Accounting
         Route::prefix('accounting')->group(function () {
-            // index  
+           
+             // Accounts  
+             Route::get('accounts', [AccountingController::class, 'accountsWithBalances']);
+
+            // cashbook  
             Route::get('cashbook', [AccountingController::class, 'cashbook']);
 
             //Expenses
