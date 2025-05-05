@@ -230,6 +230,8 @@ class AccountingController extends Controller
                     'credit' => number_format($e->credit_amt, 2, '.', ''),
                     'amount' => number_format($amt, 2, '.', ''),
                     'runningBalance' => number_format($running, 2, '.', ''),
+                    'createdAt' => $txn->created_at,
+                    'updatedAt' => $txn->updated_at
                 ];
             });
 
@@ -325,6 +327,8 @@ class AccountingController extends Controller
                     'credit' => number_format($e->credit_amt, 2, '.', ''),
                     'amount' => number_format($amt, 2, '.', ''),
                     'runningBalance' => number_format($running, 2, '.', ''),
+                    'createdAt' => $txn->created_at,
+                    'updatedAt' => $txn->updated_at
                 ];
             });
 
