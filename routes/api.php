@@ -113,13 +113,13 @@ Route::prefix('v1')->group(function () {
 
         //Accounting
         Route::prefix('accounting')->group(function () {
-           
-             // Accounts  
-             Route::prefix('accounts')->group(function () {
+
+            // Accounts  
+            Route::prefix('accounts')->group(function () {
                 //Index
                 Route::get('/', [AccountingController::class, 'accountsWithBalances']);
                 Route::get('/{id}', [AccountingController::class, 'accountTransactions']);
-             });
+            });
 
 
             // cashbook  
@@ -145,7 +145,9 @@ Route::prefix('v1')->group(function () {
 
         Route::prefix('trips')->group(function () {
             // Trips
-            Route::apiResource('', TripController::class);
+            Route::apiResource('', TripController::class, [
+                'parameters' => ['' => 'trip']
+            ]);
             //Bulk Insert
             Route::post('bulk-store', [TripController::class, 'bulkStore']);
         });
