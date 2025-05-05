@@ -46,8 +46,9 @@ Route::prefix('v1')->group(function () {
 
         //User
         Route::prefix('users')->group(function () {
-            //Index
-            Route::apiResource('/', UserController::class);
+            Route::apiResource('', UserController::class, [
+                'parameters' => ['' => 'user']
+            ]);
             Route::apiResource('departments', DepartmentController::class);
             Route::apiResource('branches', BranchController::class);
             Route::apiResource('roles', UserRoleController::class);
@@ -59,8 +60,10 @@ Route::prefix('v1')->group(function () {
 
         // Vehicles
         Route::prefix('vehicles')->group(function () {
-            // Index
-            Route::apiResource('/', VehicleController::class);
+
+            Route::apiResource('', VehicleController::class, [
+                'parameters' => ['' => 'vehicle']
+            ]);
             // Vehicle Category
             Route::apiResource('categories', VehicleCategoryController::class);
             // Vehicle Sub Category
@@ -78,8 +81,9 @@ Route::prefix('v1')->group(function () {
             //Diesel Allocations
             Route::prefix('diesel-allocations')->group(function () {
 
-                //Index
-                Route::apiResource('/', DieselAllocationController::class);
+                Route::apiResource('', DieselAllocationController::class, [
+                    'parameters' => ['' => 'dieselAllocation']
+                ]);
                 //types
                 Route::apiResource('types', DieselAllocationTypeController::class);
 
@@ -91,8 +95,10 @@ Route::prefix('v1')->group(function () {
 
         // Ores
         Route::prefix('ores')->group(function () {
-            //Index 
-            Route::apiResource('/', OreController::class);
+
+            Route::apiResource('', OreController::class, [
+                'parameters' => ['' => 'ore']
+            ]);
 
             //Ore Loaders
             Route::apiResource('loaders', OreLoaderController::class);
@@ -154,10 +160,13 @@ Route::prefix('v1')->group(function () {
 
         // Dispatches
         Route::prefix('dispatches')->group(function () {
-            Route::apiResource('/', DispatchController::class);
+            Route::apiResource('', DispatchController::class, [
+                'parameters' => ['' => 'dispatch']
+            ]);
             Route::post('seek-driver-vehicle', [DispatchController::class, 'seekDriverVehicle']);
             Route::post('bulk-store', [DispatchController::class, 'storeWithTripsAndDieselAllocations']);
         });
+
 
         //Mining Site
         Route::apiResource('mining-sites', MiningSiteController::class);
