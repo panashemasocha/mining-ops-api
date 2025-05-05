@@ -268,7 +268,7 @@ class ConsolidatedDataController extends Controller
         $data['cashbook'] = $cashbookTotals;
 
         // $data['prices'] = CostPriceResource::collection($this->priceRepository->getAllPrices());
-        $data['departments'] = DepartmentResource::collection($this->departmentRepository->getAllDepartments());
+         $data['departments'] = DepartmentResource::collection($this->departmentRepository->getAllDepartments());
          $data['branches'] = BranchResource::collection($this->branchRepository->getAllBranches());
          $data['jobPositions'] = JobPositionResource::collection($this->jobPositionRepository->getAllJobPositions());
          $data['roles'] = UserRoleResource::collection($this->roleRepository->getAllRoles());
