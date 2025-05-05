@@ -164,7 +164,7 @@ class AccountingController extends Controller
     }
 
     /**
-     * GET  /api/accounts/invoices
+     * GET  invoices
      * Invoice summary & list for period.
      */
     public function invoiceReport(ViewAccountsRequest $request)
@@ -247,7 +247,7 @@ class AccountingController extends Controller
     }
 
     /**
-     * GET  /api/accounts/payments
+     * GET payments
      * Payment summary & list for period.
      */
     public function paymentReport(ViewAccountsRequest $request)

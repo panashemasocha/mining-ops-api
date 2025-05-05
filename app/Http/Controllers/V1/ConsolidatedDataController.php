@@ -4,12 +4,16 @@ namespace App\Http\Controllers\V1;
 
 use App\Http\Requests\GetConsolidatedDataRequest;
 use App\Http\Requests\ViewCashbookRequest;
+use App\Http\Resources\BranchResource;
 use App\Http\Resources\CostPriceResource;
+use App\Http\Resources\DepartmentResource;
 use App\Http\Resources\GLTransactionResource;
+use App\Http\Resources\JobPositionResource;
 use App\Http\Resources\MiningSiteResource;
 use App\Http\Resources\OreQualityGradeResource;
 use App\Http\Resources\OreQualityTypeResource;
 use App\Http\Resources\OreTypeResource;
+use App\Http\Resources\UserRoleResource;
 use App\Http\Resources\VehicleCategoryResource;
 use App\Http\Resources\VehicleSubTypeResource;
 use App\Models\VehicleSubType;
@@ -264,10 +268,10 @@ class ConsolidatedDataController extends Controller
         $data['cashbook'] = $cashbookTotals;
 
         // $data['prices'] = CostPriceResource::collection($this->priceRepository->getAllPrices());
-        //$data['departments'] = DepartmentResource::collection($this->departmentRepository->getAllDepartments());
-        // $data['branches'] = BranchResource::collection($this->branchRepository->getAllBranches());
-        // $data['jobPositions'] = JobPositionResource::collection($this->jobPositionRepository->getAllJobPositions());
-        // $data['roles'] = UserRoleResource::collection($this->roleRepository->getAllRoles());
+        $data['departments'] = DepartmentResource::collection($this->departmentRepository->getAllDepartments());
+         $data['branches'] = BranchResource::collection($this->branchRepository->getAllBranches());
+         $data['jobPositions'] = JobPositionResource::collection($this->jobPositionRepository->getAllJobPositions());
+         $data['roles'] = UserRoleResource::collection($this->roleRepository->getAllRoles());
 
         return $data;
     }
