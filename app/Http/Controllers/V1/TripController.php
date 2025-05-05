@@ -39,7 +39,7 @@ class TripController extends Controller
 
     public function update(UpdateTripRequest $request, $id)
     {
-        $trip = Trip::findOrFail($id);
+        $trip = Trip::findOrFail(2);
         $oldStatus = $trip->status;
         $trip->update($request->validated());
 
