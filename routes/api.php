@@ -96,9 +96,8 @@ Route::prefix('v1')->group(function () {
         // Ores
         Route::prefix('ores')->group(function () {
 
-            Route::apiResource('', OreController::class, [
-                'parameters' => ['' => 'ore']
-            ]);
+            Route::apiResource('/', OreController::class);
+
 
             //Ore Loaders
             Route::apiResource('loaders', OreLoaderController::class);
