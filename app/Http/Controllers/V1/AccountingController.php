@@ -136,7 +136,7 @@ class AccountingController extends Controller
 
                 return [
                     'transactionId'  => $txn->id,
-                    'date'           => $txn->trans_date->toDateString(),
+                    'date'           => $txn->trans_date->toDateTimeString(),
                     'type'           => $txn->trans_type,
                     'description'    => $txn->description,
                     'debit'          => number_format($entry->debit_amt,   2, '.', ''),

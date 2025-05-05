@@ -19,6 +19,16 @@ class GLTransaction extends Model
         'created_by',
     ];
 
+        /**
+     * Cast trans_date into a Carbon instance, and
+     * timestamps into Carbon datetimes.
+     */
+    protected $casts = [
+        'trans_date'  => 'date',      // now $this->trans_date is a Carbon
+        'created_at'  => 'datetime',
+        'updated_at'  => 'datetime',
+    ];
+
     /**
      * The journal entries for this transaction.
      */
