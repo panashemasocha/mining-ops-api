@@ -73,7 +73,7 @@ class TripController extends Controller
             'trans_date' => $date,
             'supplier_id' => $dispatch->ore->supplier->id,
             'trip_id' => $trip->id,
-            'trans_type'=> 'purchase invoice',
+            'trans_type'=> 'invoice',
             'description' => "Ore ({$dispatch->ore->oreType->type}) Cost -{$supplierName}-{$dispatch->id}",
             'created_by' => auth()->id(),
         ]);
@@ -97,7 +97,7 @@ class TripController extends Controller
                 'trans_date' => $date,
                 'supplier_id' => $dispatch->ore->supplier->id,
                 'trip_id' => $trip->id,
-                'trans_type'=> 'purchase invoice',
+                'trans_type'=> 'invoice',
                 'description' => "Loading cost-{$supplierName}-{$dispatch->id}",
                 'created_by' => auth()->id(),
             ]);
@@ -117,7 +117,7 @@ class TripController extends Controller
         }
 
         // 3) Diesel Allocation (if provided)
-        if ($dieselAllocation) {
+        if ($dieselAllocation != null) {
             $dieselExpense = Account::where('id', 5)->firstOrFail();
             $dieselPrice = CostPrice::where('commodity', 'diesel cost')
                 ->latest('created_at')
@@ -140,7 +140,7 @@ class TripController extends Controller
                 'trans_date' => $date,
                 'supplier_id' => $dispatch->ore->supplier->id,
                 'trip_id' => $trip->id,
-                'trans_type'=> 'purchase invoice',
+                'trans_type'=> 'invoice',
                 'description' => "Diesel cost - {$dieselAllocation->vehicle->reg_number} - {$dieselAllocation->litres}L",
                 'created_by' => auth()->id(),
             ]);

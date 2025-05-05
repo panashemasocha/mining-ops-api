@@ -9,18 +9,18 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call([
-                // UserRoleSeeder::class,
-                // JobPositionSeeder::class,
-                // DepartmentSeeder::class,
-                // BranchSeeder::class,
-                // UserSeeder::class,
-                // DriverInfoSeeder::class,
+                UserRoleSeeder::class,
+                JobPositionSeeder::class,
+                DepartmentSeeder::class,
+                BranchSeeder::class,
+                UserSeeder::class,
+                DriverInfoSeeder::class,
 
-                // VehicleCategorySeeder::class,
-                 //  DieselAllocationTypeSeeder::class,
+                VehicleCategorySeeder::class,
+                  DieselAllocationTypeSeeder::class,
                  
-                // VehicleSubTypeSeeder::class,
-                // MiningSiteSeeder::class,
+                VehicleSubTypeSeeder::class,
+                MiningSiteSeeder::class,
                  VehicleSeeder::class,
                 AssignedVehicleSeeder::class,
                 PaymentMethodSeeder::class,

@@ -13,26 +13,31 @@ return new class extends Migration {
         Schema::create('ores', function (Blueprint $table) {
             $table->id();
             $table->foreignId('ore_type_id')
+                ->nullable()
                 ->constrained('ore_types')
                 ->onUpdate('cascade')
-                ->onDelete('no action'); // e.g., 'Kyanite'
+                ->onDelete('cascade'); // e.g., 'Kyanite'
             $table->foreignId('ore_quality_type_id')
+                ->nullable()
                 ->constrained('ore_quality_types')
                 ->onUpdate('cascade')
-                ->onDelete('no action'); // 'Gem-Quality' or 'Industrial-Grade'
+                ->onDelete('cascade'); // 'Gem-Quality' or 'Industrial-Grade'
             $table->foreignId('ore_quality_grade_id')
+                ->nullable()
                 ->constrained('ore_quality_grades')
                 ->onUpdate('cascade')
-                ->onDelete('no action'); // 'A', 'B', or 'C' for Gem-Quality, High,Medium,Low for Industrial-Grade
+                ->onDelete('cascade'); // 'A', 'B', or 'C' for Gem-Quality, High,Medium,Low for Industrial-Grade
             $table->decimal('quantity', 10, 2);
             $table->foreignId('supplier_id')
+                ->nullable()
                 ->constrained('suppliers')
                 ->onUpdate('cascade')
-                ->onDelete('no action');
+                ->onDelete('set null');
             $table->foreignId('created_by')
+                ->nullable()
                 ->constrained('users')
                 ->onUpdate('cascade')
-                ->onDelete('no action');
+                ->onDelete('set null');
             $table->string('location_name')->nullable();
             $table->decimal('longitude', 10, 6);
             $table->decimal('latitude', 10, 6);

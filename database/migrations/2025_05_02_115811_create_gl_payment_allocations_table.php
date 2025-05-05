@@ -15,11 +15,11 @@ return new class extends Migration {
             $table->foreignId('payment_trans_id')
                 ->constrained('gl_transactions')
                 ->onUpdate('cascade')
-                ->onDelete('no action');
+                ->onDelete('cascade');
             $table->foreignId('invoice_trans_id')
                 ->constrained('gl_transactions')
                 ->onUpdate('cascade')
-                ->onDelete('no action');
+                ->onDelete('cascade');
             $table->decimal('allocated_amount', 12, 2);
             $table->timestamps();
 

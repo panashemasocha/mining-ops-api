@@ -18,22 +18,22 @@ return new class extends Migration {
             $table->foreign('category_id', 'fk_vehicles_category1')
                 ->references('id')
                 ->on('vehicle_categories')
-                ->onDelete('no action')
+                ->onDelete('cascade')
                 ->onUpdate('cascade');
 
             $table->foreignId('sub_type_id')->nullable()
                 ->constrained('vehicle_sub_types')
-                ->noActionOnDelete()
+                ->cascadeOnUpdate()
                 ->cascadeOnUpdate();
 
             $table->foreignId('department_id')->nullable()
                 ->constrained('departments')
-                ->noActionOnDelete()
+                ->cascadeOnUpdate()
                 ->cascadeOnUpdate();
 
             $table->foreignId('assigned_site_id')->nullable()
                 ->constrained('mining_sites')
-                ->noActionOnDelete()
+                ->cascadeOnUpdate()
                 ->cascadeOnUpdate();
 
             $table->string('reg_number');

@@ -21,19 +21,19 @@ return new class extends Migration {
             $table->foreignId('job_position_id')
                 ->constrained('job_positions')
                 ->onUpdate('cascade')
-                ->onDelete('no action');
+                ->onDelete('cascade');
             $table->foreignId('branch_id')
                 ->constrained('branches')
                 ->onUpdate('cascade')
-                ->onDelete('no action');
+                ->onDelete('cascade');
             $table->foreignId('department_id')
                 ->constrained('departments')
                 ->onUpdate('cascade')
-                ->onDelete('no action');
+                ->onDelete('cascade');
             $table->foreignId('role_id')
                 ->constrained('user_roles')
                 ->onUpdate('cascade')
-                ->onDelete('no action');
+                ->onDelete('cascade');
             $table->string('physical_address')->nullable();
             $table->date('date_of_birth')->nullable();
             $table->string('national_id')->nullable();

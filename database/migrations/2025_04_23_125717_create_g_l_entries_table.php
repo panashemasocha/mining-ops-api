@@ -12,15 +12,18 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('trans_id')
                 ->constrained('gl_transactions')
+                ->onUpdate('cascade')
                 ->onDelete('cascade');
             $table->foreignId('account_id')
-                ->constrained('accounts');
+                ->constrained('accounts')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
             $table->decimal('debit_amt', 12, 2)->default(0);
             $table->decimal('credit_amt', 12, 2)->default(0);
             $table->timestamps();
         });
 
-        // Add CHECK constraints (MySQL 8+)
+        //CHECK constraints (MySQL 8+)
         DB::statement(<<<SQL
             ALTER TABLE gl_entries
             ADD CONSTRAINT chk_gl_entries_non_negative

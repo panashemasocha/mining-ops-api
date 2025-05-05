@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('trip_id')
                 ->constrained('trips')
-                ->noActionOnDelete()
+                ->cascadeOnUpdate()
                 ->cascadeOnDelete();
             $table->integer('loaders');
             $table->timestamps();

@@ -75,7 +75,6 @@ class AccountingController extends Controller
     }
 
      /**
-     * GET  /api/accounts/{id}
      * Show an account’s current balance and paginated transaction statement
      * with running balances across pages.
      */

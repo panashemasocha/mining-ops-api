@@ -15,11 +15,11 @@ return new class extends Migration {
             $table->foreignId('driver_id')
                 ->constrained('users')
                 ->onUpdate('cascade')
-                ->onDelete('no action');
+                ->onDelete('cascade');
             $table->foreignId('vehicle_id')
                 ->constrained('vehicles')
                 ->onUpdate('cascade')
-                ->onDelete('no action');
+                ->onDelete('cascade');
             $table->timestamps();
         });
     }

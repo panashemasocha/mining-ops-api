@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->foreignId('vehicle_id')->constrained();
             $table->foreignId('type_id')
             ->constrained('diesel_allocation_types')
-            ->noActionOnDelete()
+            ->cascadeOnUpdate()
             ->cascadeOnDelete();
             $table->integer('litres');
             $table->timestamps();

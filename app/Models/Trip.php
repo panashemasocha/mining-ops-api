@@ -40,7 +40,7 @@ class Trip extends Model
 
     public function dieselAllocation()
     {
-        return $this->belongsTo(DieselAllocation::class);
+        return $this->belongsTo(DieselAllocation::class,'diesel_allocation_id');
     }
 
     public function oreLoader()

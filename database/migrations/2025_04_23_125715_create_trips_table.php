@@ -13,22 +13,26 @@ return new class extends Migration {
         Schema::create('trips', function (Blueprint $table) {
             $table->id();
             $table->foreignId('driver_id')
+                ->nullable()
                 ->constrained('users')
                 ->onUpdate('cascade')
-                ->onDelete('no action');
+                ->onDelete('set null');
             $table->foreignId('vehicle_id')
+                ->nullable()
                 ->constrained('vehicles')
                 ->onUpdate('cascade')
-                ->onDelete('no action');
+                ->onDelete('set null');
             $table->foreignId('dispatch_id')
+                ->nullable()
                 ->constrained('dispatches')
                 ->onUpdate('cascade')
-                ->onDelete('no action');
+                ->onDelete('set null');
             $table->decimal('ore_quantity', 10, 2); // in tonnes
-            $table->foreignId('diesel_allocation_id')->nullable()
+            $table->foreignId('diesel_allocation_id')
+                ->nullable()
                 ->constrained('diesel_allocations')
                 ->onUpdate('cascade')
-                ->onDelete('no action');
+                ->onDelete('set null');
             $table->decimal('initial_longitude', 10, 6)->nullable();
             $table->decimal('initial_latitude', 10, 6)->nullable();
             $table->decimal('initial_altitude', 10, 2)->nullable();

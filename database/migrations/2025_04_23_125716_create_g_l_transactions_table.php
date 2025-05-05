@@ -17,22 +17,23 @@ return new class extends Migration {
                 ->nullable()
                 ->constrained('suppliers')
                 ->onUpdate('cascade')
-                ->onDelete('no action');
+                ->onDelete('set null');
             $table->foreignId('trip_id')
                 ->nullable()
                 ->constrained('trips')
                 ->onUpdate('cascade')
-                ->onDelete('no action');
+                ->onDelete('set null');
             $table->enum('trans_type', [
-                'purchase invoice',
-                'vendor payment',
+                'invoice',
+                'payment',
             ]);
             $table->string('description');
 
             $table->foreignId('created_by')
+                ->nullable()
                 ->constrained('users')
                 ->onUpdate('cascade')
-                ->onDelete('no action');
+                ->onDelete('set null');
             $table->timestamps();
         });
     }

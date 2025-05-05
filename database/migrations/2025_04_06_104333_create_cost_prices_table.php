@@ -18,9 +18,10 @@ return new class extends Migration {
             $table->string('quality_grade')->nullable(); // now nullable for loading cost
             $table->decimal('price', 10, 2);
             $table->foreignId('created_by')
+                ->nullable()
                 ->constrained('users')
                 ->onUpdate('cascade')
-                ->onDelete('no action');
+                ->onDelete('set null');
             $table->timestamps();
         });
     }

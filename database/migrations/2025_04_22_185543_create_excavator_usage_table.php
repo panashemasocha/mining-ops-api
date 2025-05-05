@@ -14,21 +14,22 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('vehicle_id')
                 ->constrained()
-                ->noActionOnDelete()
+                ->cascadeOnUpdate()
                 ->cascadeOnDelete();
             $table->foreignId('driver_id')
+                ->nullable()
                 ->constrained('users')
-                ->noActionOnDelete()
-                ->cascadeOnDelete();
+                ->cascadeOnUpdate()
+                ->nullOnDelete();
                 $table->foreignId('dispatch_id')
                 ->constrained('dispatches')
-                ->noActionOnDelete()
+                ->cascadeOnUpdate()
                 ->cascadeOnDelete();
             $table->dateTime('start');
             $table->dateTime('end');
             $table->foreignId('diesel_allocation_id')
                 ->constrained('diesel_allocations')
-                ->noActionOnDelete()
+                ->cascadeOnUpdate()
                 ->cascadeOnDelete();
             $table->timestamps();
         });

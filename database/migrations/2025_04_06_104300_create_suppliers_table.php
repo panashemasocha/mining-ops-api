@@ -17,13 +17,15 @@ return new class extends Migration {
             $table->string('national_id')->unique();
             $table->string('physical_address');
             $table->foreignId('created_by')
+                ->nullable()
                 ->constrained('users')
                 ->onUpdate('cascade')
-                ->onDelete('no action');
+                ->onDelete('set null');
             $table->foreignId('payment_method_id')
+                ->nullable()
                 ->constrained('payment_methods')
                 ->onUpdate('cascade')
-                ->onDelete('no action');
+                ->onDelete('cascade');
             $table->string('phone_number')->unique();
             $table->timestamps();
         });

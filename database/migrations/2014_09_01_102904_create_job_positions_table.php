@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->foreignId('role_id')
                 ->constrained('user_roles')
                 ->onUpdate('cascade')
-                ->onDelete('no action');
+                ->onDelete('cascade');
             $table->timestamps();
         });
     }

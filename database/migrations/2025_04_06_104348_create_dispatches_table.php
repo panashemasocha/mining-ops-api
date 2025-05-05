@@ -13,13 +13,15 @@ return new class extends Migration {
         Schema::create('dispatches', function (Blueprint $table) {
             $table->id();
             $table->foreignId('ore_id')
+            ->nullable()
                 ->constrained('ores')
                 ->onUpdate('cascade')
-                ->onDelete('no action');
+                ->onDelete('cascade');
             $table->foreignId('site_clerk_id')
+            ->nullable()
                 ->constrained('users')
                 ->onUpdate('cascade')
-                ->onDelete('no action');
+                ->onDelete('set null');
             $table->string('loading_method')->nullable(); // 'manual', 'mechanical'
             $table->decimal('ore_cost_per_tonne', 10, 2);
             $table->decimal('loading_cost_per_tonne', 10, 2);
