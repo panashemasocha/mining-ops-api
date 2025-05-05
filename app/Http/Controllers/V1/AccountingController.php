@@ -177,40 +177,69 @@ class AccountingController extends Controller
             ? Carbon::parse($request->input('endDate'))->endOfDay()
             : Carbon::now();
 
-        // 2) Base invoice transaction IDs in period
-        $invoiceTxnIds = GLTransaction::where('trans_type', 'invoice')
-            ->whereBetween('trans_date', [$start->toDateString(), $end->toDateString()])
-            ->pluck('id');
+        // 2) Stats per cost‐account
+        $stats = collect([4 => 'ore', 5 => 'diesel', 6 => 'loadingCost'])
+            ->mapWithKeys(function ($label, $acctId) use ($start, $end) {
+                $invIds = GLTransaction::where('trans_type', 'invoice')
+                    ->whereBetween('trans_date', [$start->toDateString(), $end->toDateString()])
+                    ->pluck('id');
 
-        // 3) Helper to compute totals/unpaid for a given cost‐account
-        $makeStats = function (int $acctId) use ($invoiceTxnIds) {
-            // total debited to expense
-            $total = GLEntry::whereIn('trans_id', $invoiceTxnIds)
-                ->where('account_id', $acctId)
-                ->sum('debit_amt');
-            // paid against those invoices (allocations)
-            $paid = GlPaymentAllocation::whereIn('invoice_trans_id', $invoiceTxnIds)
-                ->sum('allocated_amount');
-            return [
-                'totalAmount' => number_format($total, 2, '.', ''),
-                'unpaidAmount' => number_format($total - $paid, 2, '.', ''),
-            ];
-        };
+                $total = GLEntry::whereIn('trans_id', $invIds)
+                    ->where('account_id', $acctId)
+                    ->sum('debit_amt');
+                $paid = GlPaymentAllocation::whereIn('invoice_trans_id', $invIds)
+                    ->sum('allocated_amount');
 
-        // 4) Paginate the invoice transactions with their entries
-        $invoices = GLTransaction::with('entries')
-            ->whereIn('id', $invoiceTxnIds)
-            ->orderBy('trans_date', 'desc')
-            ->paginate(15);
+                return [
+                    $label => [
+                        'totalAmount' => number_format($total, 2, '.', ''),
+                        'unpaidAmount' => number_format($total - $paid, 2, '.', ''),
+                    ]
+                ];
+            });
+
+        // 3) Grand totals
+        $totalInvoicedAmount = $stats->sum(fn($s) => (float) $s['totalAmount']);
+        $totalUnpaidAmount = $stats->sum(fn($s) => (float) $s['unpaidAmount']);
+
+        // 4) Paginate exactly like accountTransactions()
+        $perPage = (int) $request->query('per_page', 15);
+        $running = 0;
+        $entriesQ = GLEntry::with('transaction')
+            ->whereHas(
+                'transaction',
+                fn($q) =>
+                $q->where('trans_type', 'invoice')
+                    ->whereBetween('trans_date', [$start->toDateString(), $end->toDateString()])
+            )
+            ->whereIn('account_id', [4, 5, 6])
+            ->orderBy('transaction.trans_date', 'desc')
+            ->orderBy('id');
+
+        $invoices = $entriesQ->paginate($perPage)
+            ->through(function (GLEntry $e) use (&$running) {
+                $txn = $e->transaction;
+                $amt = $e->debit_amt - $e->credit_amt;
+                $running += $amt;
+                return [
+                    'transactionId' => $txn->id,
+                    'date' => $txn->trans_date->toDateString(),
+                    'type' => $txn->trans_type,
+                    'description' => $txn->description,
+                    'debit' => number_format($e->debit_amt, 2, '.', ''),
+                    'credit' => number_format($e->credit_amt, 2, '.', ''),
+                    'amount' => number_format($amt, 2, '.', ''),
+                    'runningBalance' => number_format($running, 2, '.', ''),
+                ];
+            });
 
         return response()->json([
-            'period' => [
-                'start' => $start->toDateString(),
-                'end' => $end->toDateString(),
-            ],
-            'ore' => $makeStats(4),
-            'diesel' => $makeStats(5),
-            'loadingCost' => $makeStats(6),
+            'period' => ['start' => $start->toDateString(), 'end' => $end->toDateString()],
+            'ore' => $stats['ore'],
+            'diesel' => $stats['diesel'],
+            'loadingCost' => $stats['loadingCost'],
+            'totalInvoicedAmount' => number_format($totalInvoicedAmount, 2, '.', ''),
+            'totalUnpaidAmount' => number_format($totalUnpaidAmount, 2, '.', ''),
             'invoices' => $invoices,
         ]);
     }
@@ -229,51 +258,73 @@ class AccountingController extends Controller
             ? Carbon::parse($request->input('endDate'))->endOfDay()
             : Carbon::now();
 
-        // Invoice txns in period (for stats)
-        $invoiceTxnIds = GLTransaction::where('trans_type', 'invoice')
-            ->whereBetween('trans_date', [$start->toDateString(), $end->toDateString()])
-            ->pluck('id');
+        // 2) Stats per cost‐account
+        $stats = collect([4 => 'ore', 5 => 'diesel', 6 => 'loadingCost'])
+            ->mapWithKeys(function ($label, $acctId) use ($start, $end) {
+                $invIds = GLTransaction::where('trans_type', 'invoice')
+                    ->whereBetween('trans_date', [$start->toDateString(), $end->toDateString()])
+                    ->pluck('id');
 
-        // Payment txns in period
-        $paymentTxns = GLTransaction::with('entries')
-            ->where('trans_type', 'payment')
-            ->whereBetween('trans_date', [$start->toDateString(), $end->toDateString()])
-            ->orderBy('trans_date', 'desc')
-            ->paginate(15);
-
-        // 2) Helper for invoiced/paid/unpaid per cost‐account
-        $makeStats = function (int $acctId) use ($invoiceTxnIds) {
-            $invoiced = GLEntry::whereIn('trans_id', $invoiceTxnIds)
-                ->where('account_id', $acctId)
-                ->sum('debit_amt');
-            $paid = GlPaymentAllocation::whereIn('invoice_trans_id', $invoiceTxnIds)
-                ->sum('allocated_amount');
-            return [
-                'totalInvoicedAmount' => number_format($invoiced, 2, '.', ''),
-                'paidAmount' => number_format($paid, 2, '.', ''),
-                'unpaidAmount' => number_format($invoiced - $paid, 2, '.', ''),
-            ];
-        };
-
-        // 3) Count partially‐paid invoices in period
-        $partialCount = collect($invoiceTxnIds)
-            ->filter(function ($invId) {
-                $total = GLEntry::where('trans_id', $invId)->sum('debit_amt');
-                $paidAmt = GlPaymentAllocation::where('invoice_trans_id', $invId)
+                $invoiced = GLEntry::whereIn('trans_id', $invIds)
+                    ->where('account_id', $acctId)
+                    ->sum('debit_amt');
+                $paid = GlPaymentAllocation::whereIn('invoice_trans_id', $invIds)
                     ->sum('allocated_amount');
-                return $paidAmt > 0 && $paidAmt < $total;
-            })->count();
+
+                return [
+                    $label => [
+                        'totalInvoicedAmount' => number_format($invoiced, 2, '.', ''),
+                        'paidAmount' => number_format($paid, 2, '.', ''),
+                        'unpaidAmount' => number_format($invoiced - $paid, 2, '.', ''),
+                    ]
+                ];
+            });
+
+        // 3) Grand totals
+        $totalInvoiced = $stats->sum(fn($s) => (float) $s['totalInvoicedAmount']);
+        $totalPaid = $stats->sum(fn($s) => (float) $s['paidAmount']);
+        $totalUnpaid = $stats->sum(fn($s) => (float) $s['unpaidAmount']);
+
+        // 4) Paginate entries like accountTransactions()
+        $perPage = (int) $request->query('per_page', 15);
+        $running = 0;
+        $entriesQ = GLEntry::with('transaction')
+            ->whereHas(
+                'transaction',
+                fn($q) =>
+                $q->where('trans_type', 'payment')
+                    ->whereBetween('trans_date', [$start->toDateString(), $end->toDateString()])
+            )
+            ->whereIn('account_id', [4, 5, 6])
+            ->orderBy('transaction.trans_date', 'desc')
+            ->orderBy('id');
+
+        $payments = $entriesQ->paginate($perPage)
+            ->through(function (GLEntry $e) use (&$running) {
+                $txn = $e->transaction;
+                $amt = $e->credit_amt - $e->debit_amt;
+                $running += $amt;
+                return [
+                    'transactionId' => $txn->id,
+                    'date' => $txn->trans_date->toDateString(),
+                    'type' => $txn->trans_type,
+                    'description' => $txn->description,
+                    'debit' => number_format($e->debit_amt, 2, '.', ''),
+                    'credit' => number_format($e->credit_amt, 2, '.', ''),
+                    'amount' => number_format($amt, 2, '.', ''),
+                    'runningBalance' => number_format($running, 2, '.', ''),
+                ];
+            });
 
         return response()->json([
-            'period' => [
-                'start' => $start->toDateString(),
-                'end' => $end->toDateString(),
-            ],
-            'ore' => $makeStats(4),
-            'diesel' => $makeStats(5),
-            'loadingCost' => $makeStats(6),
-            'partiallyPaidInvoices' => $partialCount,
-            'payments' => $paymentTxns,
+            'period' => ['start' => $start->toDateString(), 'end' => $end->toDateString()],
+            'ore' => $stats['ore'],
+            'diesel' => $stats['diesel'],
+            'loadingCost' => $stats['loadingCost'],
+            'totalInvoicedAmount' => number_format($totalInvoiced, 2, '.', ''),
+            'totalPaidAmount' => number_format($totalPaid, 2, '.', ''),
+            'totalUnpaidAmount' => number_format($totalUnpaid, 2, '.', ''),
+            'payments' => $payments,
         ]);
     }
 }
