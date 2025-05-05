@@ -145,8 +145,7 @@ Route::prefix('v1')->group(function () {
 
         Route::prefix('trips')->group(function () {
             // Trips
-            Route::apiResource('/', TripController::class);
-            Route::put('update/{id}', [TripController::class, 'update']);
+            Route::apiResource('', TripController::class);
             //Bulk Insert
             Route::post('bulk-store', [TripController::class, 'bulkStore']);
         });
