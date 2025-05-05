@@ -104,7 +104,7 @@ class AccountingController extends Controller
         if ($offset > 0) {
             $priorEntries = GLEntry::with('transaction')
                 ->where('account_id', $id)
-                ->orderBy('trans_date','desc')
+                ->orderBy('created_at','desc')
                 ->orderBy('id')
                 ->skip(0)
                 ->take($offset)
@@ -123,7 +123,7 @@ class AccountingController extends Controller
         $running = $openingBalance;
         $paginated = GLEntry::with('transaction')
             ->where('account_id', $id)
-            ->orderBy('trans_date','desc')
+            ->orderBy('created_at','desc')
             ->orderBy('id')
             ->paginate($perPage)
             ->through(function (GLEntry $entry) use (&$running, $isDebitNatural) {
