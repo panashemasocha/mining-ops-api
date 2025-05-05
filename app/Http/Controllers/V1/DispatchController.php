@@ -117,7 +117,7 @@ class DispatchController extends Controller
         return new DispatchResource($dispatch);
     }
 
-  
+
     public function destroy($id)
     {
         $dispatch = Dispatch::findOrFail($id);
@@ -134,14 +134,14 @@ class DispatchController extends Controller
 
         $drivers = User::where('job_position_id', 5)
             ->where('status', 1)
-            ->whereHas(
-                'driverInfo',
-                fn($q) => $q
-                    ->whereNotNull('last_known_latitude')
+            ->whereHas('driverInfo', function ($q) {
+                $q->whereNotNull('last_known_latitude')
                     ->whereNotNull('last_known_longitude')
-            )
+                    ->where('status', 'off trip');
+            })
             ->with('driverInfo')
             ->get();
+
 
         $vehicles = Vehicle::with('vehicleSubType')
             ->where('status', 'off trip')
