@@ -84,15 +84,6 @@ class DispatchController extends Controller
                 $trips->push($trip);
             }
 
-            // 4. Post mining expenses
-            if ($dispatch->status === 'accepted') {
-                $this->postMiningExpenses(
-                    $dispatch,
-                    $request->input('dispatch.payment_method', 'Cash'),
-                    $dieselAllocations
-                );
-            }
-
             DB::commit();
 
             return response()->json([
