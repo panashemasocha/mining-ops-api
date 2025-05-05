@@ -213,7 +213,7 @@ class AccountingController extends Controller
                     ->whereBetween('trans_date', [$start->toDateString(), $end->toDateString()])
             )
             ->whereIn('account_id', [4, 5, 6])
-            ->orderBy('trans_date', 'desc')
+            ->orderBy('gl_transactions.trans_date', 'desc')
             ->orderBy('id');
 
         $invoices = $entriesQ->paginate($perPage)
@@ -296,7 +296,7 @@ class AccountingController extends Controller
                     ->whereBetween('trans_date', [$start->toDateString(), $end->toDateString()])
             )
             ->whereIn('account_id', [4, 5, 6])
-            ->orderBy('trans_date', 'desc')
+            ->orderBy('gl_transactions.trans_date', 'desc')
             ->orderBy('id');
 
         $payments = $entriesQ->paginate($perPage)
