@@ -41,11 +41,6 @@ class DispatchController extends Controller
     {
         $dispatch = Dispatch::create($request->validated());
 
-        if ($dispatch->status === 'accepted') {
-            $this->postMiningExpenses($dispatch, $request->input('payment_method'));
-        }
-
-
         return new DispatchResource($dispatch);
     }
 
@@ -126,127 +121,12 @@ class DispatchController extends Controller
     public function update(UpdateDispatchRequest $request, $id)
     {
         $dispatch = Dispatch::findOrFail($id);
-        $oldStatus = $dispatch->status;
 
         $dispatch->update($request->validated());
-
-        // If just transitioned to 'accepted', post expenses
-        if ($oldStatus !== 'accepted' && $dispatch->status === 'accepted') {
-            $this->postMiningExpenses($dispatch, $request->input('payment_method'));
-        }
-
         return new DispatchResource($dispatch);
     }
 
-    protected function postMiningExpenses(Dispatch $dispatch, string $paymentMethod, $dieselAllocations = null)
-    {
-        // Validate supplier exists
-        if (!$dispatch->ore->supplier) {
-            throw new \Exception("Supplier not found for dispatch #{$dispatch->id}");
-        }
-
-        $supplierName = $dispatch->ore->supplier->first_name . ' ' . $dispatch->ore->supplier->last_name;
-        $date = Carbon::now()->toDateString();
-        $oreQty = $dispatch->ore_quantity;
-        $oreCostAmt = $dispatch->ore_cost_per_tonne * $oreQty;
-        $loadCostAmt = $dispatch->loading_cost_per_tonne * $oreQty;
-
-        // Map payment method to asset account
-        $assetAccountName = match ($paymentMethod) {
-            'Cash' => 'Cash on Hand',
-            'Bank Transfer' => 'Bank',
-            'Ecocash' => 'Ecocash',
-            default => 'Cash on Hand',
-        };
-
-        $asset = Account::where('account_name', $assetAccountName)->firstOrFail();
-        $miningExpense = Account::where('account_name', 'Mining expenses')->firstOrFail();
-
-        // 1) Ore Cost Transaction
-        $txOre = GLTransaction::create([
-            'trans_date' => $date,
-            'description' => "Ore ({$dispatch->ore->oreType->type}) Cost -{$supplierName}-{$dispatch->id}",
-            'created_by' => auth()->id(),
-        ]);
-
-        GLEntry::create([
-            'trans_id' => $txOre->id,
-            'account_id' => $miningExpense->id,
-            'debit_amt' => $oreCostAmt,
-            'credit_amt' => 0,
-        ]);
-        GLEntry::create([
-            'trans_id' => $txOre->id,
-            'account_id' => $asset->id,
-            'debit_amt' => 0,
-            'credit_amt' => $oreCostAmt,
-        ]);
-
-        // 2) Loading Cost (if manual)
-        if ($dispatch->loading_method === "manual") {
-            $txLoading = GLTransaction::create([
-                'trans_date' => $date,
-                'description' => "Loading cost-{$supplierName}-{$dispatch->id}",
-                'created_by' => auth()->id(),
-            ]);
-
-            GLEntry::create([
-                'trans_id' => $txLoading->id,
-                'account_id' => $miningExpense->id,
-                'debit_amt' => $loadCostAmt,
-                'credit_amt' => 0,
-            ]);
-            GLEntry::create([
-                'trans_id' => $txLoading->id,
-                'account_id' => $asset->id,
-                'debit_amt' => 0,
-                'credit_amt' => $loadCostAmt,
-            ]);
-        }
-
-        // 3) Diesel Allocations (if any)
-        if ($dieselAllocations && $dieselAllocations->isNotEmpty()) {
-            $dieselExpense = Account::where('account_name', 'Diesel expenses')->firstOrFail();
-            $dieselPrice = CostPrice::where('commodity', 'diesel cost')
-                ->latest('created_at')
-                ->firstOrFail();
-
-            foreach ($dieselAllocations as $allocation) {
-                // Ensure it's a model instance and has an ID
-                if (!$allocation instanceof DieselAllocation || !$allocation->id) {
-                    throw new \Exception("Invalid diesel allocation data");
-                }
-
-                // Load vehicle relationship
-                $allocation->load('vehicle');
-                if (!$allocation->vehicle) {
-                    throw new \Exception("Vehicle not found for diesel allocation #{$allocation->id}");
-                }
-
-                $cost = $allocation->litres * $dieselPrice->price;
-
-                $txDiesel = GLTransaction::create([
-                    'trans_date' => $date,
-                    'description' => "Diesel cost - {$allocation->vehicle->reg_number} - {$allocation->litres}L",
-                    'created_by' => auth()->id(),
-                ]);
-
-                GLEntry::create([
-                    'trans_id' => $txDiesel->id,
-                    'account_id' => $dieselExpense->id,
-                    'debit_amt' => $cost,
-                    'credit_amt' => 0,
-                ]);
-
-                GLEntry::create([
-                    'trans_id' => $txDiesel->id,
-                    'account_id' => $asset->id,
-                    'debit_amt' => 0,
-                    'credit_amt' => $cost,
-                ]);
-            }
-        }
-    }
+  
     public function destroy($id)
     {
         $dispatch = Dispatch::findOrFail($id);

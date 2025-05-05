@@ -24,7 +24,6 @@ class UpdateDispatchRequest extends FormRequest
             'max_quantity_per_trip' => 'sometimes|numeric|min:1',
             'status' => 'sometimes|in:pending,accepted,rejected',
             'payment_status' => 'sometimes|in:fully-paid,pending,partially-paid,n/a',
-            'payment_method' => 'sometimes|nullable|string|in:Cash,Bank Transfer,Ecocash',
 
         ];
     }
@@ -42,7 +41,6 @@ class UpdateDispatchRequest extends FormRequest
             'max_quantity_per_trip' => $this->input('max_quantity_per_trip', $this->input('maxQuantityPerTrip')),
             'status' => $this->input('status', $this->input('status')),
             'payment_status' => $this->input('paymentStatus', $this->input('payment_status')),
-            'payment_method' => $this->input('payment_method', $this->input('paymentMethod')),
         ]);
     }
 }
