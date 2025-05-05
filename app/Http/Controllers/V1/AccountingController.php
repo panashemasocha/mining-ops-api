@@ -74,9 +74,10 @@ class AccountingController extends Controller
                 'name' => $account->account_name,
                 'type' => $account->account_type,
                 'status' => $account->status === 1 ? 'Active' : 'Inactive',
-                'balance' => number_format($balance, 2, '.', ''),
+                'currentBalance' => number_format($balance, 2, '.', ''),
                 'createdAt' => $account->created_at->toDateTimeString(),
                 'updatedAt' => $account->updated_at->toDateTimeString(),
+                'asOfDate' => now()->toDateTimeString(),
             ];
         });
 
@@ -147,11 +148,15 @@ class AccountingController extends Controller
                     'transactionId' => $txn->id,
                     'date' => $txn->trans_date->toDateTimeString(),
                     'type' => $txn->trans_type,
+                    'trip' => $txn->trip,
+                    'supplier' => $txn->supplier,
                     'description' => $txn->description,
                     'debit' => number_format($entry->debit_amt, 2, '.', ''),
                     'credit' => number_format($entry->credit_amt, 2, '.', ''),
                     'amount' => number_format($amt, 2, '.', ''),
                     'runningBalance' => number_format($running, 2, '.', ''),
+                    'createdAt' => $txn->created_at,
+                    'updatedAt' => $txn->updated_at
                 ];
             });
 
