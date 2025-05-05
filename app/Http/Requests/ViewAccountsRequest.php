@@ -22,7 +22,9 @@ class   ViewAccountsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'account_type' => 'nullable|string',
+            'startDate'   => 'nullable|date',
+            'endDate'     => 'nullable|date',
+            'account_type'=> 'nullable|string',
         ];
     }
 
@@ -32,7 +34,9 @@ class   ViewAccountsRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
-            'account_type' => $this->input('account_type', $this->input('accountType')),
+            'startDate'   => $this->input('startDate') ?? $this->input('start_date'),
+            'endDate'     => $this->input('endDate')   ?? $this->input('end_date'),
+            'account_type'=> $this->input('accountType') ?? $this->input('account_type'),
         ]);
     }
 

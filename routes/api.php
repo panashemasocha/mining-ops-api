@@ -126,6 +126,11 @@ Route::prefix('v1')->group(function () {
                 Route::get('/{id}', [AccountingController::class, 'accountTransactions']);
             });
 
+            // invoices  
+            Route::post('invoices', [AccountingController::class, 'invoiceReport']);
+
+            // invoices  
+            Route::post('payments', [AccountingController::class, 'paymentReport']);
 
             // cashbook  
             Route::get('cashbook', [AccountingController::class, 'cashbook']);
@@ -175,8 +180,6 @@ Route::prefix('v1')->group(function () {
 
         // Supplier
         Route::apiResource('suppliers', SupplierController::class);
-
-
 
     });
 });
