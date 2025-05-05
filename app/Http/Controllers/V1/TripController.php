@@ -124,7 +124,7 @@ class TripController extends Controller
                 ->firstOrFail();
 
             // Validate allocation instance
-            if (!$dieselAllocation instanceof DieselAllocation || !$dieselAllocation->id) {
+            if (!$dieselAllocation->id) {
                 throw new \Exception("Invalid diesel allocation data");
             }
 
