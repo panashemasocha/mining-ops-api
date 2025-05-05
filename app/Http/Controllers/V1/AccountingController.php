@@ -49,34 +49,40 @@ class AccountingController extends Controller
      */
     public function accountsWithBalances(Request $request)
     {
-        $accounts = Account::withSum('entries as total_debits', 'debit_amt')
+        $perPage = $request->get('per_page', 10);
+
+        // paginated query with sums
+        $paginated = Account::withSum('entries as total_debits', 'debit_amt')
             ->withSum('entries as total_credits', 'credit_amt')
-            ->get()
-            ->map(function (Account $account) {
-                $debits = (float) $account->total_debits;
-                $credits = (float) $account->total_credits;
+            ->paginate($perPage);
 
-                // Assets & Expenses carry a debit balance;
-                // Liabilities, Equity & Revenue carry a credit balance.
-                if (in_array($account->account_type, ['Asset', 'Expense'], true)) {
-                    $balance = $debits - $credits;
-                } else {
-                    $balance = $credits - $debits;
-                }
+        // Transform each item in the current page
+        $paginated->getCollection()->transform(function (Account $account) {
+            $debits = (float) $account->total_debits;
+            $credits = (float) $account->total_credits;
 
-                return [
-                    'id' => $account->id,
-                    'accountName' => $account->account_name,
-                    'accountType' => $account->account_type,
-                    'status' => $account->status === 1 ? 'Active' : 'Inactive',
-                    'balance' => number_format($balance, 2, '.', ''),
-                    'createdAt' => $account->created_at->toDateTimeString(),
-                    'updatedAt' => $account->updated_at->toDateTimeString(),
-                ];
-            });
+            // Assets & Expenses carry a debit balance;
+            // Liabilities, Equity & Revenue carry a credit balance.
+            if (in_array($account->account_type, ['Asset', 'Expense'], true)) {
+                $balance = $debits - $credits;
+            } else {
+                $balance = $credits - $debits;
+            }
 
-        return response()->json($accounts);
+            return [
+                'id' => $account->id,
+                'name' => $account->account_name,
+                'type' => $account->account_type,
+                'status' => $account->status === 1 ? 'Active' : 'Inactive',
+                'balance' => number_format($balance, 2, '.', ''),
+                'createdAt' => $account->created_at->toDateTimeString(),
+                'updatedAt' => $account->updated_at->toDateTimeString(),
+            ];
+        });
+
+        return response()->json($paginated);
     }
+
 
     /**
      * Show an account’s current balance and paginated transaction statement
@@ -223,8 +229,8 @@ class AccountingController extends Controller
                     'transactionId' => $txn->id,
                     'date' => $txn->trans_date->toDateString(),
                     'type' => $txn->trans_type,
-                    'trip'=> $txn->trip,
-                    'supplier'=> $txn->supplier,
+                    'trip' => $txn->trip,
+                    'supplier' => $txn->supplier,
                     'description' => $txn->description,
                     'debit' => number_format($e->debit_amt, 2, '.', ''),
                     'credit' => number_format($e->credit_amt, 2, '.', ''),
@@ -320,8 +326,8 @@ class AccountingController extends Controller
                     'transactionId' => $txn->id,
                     'date' => $txn->trans_date->toDateString(),
                     'type' => $txn->trans_type,
-                    'trip'=> $txn->trip,
-                    'supplier'=> $txn->supplier,
+                    'trip' => $txn->trip,
+                    'supplier' => $txn->supplier,
                     'description' => $txn->description,
                     'debit' => number_format($e->debit_amt, 2, '.', ''),
                     'credit' => number_format($e->credit_amt, 2, '.', ''),
