@@ -13,8 +13,7 @@ class OdometerReadingController extends Controller
 {
     public function index(Request $request)
     {
-        $readings = OdometerReading::with('vehicle', 'trip')
-            ->orderBy('created_at', 'desc')
+        $readings = OdometerReading::orderBy('created_at', 'desc')
             ->paginate(15);
 
         return OdometerReadingResource::collection($readings);
