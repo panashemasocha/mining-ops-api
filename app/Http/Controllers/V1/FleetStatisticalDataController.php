@@ -155,7 +155,7 @@ class FleetStatisticalDataController extends Controller
                 'totalTrips' => $trips->count(),
                 'mostTrips' => [
                     'count' => $maxCount,
-                    'vehicle' => $reg,
+                    'vehicle' => $reg ?? 'N/A'
                 ],
             ];
         }
@@ -189,15 +189,15 @@ class FleetStatisticalDataController extends Controller
             }, 0.0);
 
             $vehicleMileage[$vehicle->id] = [
-                'regNumber' => $vehicle->reg_number,
+                'regNumber' => $vehicle->reg_number ?? 'N/A',
                 'mileage' => round($totalKm, 2),   //2.dp
                 'readingUnit' => 'Kilometers',
             ];
         }
 
         // Initialize highest/lowest
-        $highest = ['mileage' => 0, 'regNumber' => null, 'readingUnit' => 'Kilometers'];
-        $lowest = ['mileage' => PHP_INT_MAX, 'regNumber' => null, 'readingUnit' => 'Kilometers'];
+        $highest = ['mileage' => 0, 'regNumber' => 'N/A', 'readingUnit' => 'Kilometers'];
+        $lowest = ['mileage' => PHP_INT_MAX, 'regNumber' => 'N/A', 'readingUnit' => 'Kilometers'];
 
         foreach ($vehicleMileage as $data) {
             // Highest
@@ -212,7 +212,7 @@ class FleetStatisticalDataController extends Controller
 
         // If nothing had mileage, set lowest to zero
         if ($lowest['mileage'] === PHP_INT_MAX) {
-            $lowest = ['mileage' => 0, 'regNumber' => null, 'readingUnit' => 'Kilometers'];
+            $lowest = ['mileage' => 0, 'regNumber' => 'N/A', 'readingUnit' => 'Kilometers'];
         }
 
         return [
@@ -251,11 +251,14 @@ class FleetStatisticalDataController extends Controller
                 $sum = $group->sum('litres');
                 $veh = $this->vehicleRepository->getVehicleById($vid);
                 if ($veh) {
-                    $byVeh[$vid] = ['regNumber' => $veh->reg_number, 'litres' => $sum];
+                    $byVeh[$vid] = [
+                        'regNumber' => $veh->reg_number ?? 'N/A',
+                        'litres' => $sum
+                    ];
                 }
             }
 
-            $highest = ['litres' => 0, 'regNumber' => null];
+            $highest = ['litres' => 0, 'regNumber' => 'N/A'];
             foreach ($byVeh as $d) {
                 if ($d['litres'] > $highest['litres']) {
                     $highest = $d;
