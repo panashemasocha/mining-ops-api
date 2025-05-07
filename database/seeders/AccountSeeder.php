@@ -20,6 +20,7 @@ class AccountSeeder extends Seeder
             ['Ore expense', 'Expense',1],
             ['Diesel expense', 'Expense',1],
             ['Ore loading expense', 'Expense',1],
+            ['Accounts payable','Liability',1]
         ];
 
         foreach ($accounts as [$name, $type]) {

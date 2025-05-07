@@ -50,6 +50,7 @@ class TripController extends Controller
         }
         return new TripResource($trip);
     }
+
     protected function postMiningExpenses(Trip $trip, $dieselAllocation = null)
     {
         $dispatch = $trip->dispatch;
@@ -57,109 +58,84 @@ class TripController extends Controller
         if (!$dispatch->ore->supplier) {
             throw new \Exception("Supplier not found for dispatch #{$dispatch->id}");
         }
-        $paymentMethod = $dispatch->ore->supplier->payment_method_id ?? 1;
-        $supplierName = $dispatch->ore->supplier->first_name . ' ' . $dispatch->ore->supplier->last_name;
+        $supplier = $dispatch->ore->supplier;
+        $supplierName = "{$supplier->first_name} {$supplier->last_name}";
         $date = Carbon::now()->toDateString();
-        $oreQty = $trip->ore_quantity;
-        $oreCostAmt = $dispatch->ore_cost_per_tonne * $oreQty;
-        $loadCostAmt = $dispatch->loading_cost_per_tonne * $oreQty;
 
-        $asset = Account::where('id', $paymentMethod)->firstOrFail();
-        $oreExpense = Account::where('id', 4)->firstOrFail();
-        $oreLoadingExpense = Account::where('id', 6)->firstOrFail();
+        // Expense accounts
+        $oreExpense = Account::findOrFail(4);
+        $loadExpense = Account::findOrFail(6);
+        $dieselExpense = Account::findOrFail(5);
+        // Liability account: Accounts Payable
+        $apAccount = Account::where('id', 7)->firstOrFail();
 
-        // 1) Ore Cost Transaction
-        $txOre = GLTransaction::create([
-            'trans_date' => $date,
-            'supplier_id' => $dispatch->ore->supplier->id,
-            'trip_id' => $trip->id,
-            'trans_type'=> 'invoice',
-            'description' => "Ore ({$dispatch->ore->oreType->type}) Cost -{$supplierName}-{$dispatch->id}",
-            'created_by' => auth()->id(),
-        ]);
-
-        GLEntry::create([
-            'trans_id' => $txOre->id,
-            'account_id' => $oreExpense->id,
-            'debit_amt' => $oreCostAmt,
-            'credit_amt' => 0,
-        ]);
-        GLEntry::create([
-            'trans_id' => $txOre->id,
-            'account_id' => $asset->id,
-            'debit_amt' => 0,
-            'credit_amt' => $oreCostAmt,
-        ]);
-
-        // 2) Loading Cost (if manual)
-        if ($dispatch->loading_method === "manual") {
-            $txLoading = GLTransaction::create([
+        // Helper to create an invoice
+        $createInvoice = function (string $description, int $expAcctId, float $amt) use ($supplier, $trip, $date, $apAccount) {
+            $tx = GLTransaction::create([
                 'trans_date' => $date,
-                'supplier_id' => $dispatch->ore->supplier->id,
+                'supplier_id' => $supplier->id,
                 'trip_id' => $trip->id,
-                'trans_type'=> 'invoice',
-                'description' => "Loading cost-{$supplierName}-{$dispatch->id}",
+                'trans_type' => 'invoice',
+                'description' => $description,
                 'created_by' => auth()->id(),
             ]);
 
+            // Debit expense
             GLEntry::create([
-                'trans_id' => $txLoading->id,
-                'account_id' => $oreLoadingExpense->id,
-                'debit_amt' => $loadCostAmt,
+                'trans_id' => $tx->id,
+                'account_id' => $expAcctId,
+                'debit_amt' => $amt,
                 'credit_amt' => 0,
             ]);
+
+            // Credit Accounts Payable
             GLEntry::create([
-                'trans_id' => $txLoading->id,
-                'account_id' => $asset->id,
+                'trans_id' => $tx->id,
+                'account_id' => $apAccount->id,
                 'debit_amt' => 0,
-                'credit_amt' => $loadCostAmt,
+                'credit_amt' => $amt,
             ]);
+        };
+
+        // 1) Ore cost
+        $oreQty = $trip->ore_quantity;
+        $oreCostAmt = $dispatch->ore_cost_per_tonne * $oreQty;
+        $createInvoice(
+            "Purchase Invoice – Ore Cost ({$dispatch->ore->oreType->type}) for Trip #{$trip->id}",
+            $oreExpense->id,
+            $oreCostAmt
+        );
+
+        // 2) Loading cost
+        if ($dispatch->loading_method === 'manual') {
+            $loadCostAmt = $dispatch->loading_cost_per_tonne * $oreQty;
+            $createInvoice(
+                "Purchase Invoice – Ore Loading Services for Trip #{$trip->id}",
+                $loadExpense->id,
+                $loadCostAmt
+            );
         }
 
-        // 3) Diesel Allocation (if provided)
-        if ($dieselAllocation != null) {
-            $dieselExpense = Account::where('id', 5)->firstOrFail();
-            $dieselPrice = CostPrice::where('commodity', 'diesel cost')
-                ->latest('created_at')
-                ->firstOrFail();
-
-            // Validate allocation instance
-            if (!$dieselAllocation->id) {
-                throw new \Exception("Invalid diesel allocation data");
-            }
-
-            // Load vehicle relationship
+        // 3) Diesel cost
+        if ($dieselAllocation) {
             $dieselAllocation->load('vehicle');
             if (!$dieselAllocation->vehicle) {
                 throw new \Exception("Vehicle not found for diesel allocation #{$dieselAllocation->id}");
             }
-
+            $dieselPrice = CostPrice::where('commodity', 'diesel cost')
+                ->latest('created_at')
+                ->firstOrFail();
             $cost = $dieselAllocation->litres * $dieselPrice->price;
 
-            $txDiesel = GLTransaction::create([
-                'trans_date' => $date,
-                'supplier_id' => $dispatch->ore->supplier->id,
-                'trip_id' => $trip->id,
-                'trans_type'=> 'invoice',
-                'description' => "Diesel cost - {$dieselAllocation->vehicle->reg_number} - {$dieselAllocation->litres}L",
-                'created_by' => auth()->id(),
-            ]);
+            $createInvoice(
+                "Purchase Invoice – Diesel Allocation ({$dieselAllocation->litres} L – {$dieselAllocation->vehicle->reg_number})",
+                $dieselExpense->id,
+                $cost,
 
-            GLEntry::create([
-                'trans_id' => $txDiesel->id,
-                'account_id' => $dieselExpense->id,
-                'debit_amt' => $cost,
-                'credit_amt' => 0,
-            ]);
-
-            GLEntry::create([
-                'trans_id' => $txDiesel->id,
-                'account_id' => $asset->id,
-                'debit_amt' => 0,
-                'credit_amt' => $cost,
-            ]);
+            );
         }
     }
+
 
 
     public function destroy($id)

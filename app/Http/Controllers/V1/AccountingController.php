@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreReceiptRequest;
 use App\Http\Requests\ViewAccountsRequest;
 use App\Http\Requests\ViewCashbookRequest;
 use App\Models\Account;
 use App\Models\GLEntry;
 use App\Models\GlPaymentAllocation;
 use App\Models\GLTransaction;
+use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
@@ -354,6 +356,97 @@ class AccountingController extends Controller
             'partiallyPaidInvoices' => $partialCount,
             'payments' => $payments,
         ]);
+    }
+
+    /**
+     * Record a payment against a purchase-invoice 
+     */
+    public function storeReceipt(StoreReceiptRequest $request)
+    {
+        // 1) Load invoice & selected paying account
+        $invoice = GLTransaction::findOrFail($request->invoice_id);
+        $assetAcct = Account::findOrFail($request->account_id);
+        $amount = $request->amount;
+        $payDate = $request->input('payment_date', Carbon::today()->toDateString());
+
+        // 2)Seek AP liability account
+        $apAccount = Account::where('id', 7)->firstOrFail();
+
+        // 3) Compute invoice unpaid balance
+        $totalInv = $invoice->entries()
+            ->where('account_id', $apAccount->id)
+            ->value('credit_amt');
+        $alreadyPaid = GlPaymentAllocation::where('invoice_trans_id', $invoice->id)
+            ->sum('allocated_amount');
+
+        $unpaid = $totalInv - $alreadyPaid;
+        if ($amount > $unpaid) {
+            return response()->json([
+                'message' => "Cannot pay more than unpaid balance ({$unpaid})"
+            ], 422);
+        }
+
+        // 4) Check Asset account has enough funds (debit balance)
+        $assetBalance = $assetAcct->entries()
+            ->selectRaw('SUM(debit_amt) - SUM(credit_amt) as bal')
+            ->value('bal');
+
+        if ($amount > $assetBalance) {
+            return response()->json([
+                'message' => "Insufficient funds in {$assetAcct->account_name} ({$assetBalance})"
+            ], 422);
+        }
+
+        // 5) log in transactions
+        DB::transaction(function () use ($invoice, $amount, $payDate, $assetAcct, $apAccount) {
+            $isFull = abs($amount - ($invoice->entries()
+                ->where('account_id', $apAccount->id)
+                ->sum('credit_amt')
+                - GlPaymentAllocation::where('invoice_trans_id', $invoice->id)
+                    ->sum('allocated_amount'))) < 0.01;
+
+            $desc = $isFull
+                ? "Full payment of Invoice #{$invoice->id}"
+                : "Partial payment of Invoice #{$invoice->id}";
+
+            // a) create payment transaction
+            $payTxn = GLTransaction::create([
+                'trans_date' => $payDate,
+                'description' => $desc,
+                'created_by' => auth()->id(),
+                'supplier_id' => $invoice->supplier_id,
+                'trans_type' => 'payment',
+            ]);
+
+            // b) journal entries: debit Account Payables, credit Asset
+            GLEntry::insert([
+                [
+                    'trans_id' => $payTxn->id,
+                    'account_id' => $apAccount->id,
+                    'debit_amt' => $amount,
+                    'credit_amt' => 0,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ],
+                [
+                    'trans_id' => $payTxn->id,
+                    'account_id' => $assetAcct->id,
+                    'debit_amt' => 0,
+                    'credit_amt' => $amount,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ],
+            ]);
+
+            // c) link payment to invoice
+            GlPaymentAllocation::create([
+                'payment_trans_id' => $payTxn->id,
+                'invoice_trans_id' => $invoice->id,
+                'allocated_amount' => $amount,
+            ]);
+        });
+
+        return response()->json(['message' => 'Payment recorded'], 201);
     }
 }
 
