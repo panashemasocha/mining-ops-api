@@ -288,18 +288,17 @@ class AccountingController extends Controller
             ->whereBetween('trans_date', [$start->toDateString(), $end->toDateString()])
             ->pluck('id');
 
-        // 2) Stats per cost‐account 
+        // 2) Stats per cost‐account
         $stats = collect([4 => 'ore', 5 => 'diesel', 6 => 'loadingCost'])
-            ->mapWithKeys(function ($label, $acctId) use ($allInvoiceIds) {
+            ->mapWithKeys(function ($acctId, $label) use ($allInvoiceIds) {
                 $acctInvoiceIds = GLEntry::whereIn('trans_id', $allInvoiceIds)
-                    ->where('account_id', $acctId)
+                    ->where('account_id', $label)
                     ->pluck('trans_id')
                     ->unique();
 
                 $invoiced = GLEntry::whereIn('trans_id', $acctInvoiceIds)
-                    ->where('account_id', $acctId)
+                    ->where('account_id', $label)
                     ->sum('debit_amt');
-
                 $paid = GlPaymentAllocation::whereIn('invoice_trans_id', $acctInvoiceIds)
                     ->sum('allocated_amount');
 
@@ -313,14 +312,19 @@ class AccountingController extends Controller
             });
 
         // 3) Grand totals
-        $totalInvoiced = $stats->sum(fn($s) => (float) $s['totalInvoicedAmount']);
-        $totalPaid = $stats->sum(fn($s) => (float) $s['paidAmount']);
-        $totalUnpaid = $stats->sum(fn($s) => (float) $s['unpaidAmount']);
+        $totalInvoiced = $stats->sum(function ($s) {
+            return (float) $s['totalInvoicedAmount'];
+        });
+        $totalPaid = $stats->sum(function ($s) {
+            return (float) $s['paidAmount'];
+        });
+        $totalUnpaid = $stats->sum(function ($s) {
+            return (float) $s['unpaidAmount'];
+        });
 
-        // 4) Paginate entries via join for proper ordering
+        // 4) Paginate entries via join
         $perPage = (int) $request->query('per_page', 15);
         $running = 0;
-
         $entriesQ = GLEntry::select('gl_entries.*')
             ->join('gl_transactions as t', 'gl_entries.trans_id', '=', 't.id')
             ->where('t.trans_type', 'payment')
@@ -329,7 +333,7 @@ class AccountingController extends Controller
             ->orderBy('t.trans_date', 'desc')
             ->orderBy('gl_entries.id');
 
-        // 5) Count partially‐paid invoices in period
+        // 5) Count partially‐paid invoices
         $partialCount = collect($allInvoiceIds)
             ->filter(function ($invId) {
                 $total = GLEntry::where('trans_id', $invId)->sum('debit_amt');
