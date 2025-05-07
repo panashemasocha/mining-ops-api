@@ -132,7 +132,7 @@ Route::prefix('v1')->group(function () {
 
             // invoices  
             Route::post('payments', [AccountingController::class, 'paymentReport']);
-            Route::post('receipt', [AccountingController::class, 'AccountingController@storeReceipt']);
+            Route::post('receipt', [AccountingController::class, 'storeReceipt']);
 
 
             // cashbook  
