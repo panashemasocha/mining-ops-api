@@ -190,17 +190,27 @@ class AccountingController extends Controller
             ? Carbon::parse($request->input('endDate'))->endOfDay()
             : Carbon::now();
 
-        // 2) Stats per cost‐account
-        $stats = collect([4 => 'ore', 5 => 'diesel', 6 => 'loadingCost'])
-            ->mapWithKeys(function ($label, $acctId) use ($start, $end) {
-                $invIds = GLTransaction::where('trans_type', 'invoice')
-                    ->whereBetween('trans_date', [$start->toDateString(), $end->toDateString()])
-                    ->pluck('id');
+        // Pre-load all invoice IDs in period
+        $allInvoiceIds = GLTransaction::where('trans_type', 'invoice')
+            ->whereBetween('trans_date', [$start->toDateString(), $end->toDateString()])
+            ->pluck('id');
 
-                $total = GLEntry::whereIn('trans_id', $invIds)
+        // 2) Stats per cost‐account 
+        $stats = collect([4 => 'ore', 5 => 'diesel', 6 => 'loadingCost'])
+            ->mapWithKeys(function ($label, $acctId) use ($allInvoiceIds) {
+                // Filter to only those invoices which hit this expense account
+                $acctInvoiceIds = GLEntry::whereIn('trans_id', $allInvoiceIds)
+                    ->where('account_id', $acctId)
+                    ->pluck('trans_id')
+                    ->unique();
+
+                // Total invoiced to this expense
+                $total = GLEntry::whereIn('trans_id', $acctInvoiceIds)
                     ->where('account_id', $acctId)
                     ->sum('debit_amt');
-                $paid = GlPaymentAllocation::whereIn('invoice_trans_id', $invIds)
+
+                // Payments applied to those same invoices
+                $paid = GlPaymentAllocation::whereIn('invoice_trans_id', $acctInvoiceIds)
                     ->sum('allocated_amount');
 
                 return [
@@ -244,7 +254,7 @@ class AccountingController extends Controller
                     'amount' => number_format($amt, 2, '.', ''),
                     'runningBalance' => number_format($running, 2, '.', ''),
                     'createdAt' => $txn->created_at,
-                    'updatedAt' => $txn->updated_at
+                    'updatedAt' => $txn->updated_at,
                 ];
             });
 
@@ -273,17 +283,24 @@ class AccountingController extends Controller
             ? Carbon::parse($request->input('endDate'))->endOfDay()
             : Carbon::now();
 
-        // 2) Stats per cost‐account
-        $stats = collect([4 => 'ore', 5 => 'diesel', 6 => 'loadingCost'])
-            ->mapWithKeys(function ($label, $acctId) use ($start, $end) {
-                $invIds = GLTransaction::where('trans_type', 'invoice')
-                    ->whereBetween('trans_date', [$start->toDateString(), $end->toDateString()])
-                    ->pluck('id');
+        // Pre-load all invoice IDs in period
+        $allInvoiceIds = GLTransaction::where('trans_type', 'invoice')
+            ->whereBetween('trans_date', [$start->toDateString(), $end->toDateString()])
+            ->pluck('id');
 
-                $invoiced = GLEntry::whereIn('trans_id', $invIds)
+        // 2) Stats per cost‐account 
+        $stats = collect([4 => 'ore', 5 => 'diesel', 6 => 'loadingCost'])
+            ->mapWithKeys(function ($label, $acctId) use ($allInvoiceIds) {
+                $acctInvoiceIds = GLEntry::whereIn('trans_id', $allInvoiceIds)
+                    ->where('account_id', $acctId)
+                    ->pluck('trans_id')
+                    ->unique();
+
+                $invoiced = GLEntry::whereIn('trans_id', $acctInvoiceIds)
                     ->where('account_id', $acctId)
                     ->sum('debit_amt');
-                $paid = GlPaymentAllocation::whereIn('invoice_trans_id', $invIds)
+
+                $paid = GlPaymentAllocation::whereIn('invoice_trans_id', $acctInvoiceIds)
                     ->sum('allocated_amount');
 
                 return [
@@ -313,10 +330,7 @@ class AccountingController extends Controller
             ->orderBy('gl_entries.id');
 
         // 5) Count partially‐paid invoices in period
-        $invoiceTxnIds = GLTransaction::where('trans_type', 'purchase_invoice')
-            ->whereBetween('trans_date', [$start->toDateString(), $end->toDateString()])
-            ->pluck('id');
-        $partialCount = collect($invoiceTxnIds)
+        $partialCount = collect($allInvoiceIds)
             ->filter(function ($invId) {
                 $total = GLEntry::where('trans_id', $invId)->sum('debit_amt');
                 $paidAmt = GlPaymentAllocation::where('invoice_trans_id', $invId)
@@ -341,7 +355,7 @@ class AccountingController extends Controller
                     'amount' => number_format($amt, 2, '.', ''),
                     'runningBalance' => number_format($running, 2, '.', ''),
                     'createdAt' => $txn->created_at,
-                    'updatedAt' => $txn->updated_at
+                    'updatedAt' => $txn->updated_at,
                 ];
             });
 
@@ -357,6 +371,7 @@ class AccountingController extends Controller
             'payments' => $payments,
         ]);
     }
+
 
     /**
      * Record a payment against a purchase-invoice 
