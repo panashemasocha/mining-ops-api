@@ -124,6 +124,7 @@ Route::prefix('v1')->group(function () {
                 //Index
                 Route::get('/', [AccountingController::class, 'accountsWithBalances']);
                 Route::get('/{id}', [AccountingController::class, 'accountTransactions']);
+
             });
 
             // invoices  
@@ -131,6 +132,8 @@ Route::prefix('v1')->group(function () {
 
             // invoices  
             Route::post('payments', [AccountingController::class, 'paymentReport']);
+            Route::post('receipt', [AccountingController::class, 'AccountingController@storeReceipt']);
+
 
             // cashbook  
             Route::get('cashbook', [AccountingController::class, 'cashbook']);
