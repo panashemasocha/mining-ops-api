@@ -325,7 +325,6 @@ class AccountingController extends Controller
             ->join('gl_transactions as t', 'gl_entries.trans_id', '=', 't.id')
             ->where('t.trans_type', 'payment')
             ->whereBetween('t.trans_date', [$start->toDateString(), $end->toDateString()])
-            ->whereIn('gl_entries.account_id', [4, 5, 6])
             ->orderBy('t.trans_date', 'desc')
             ->orderBy('gl_entries.id');
 
