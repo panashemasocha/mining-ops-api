@@ -409,13 +409,7 @@ class AccountingController extends Controller
                             2,'.',''
                         ),
                         'paid'            => number_format($allocation->allocated_amount,2,'.',''),
-                        'supplier'        => [
-                            'id'          => $invTx->supplier->id,
-                            'first_name'  => $invTx->supplier->first_name,
-                            'last_name'   => $invTx->supplier->last_name,
-                            'phone_number'=> $invTx->supplier->phone_number,
-                            'email'       => $invTx->supplier->email,
-                        ],
+                        'supplier'        => $invTx->supplier,
                     ];
                 }
 
