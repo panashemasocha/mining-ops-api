@@ -8,6 +8,7 @@ use App\Http\Requests\StoreReceiptRequest;
 use App\Http\Requests\ViewAccountsRequest;
 use App\Http\Requests\ViewCashbookRequest;
 use App\Http\Resources\SupplierResource;
+use App\Http\Resources\TripResource;
 use App\Models\Account;
 use App\Models\GLEntry;
 use App\Models\GlPaymentAllocation;
@@ -295,8 +296,8 @@ class AccountingController extends Controller
                     'transactionId' => $txn->id,
                     'date' => $txn->trans_date->toDateString(),
                     'type' => $txn->trans_type,
-                    'trip' => $txn->trip,
-                    'supplier' => $txn->supplier,
+                    'trip' => new TripResource($txn->trip),
+                    'supplier' => new SupplierResource($txn->supplier),
                     'description' => $txn->description,
                     'debit' => number_format($e->debit_amt, 2, '.', ''),
                     'credit' => number_format($e->credit_amt, 2, '.', ''),
@@ -367,7 +368,7 @@ class AccountingController extends Controller
         $totalUnpaid = $stats->sum(fn($s) => (float) $s['unpaidAmount']);
 
         // 4) Paginate entries via join for proper ordering
-        $perPage = (int) $request->query('per_page', 15);
+        $perPage = (int) $request->query('per_page', 10);
         $running = 0;
 
         $entriesQ = GLEntry::select('gl_entries.*')
@@ -395,22 +396,24 @@ class AccountingController extends Controller
                 $amt = $e->credit_amt - $e->debit_amt;
                 $running += $amt;
 
-             // load allocation & related invoice + its supplier
+                // load allocation & related invoice + its supplier
                 $allocation = $txn->paymentAllocations()->first();
                 $invoice = null;
                 if ($allocation) {
                     $invTx = $allocation->invoiceTransaction()->with('supplier')->first();
                     $invoice = [
-                        'id'              => $invTx->id,
+                        'id' => $invTx->id,
                         'transactionDate' => $invTx->trans_date->toDateString(),
-                        'description'     => $invTx->description,
-                        'total'           => number_format(
-                            $invTx->entries()->where('account_id',$invTx->entries()->first()->account_id)
+                        'description' => $invTx->description,
+                        'total' => number_format(
+                            $invTx->entries()->where('account_id', $invTx->entries()->first()->account_id)
                                 ->sum('debit_amt'),
-                            2,'.',''
+                            2,
+                            '.',
+                            ''
                         ),
-                        'paid'            => number_format($allocation->allocated_amount,2,'.',''),
-                        'supplier'        =>new SupplierResource($invTx->supplier),
+                        'paid' => number_format($allocation->allocated_amount, 2, '.', ''),
+                        'supplier' => new SupplierResource($invTx->supplier),
                     ];
                 }
 
@@ -418,8 +421,8 @@ class AccountingController extends Controller
                     'transactionId' => $txn->id,
                     'date' => $txn->trans_date->toDateString(),
                     'type' => $txn->trans_type,
-                    'trip' => $txn->trip,
-                    'supplier' => $txn->supplier,
+                    'trip' => new TripResource($txn->trip),
+                    'supplier' => new SupplierResource($txn->supplier),
                     'description' => $txn->description,
                     'debit' => number_format($e->debit_amt, 2, '.', ''),
                     'credit' => number_format($e->credit_amt, 2, '.', ''),
