@@ -123,6 +123,7 @@ Route::prefix('v1')->group(function () {
             Route::prefix('accounts')->group(function () {
                 //Index
                 Route::get('/', [AccountingController::class, 'accountsWithBalances']);
+                Route::get('search', [AccountingController::class, 'searchAccountTransactions']);
                 Route::get('/{id}', [AccountingController::class, 'accountTransactions']);
 
             });
