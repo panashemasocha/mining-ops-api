@@ -423,6 +423,7 @@ class AccountingController extends Controller
                             ''
                         ),
                         'paid' => number_format($allocation->allocated_amount, 2, '.', ''),
+                        'supplier'=> $invoice->suppler,
                     ] : null,
                     'createdAt' => $txn->created_at,
                     'updatedAt' => $txn->updated_at,
