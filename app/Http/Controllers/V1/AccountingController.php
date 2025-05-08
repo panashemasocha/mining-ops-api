@@ -292,6 +292,11 @@ class AccountingController extends Controller
                 $txn = $e->transaction;
                 $amt = $e->debit_amt - $e->credit_amt;
                 $running += $amt;
+
+                // sum of all payments against this invoice
+                $totalPaid = GlPaymentAllocation::where('invoice_trans_id', $txn->id)
+                    ->sum('allocated_amount');
+
                 return [
                     'transactionId' => $txn->id,
                     'date' => $txn->trans_date->toDateString(),
@@ -307,6 +312,7 @@ class AccountingController extends Controller
                     'credit' => number_format($e->credit_amt, 2, '.', ''),
                     'amount' => number_format($amt, 2, '.', ''),
                     'runningBalance' => number_format($running, 2, '.', ''),
+                    'totalPaid' => number_format($totalPaid, 2, '.', ''),
                     'createdAt' => $txn->created_at,
                     'updatedAt' => $txn->updated_at,
                 ];
