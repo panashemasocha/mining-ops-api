@@ -296,8 +296,12 @@ class AccountingController extends Controller
                     'transactionId' => $txn->id,
                     'date' => $txn->trans_date->toDateString(),
                     'type' => $txn->trans_type,
-                    'trip' => new TripResource($txn->trip),
-                    'supplier' => new SupplierResource($txn->supplier),
+                    'trip' => $txn->trip
+                        ? new TripResource($txn->trip)
+                        : null,
+                    'supplier' => $txn->supplier
+                        ? new SupplierResource($txn->supplier)
+                        : null,
                     'description' => $txn->description,
                     'debit' => number_format($e->debit_amt, 2, '.', ''),
                     'credit' => number_format($e->credit_amt, 2, '.', ''),
@@ -413,7 +417,9 @@ class AccountingController extends Controller
                             ''
                         ),
                         'paid' => number_format($allocation->allocated_amount, 2, '.', ''),
-                        'supplier' => new SupplierResource($invTx->supplier),
+                        'supplier' => $invTx->supplier
+                            ? new SupplierResource($invTx->supplier)
+                            : null,
                     ];
                 }
 
@@ -421,8 +427,12 @@ class AccountingController extends Controller
                     'transactionId' => $txn->id,
                     'date' => $txn->trans_date->toDateString(),
                     'type' => $txn->trans_type,
-                    'trip' => new TripResource($txn->trip),
-                    'supplier' => new SupplierResource($txn->supplier),
+                    'trip' => $txn->trip
+                        ? new TripResource($txn->trip)
+                        : null,
+                    'supplier' => $txn->supplier
+                        ? new SupplierResource($txn->supplier)
+                        : null,
                     'description' => $txn->description,
                     'debit' => number_format($e->debit_amt, 2, '.', ''),
                     'credit' => number_format($e->credit_amt, 2, '.', ''),
