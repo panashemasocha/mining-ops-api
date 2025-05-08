@@ -394,11 +394,30 @@ class AccountingController extends Controller
                 $amt = $e->credit_amt - $e->debit_amt;
                 $running += $amt;
 
-                // find first allocation for this payment, then its invoice
+             // load allocation & related invoice + its supplier
                 $allocation = $txn->paymentAllocations()->first();
-                $invoice = $allocation
-                    ? $allocation->invoiceTransaction()->with('entries')->first()
-                    : null;
+                $invoice = null;
+                if ($allocation) {
+                    $invTx = $allocation->invoiceTransaction()->with('supplier')->first();
+                    $invoice = [
+                        'id'              => $invTx->id,
+                        'transactionDate' => $invTx->trans_date->toDateString(),
+                        'description'     => $invTx->description,
+                        'total'           => number_format(
+                            $invTx->entries()->where('account_id',$invTx->entries()->first()->account_id)
+                                ->sum('debit_amt'),
+                            2,'.',''
+                        ),
+                        'paid'            => number_format($allocation->allocated_amount,2,'.',''),
+                        'supplier'        => [
+                            'id'          => $invTx->supplier->id,
+                            'first_name'  => $invTx->supplier->first_name,
+                            'last_name'   => $invTx->supplier->last_name,
+                            'phone_number'=> $invTx->supplier->phone_number,
+                            'email'       => $invTx->supplier->email,
+                        ],
+                    ];
+                }
 
                 return [
                     'transactionId' => $txn->id,
@@ -411,20 +430,7 @@ class AccountingController extends Controller
                     'credit' => number_format($e->credit_amt, 2, '.', ''),
                     'amount' => number_format($amt, 2, '.', ''),
                     'runningBalance' => number_format($running, 2, '.', ''),
-                    'invoice' => $invoice ? [
-                        'id' => $invoice->id,
-                        'transactionDate' => $invoice->trans_date->toDateString(),
-                        'description' => $invoice->description,
-                        'total' => number_format(
-                            $invoice->entries()->where('account_id', $invoice->entries()->first()->account_id)
-                                ->sum('debit_amt'),
-                            2,
-                            '.',
-                            ''
-                        ),
-                        'paid' => number_format($allocation->allocated_amount, 2, '.', ''),
-                        'supplier'=> $invoice->suppler,
-                    ] : null,
+                    'invoice' => $invoice,
                     'createdAt' => $txn->created_at,
                     'updatedAt' => $txn->updated_at,
                 ];
