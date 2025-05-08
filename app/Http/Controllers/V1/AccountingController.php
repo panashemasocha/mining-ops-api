@@ -499,11 +499,11 @@ class AccountingController extends Controller
             ->selectRaw('SUM(debit_amt) - SUM(credit_amt) as bal')
             ->value('bal');
 
-        if ($amount > $assetBalance) {
-            return response()->json([
-                'message' => "Insufficient funds in {$assetAcct->account_name} ({$assetBalance})"
-            ], 422);
-        }
+        // if ($amount > $assetBalance) {
+        //     return response()->json([
+        //         'message' => "Insufficient funds in {$assetAcct->account_name} ({$assetBalance})"
+        //     ], 422);
+        // }
 
         // 5) log in transactions
         DB::transaction(function () use ($invoice, $amount, $payDate, $assetAcct, $apAccount) {
