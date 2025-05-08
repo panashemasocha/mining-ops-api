@@ -90,7 +90,7 @@ class AccountingController extends Controller
     }
 
     /**
-     * Return accounts (with balances) filtered by type and/or name.
+     * Return Active accounts (with balances) filtered by type and/or name.
      */
 
     public function searchAccountTransactions(SearchAccountsRequest $request)
@@ -99,6 +99,7 @@ class AccountingController extends Controller
 
         // Build query, applying filters only when the request provided them
         $query = Account::query()
+            ->where('status', 1)                       
             ->withSum('entries as total_debits', 'debit_amt')
             ->withSum('entries as total_credits', 'credit_amt')
             ->when($request->filled('type'), function ($q) use ($request) {
