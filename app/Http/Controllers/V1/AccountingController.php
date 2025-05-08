@@ -105,9 +105,10 @@ class AccountingController extends Controller
             ->when($request->filled('type'), function ($q) use ($request) {
                 $q->where('account_type', $request->input('type'));
             })
-            ->when($request->filled('name'), function ($q) use ($request) {
-                $q->where('account_name', 'like', '%' . $request->input('name') . '%');
-            });
+            // ->when($request->filled('name'), function ($q) use ($request) {
+            //     $q->where('account_name', 'like', '%' . $request->input('name') . '%');
+            // })
+            ;
 
         $paginated = $query->paginate($perPage);
 
