@@ -71,14 +71,22 @@ class TripController extends Controller
 
         // Helper to create an invoice
         $createInvoice = function (string $description, int $expAcctId, float $amt) use ($supplier, $trip, $date, $apAccount) {
-            $tx = GLTransaction::create([
+
+            $txData = [
                 'trans_date' => $date,
-                'supplier_id' => $supplier->id,
                 'trip_id' => $trip->id,
                 'trans_type' => 'invoice',
                 'description' => $description,
                 'created_by' => auth()->id(),
-            ]);
+            ];
+
+            if ($expAcctId === 4) {
+                $txData['supplier_id'] = $supplier->id;
+            }
+
+            // Create the transaction
+            $tx = GLTransaction::create($txData);
+
 
             // Debit expense
             GLEntry::create([
