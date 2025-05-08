@@ -460,7 +460,7 @@ class AccountingController extends Controller
             ]);
         });
 
-        return response()->json(['message' => 'Payment recorded'], 201);
+        return response()->json(['info' => 'Payment recorded'], 201);
     }
 }
 
