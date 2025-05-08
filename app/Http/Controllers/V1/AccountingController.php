@@ -393,6 +393,13 @@ class AccountingController extends Controller
                 $txn = $e->transaction;
                 $amt = $e->credit_amt - $e->debit_amt;
                 $running += $amt;
+
+                // find first allocation for this payment, then its invoice
+                $allocation = $txn->paymentAllocations()->first();
+                $invoice = $allocation
+                    ? $allocation->invoiceTransaction()->with('entries')->first()
+                    : null;
+
                 return [
                     'transactionId' => $txn->id,
                     'date' => $txn->trans_date->toDateString(),
@@ -404,6 +411,19 @@ class AccountingController extends Controller
                     'credit' => number_format($e->credit_amt, 2, '.', ''),
                     'amount' => number_format($amt, 2, '.', ''),
                     'runningBalance' => number_format($running, 2, '.', ''),
+                    'invoice' => $invoice ? [
+                        'id' => $invoice->id,
+                        'transactionDate' => $invoice->trans_date->toDateString(),
+                        'description' => $invoice->description,
+                        'total' => number_format(
+                            $invoice->entries()->where('account_id', $invoice->entries()->first()->account_id)
+                                ->sum('debit_amt'),
+                            2,
+                            '.',
+                            ''
+                        ),
+                        'paid' => number_format($allocation->allocated_amount, 2, '.', ''),
+                    ] : null,
                     'createdAt' => $txn->created_at,
                     'updatedAt' => $txn->updated_at,
                 ];
