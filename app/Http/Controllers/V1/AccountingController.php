@@ -87,7 +87,7 @@ class AccountingController extends Controller
         return response()->json($paginated);
     }
 
-     /**
+    /**
      * Return accounts (with balances) filtered by type and/or name.
      */
 
@@ -109,7 +109,7 @@ class AccountingController extends Controller
         $paginated = $query->paginate($perPage);
 
         $paginated->getCollection()->transform(function (Account $account) {
-            $debits  = (float) $account->total_debits;
+            $debits = (float) $account->total_debits;
             $credits = (float) $account->total_credits;
 
             // Compute balance by account type
@@ -120,14 +120,14 @@ class AccountingController extends Controller
             }
 
             return [
-                'id'             => $account->id,
-                'name'           => $account->account_name,
-                'type'           => $account->account_type,
-                'status'         => $account->status === 1 ? 'Active' : 'Inactive',
+                'id' => $account->id,
+                'name' => $account->account_name,
+                'type' => $account->account_type,
+                'status' => $account->status === 1 ? 'Active' : 'Inactive',
                 'currentBalance' => number_format($balance, 2, '.', ''),
-                'createdAt'      => $account->created_at->toDateTimeString(),
-                'updatedAt'      => $account->updated_at->toDateTimeString(),
-                'asOfDate'       => now()->toDateTimeString(),
+                'createdAt' => $account->created_at->toDateTimeString(),
+                'updatedAt' => $account->updated_at->toDateTimeString(),
+                'asOfDate' => now()->toDateTimeString(),
             ];
         });
 
@@ -371,8 +371,11 @@ class AccountingController extends Controller
 
         $entriesQ = GLEntry::select('gl_entries.*')
             ->join('gl_transactions as t', 'gl_entries.trans_id', '=', 't.id')
+            ->join('accounts as a', 'gl_entries.account_id', '=', 'a.id')
             ->where('t.trans_type', 'payment')
             ->whereBetween('t.trans_date', [$start->toDateString(), $end->toDateString()])
+            ->where('a.account_type', 'Asset')
+            ->where('gl_entries.credit_amt', '>', 0)   // only the credit side
             ->orderBy('t.trans_date', 'desc')
             ->orderBy('gl_entries.id');
 
