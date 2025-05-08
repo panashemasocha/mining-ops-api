@@ -7,6 +7,7 @@ use App\Http\Requests\SearchAccountsRequest;
 use App\Http\Requests\StoreReceiptRequest;
 use App\Http\Requests\ViewAccountsRequest;
 use App\Http\Requests\ViewCashbookRequest;
+use App\Http\Resources\SupplierResource;
 use App\Models\Account;
 use App\Models\GLEntry;
 use App\Models\GlPaymentAllocation;
@@ -409,7 +410,7 @@ class AccountingController extends Controller
                             2,'.',''
                         ),
                         'paid'            => number_format($allocation->allocated_amount,2,'.',''),
-                        'supplier'        => $invTx->supplier,
+                        'supplier'        =>new SupplierResource($invTx->supplier),
                     ];
                 }
 
