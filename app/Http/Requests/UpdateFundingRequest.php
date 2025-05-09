@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
@@ -17,29 +18,45 @@ class UpdateFundingRequest extends FormRequest
 
     public function rules()
     {
+        // For full PUT, all fields are required; for PATCH (or others)
+        $prefix = $this->isMethod('put') ? 'required|' : 'sometimes|';
+
         return [
-            'amount' => 'sometimes|numeric|min:0',
-            'payment_method_id' => 'sometimes|exists:payment_methods,id',
-            'account_id' => 'sometimes|exists:accounts,id',
-            'purpose' => 'sometimes|string|max:255',
-            'approval_notes' => 'sometimes|nullable|string',
-            'department_id' => 'sometimes|exists:departments,id',
-            'mining_site_id' => 'sometimes|exists:mining_sites,id',
-            'accountant_id' => 'sometimes|exists:users,id',
-            'decision_date' => 'sometimes|nullable|date',
-            'status' => 'sometimes|in:pending,accepted,rejected',
+            'amount' => "{$prefix}numeric|min:0",
+            'payment_method_id' => "{$prefix}exists:payment_methods,id",
+            'account_id' => "{$prefix}exists:accounts,id",
+            'purpose' => "{$prefix}string|max:255",
+            'approval_notes' => "{$prefix}nullable|string",
+            'department_id' => "{$prefix}exists:departments,id",
+            'mining_site_id' => "{$prefix}exists:mining_sites,id",
+            'accountant_id' => "{$prefix}exists:users,id",
+            'decision_date' => "{$prefix}nullable|date",
+            'status' => "{$prefix}in:pending,accepted,rejected",
         ];
     }
 
     protected function prepareForValidation()
     {
-        $this->merge([
-            'payment_method_id' => $this->input('paymentMethodId', $this->input('payment_method_id')),
-            'mining_site_id' => $this->input('miningSiteId', $this->input('mining_site_id')),
-            'account_id' => $this->input('accountId', $this->input('account_id')),
-            'department_id' => $this->input('departmentId', $this->input('department_id')),
-            'accountant_id' => $this->input('accountantId', $this->input('accountant_id')),
-            'decision_date' => $this->input('decisionDate', $this->input('decision_date')),
-        ]);
+        $mapping = [
+            'amount' => ['amount', 'amount'],
+            'payment_method_id' => ['payment_method_id', 'paymentMethodId'],
+            'account_id' => ['account_id', 'accountId'],
+            'purpose' => ['purpose', 'purpose'],
+            'approval_notes' => ['approval_notes', 'approvalNotes'],
+            'department_id' => ['department_id', 'departmentId'],
+            'mining_site_id' => ['mining_site_id', 'miningSiteId'],
+            'accountant_id' => ['accountant_id', 'accountantId'],
+            'decision_date' => ['decision_date', 'decisionDate'],
+            'status' => ['status', 'status'],
+        ];
+
+        $data = [];
+        foreach ($mapping as $snake => [$snakeKey, $camelKey]) {
+            if ($this->has($snakeKey) || $this->has($camelKey)) {
+                $data[$snake] = $this->input($snakeKey, $this->input($camelKey));
+            }
+        }
+
+        $this->merge($data);
     }
 }
