@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers\V1;
 
+use App\Filters\V1\RequisitionFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreFundingRequest;
 use App\Http\Requests\UpdateFundingRequest;
@@ -12,7 +13,9 @@ class RequisitionController extends Controller
 {
     public function index(Request $request)
     {
-        $query = FundingRequest::orderBy('updated_at', 'desc');
+        $filter = new RequisitionFilter();
+        $filterItems = $filter->transform($request);
+        $query = FundingRequest::where($filterItems)->orderBy('updated_at', 'desc');
         $requests = $request->query('paging', 'true') === 'false'
             ? $query->get()
             : $query->paginate(10);
