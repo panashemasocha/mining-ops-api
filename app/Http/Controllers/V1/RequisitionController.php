@@ -31,9 +31,16 @@ class RequisitionController extends Controller
         $query->orderBy('updated_at', 'desc');
 
         // Get requisitions with pagination
-        $requests = $request->query('paging', 'true') === 'false'
-            ? $query->get()
-            : $query->paginate(10)->appends($request->query());
+        $isPaginated = $request->query('paging', 'true') !== 'false';
+        
+        if ($isPaginated) {
+            $requests = $query->paginate(10)->appends($request->query());
+            $requisitions = FundingRequestResource::collection($requests);
+            
+        } else {
+            $requests = $query->get();
+            $requisitions = FundingRequestResource::collection($requests);
+        }
 
         // Get stats
         $stats = $statsService->getStats();
@@ -42,7 +49,7 @@ class RequisitionController extends Controller
         return response()->json([
             'data' => [
                 'stats' => $stats,
-                'requisitions' => FundingRequestResource::collection($requests)
+                'requisitions' => $requisitions
             ]
         ]);
     }
@@ -56,7 +63,7 @@ class RequisitionController extends Controller
     public function store(StoreFundingRequest $request)
     {
         $funding = FundingRequest::create($request->validated());
-
+        
         return new FundingRequestResource($funding);
     }
 
@@ -69,7 +76,7 @@ class RequisitionController extends Controller
     public function show($id)
     {
         $funding = FundingRequest::findOrFail($id);
-
+        
         return new FundingRequestResource($funding);
     }
 
@@ -84,7 +91,7 @@ class RequisitionController extends Controller
     {
         $funding = FundingRequest::findOrFail($id);
         $funding->update($request->validated());
-
+        
         return new FundingRequestResource($funding);
     }
 
@@ -98,7 +105,7 @@ class RequisitionController extends Controller
     {
         $funding = FundingRequest::findOrFail($id);
         $funding->delete();
-
+        
         return response()->json(['message' => 'Funding request deleted'], 200);
     }
 }
