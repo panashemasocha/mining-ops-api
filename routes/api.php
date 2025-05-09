@@ -48,12 +48,12 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('users', UserController::class);
 
         //Users Routes
-    
-           Route::apiResource('departments', DepartmentController::class);
-            Route::apiResource('branches', BranchController::class);
-            Route::apiResource('roles', UserRoleController::class);
-            Route::apiResource('driver-info', DriverInfoController::class);
-            Route::apiResource('job-positions', JobPositionController::class);
+
+        Route::apiResource('departments', DepartmentController::class);
+        Route::apiResource('branches', BranchController::class);
+        Route::apiResource('roles', UserRoleController::class);
+        Route::apiResource('driver-info', DriverInfoController::class);
+        Route::apiResource('job-positions', JobPositionController::class);
 
         Route::post('fleet-stats', [FleetStatisticalDataController::class, 'getFleetStatistics']);
 
@@ -89,22 +89,20 @@ Route::prefix('v1')->group(function () {
             });
         });
 
+        // Ores
         Route::apiResource('ores', OreController::class);
 
         //Ore Type
-        Route::apiResource('ores/type', OreTypeController::class);
-        // Ores
-        Route::prefix('ores')->group(function () {
-         
-            //Quantities
-            Route::get('quantities', [OreController::class, 'quantities']);
+        Route::apiResource('ores-type', OreTypeController::class);
 
-            //Ore Quality Type
-            Route::apiResource('quality-types', OreQualityTypeController::class);
-            //Ore Quality Grade
-            Route::apiResource('quality-grade', OreQualityGradeController::class);
+        //Ore Quality Type
+        Route::apiResource('ore-quality-types', OreQualityTypeController::class);
+        //Ore Quality Grade
+        Route::apiResource('ore-quality-grade', OreQualityGradeController::class);
 
-        });
+        //Quantities
+        Route::get('ore-quantities', [OreController::class, 'quantities']);
+
 
         //Accounting
         Route::prefix('accounting')->group(function () {
