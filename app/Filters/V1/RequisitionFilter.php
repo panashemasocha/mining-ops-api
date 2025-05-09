@@ -1,56 +1,24 @@
 <?php
+
 namespace App\Filters\V1;
 
-use Illuminate\Http\Request;
-use App\Filters\ApiFilter;
+use App\Filters\AbstractApiFilter;
 
-class RequisitionFilter extends ApiFilter{
-    
-    protected $safeparams = [
+class RequisitionFilter extends AbstractApiFilter
+{
+    /**
+     * Parameters that can be filtered and their allowed operators.
+     */
+    protected $safeParams = [
         'status' => ['eq'],
         'accountId' => ['eq'],
     ];
     
+    /**
+     * Map request parameters to database columns.
+     */
     protected $columnMap = [
         'status' => 'status',
         'accountId' => 'account_id'
     ];
-    
-    protected $operatorMap = [
-        'eq' => '=',
-        'lt' => '<',
-        'lte' => '≤',
-        'gt' => '>',
-        'gte' => '≥',
-        'ne' => '!='
-    ];
-
-    protected function operatorMap(string $operator): string
-    {
-         return $this->operatorMap[$operator] ?? '=';
-    }
-
-
-    public function transform(Request $request){
-        $eloQuery = [];
-
-        foreach($this->safeparams as $parm =>$operators){
-            $query = $request->query($parm);
-
-            if(!isset($query)){
-                continue;
-            }
-
-            $column = $this->columnMap[$parm] ?? $parm;
-
-            foreach($operators as $operator){
-                if(isset($query[$operator])){
-                    $eloQuery[] = [$column, $this->operatorMap[$operator],$query[$operator]];
-                }
-            }
-        }
-        return $eloQuery;
-    }
-
-
 }
