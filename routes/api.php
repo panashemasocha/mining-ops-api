@@ -98,7 +98,7 @@ Route::prefix('v1')->group(function () {
         //Ore Quality Type
         Route::apiResource('ore-quality-types', OreQualityTypeController::class);
         //Ore Quality Grade
-        Route::apiResource('ore-quality-grade', OreQualityGradeController::class);
+        Route::apiResource('ore-quality-grades', OreQualityGradeController::class);
 
         //Quantities
         Route::get('ore-quantities', [OreController::class, 'quantities']);
