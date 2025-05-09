@@ -43,7 +43,7 @@ Route::prefix('v1')->group(function () {
         //Auth
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::post('/refresh', [AuthController::class, 'refresh']);
-       
+
         //Users
         Route::apiResource('users', UserController::class);
 
@@ -58,12 +58,11 @@ Route::prefix('v1')->group(function () {
 
         Route::post('fleet-stats', [FleetStatisticalDataController::class, 'getFleetStatistics']);
 
+        Route::apiResource('vehicles', VehicleController::class);
+
         // Vehicles
         Route::prefix('vehicles')->group(function () {
 
-            Route::apiResource('', VehicleController::class, [
-                'parameters' => ['' => 'vehicle']
-            ]);
             // Vehicle Category
             Route::apiResource('categories', VehicleCategoryController::class);
             // Vehicle Sub Category
@@ -78,12 +77,10 @@ Route::prefix('v1')->group(function () {
             // Assigned Drivers
             Route::apiResource('assigned-drivers', AssignedVehicleController::class);
 
+            Route::apiResource('diesel-allocations', DieselAllocationController::class);
+
             //Diesel Allocations
             Route::prefix('diesel-allocations')->group(function () {
-
-                Route::apiResource('', DieselAllocationController::class, [
-                    'parameters' => ['' => 'dieselAllocation']
-                ]);
                 //types
                 Route::apiResource('types', DieselAllocationTypeController::class);
 
@@ -93,27 +90,21 @@ Route::prefix('v1')->group(function () {
             });
         });
 
+        Route::apiResource('ores', OreController::class);
+
+        //Ore Type
+        Route::apiResource('ores/type', OreTypeController::class);
         // Ores
         Route::prefix('ores')->group(function () {
-
-            Route::apiResource('/', OreController::class);
-
-
-            //Ore Loaders
-            Route::apiResource('loaders', OreLoaderController::class);
-
+         
             //Quantities
             Route::get('quantities', [OreController::class, 'quantities']);
 
-            //Ore Type
-            Route::apiResource('type', OreTypeController::class);
+            //Ore Quality Type
+            Route::apiResource('quality-types', OreQualityTypeController::class);
+            //Ore Quality Grade
+            Route::apiResource('quality-grade', OreQualityGradeController::class);
 
-            Route::prefix('quality')->group(function () {
-                //Ore Quality Type
-                Route::apiResource('type', OreQualityTypeController::class);
-                //Ore Quality Grade
-                Route::apiResource('grade', OreQualityGradeController::class);
-            });
         });
 
         //Accounting
@@ -155,20 +146,18 @@ Route::prefix('v1')->group(function () {
 
         });
 
+        // Trips
+        Route::apiResource('trips', TripController::class);
         Route::prefix('trips')->group(function () {
-            // Trips
-            Route::apiResource('', TripController::class, [
-                'parameters' => ['' => 'trip']
-            ]);
+
             //Bulk Insert
             Route::post('bulk-store', [TripController::class, 'bulkStore']);
         });
 
+        Route::apiResource('dispatches', DispatchController::class);
+
         // Dispatches
         Route::prefix('dispatches')->group(function () {
-            Route::apiResource('', DispatchController::class, [
-                'parameters' => ['' => 'dispatch']
-            ]);
             Route::post('seek-driver-vehicle', [DispatchController::class, 'seekDriverVehicle']);
             Route::post('bulk-store', [DispatchController::class, 'storeWithTripsAndDieselAllocations']);
         });
