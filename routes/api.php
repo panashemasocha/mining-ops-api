@@ -10,7 +10,7 @@ use App\Http\Controllers\V1\DispatchController;
 use App\Http\Controllers\V1\ExcavatorUsageController;
 use App\Http\Controllers\V1\ExpenseController;
 use App\Http\Controllers\V1\FleetStatisticalDataController;
-use App\Http\Controllers\V1\FundingRequestController;
+use App\Http\Controllers\V1\RequisitionController;
 use App\Http\Controllers\V1\JobPositionController;
 use App\Http\Controllers\V1\DriverInfoController;
 use App\Http\Controllers\V1\MiningSiteController;
@@ -146,8 +146,8 @@ Route::prefix('v1')->group(function () {
                 Route::post('/', [ExpenseController::class, 'store']);
             });
 
-            //Request Funding
-            Route::apiResource('funding-request', FundingRequestController::class);
+            //Requisitions
+            Route::apiResource('requisitions', RequisitionController::class);
 
             // Cost Prices
             Route::apiResource('cost-prices', CostPriceController::class);

@@ -8,7 +8,7 @@ use App\Http\Resources\FundingRequestResource;
 use App\Models\FundingRequest;
 use Illuminate\Http\Request;
 
-class FundingRequestController extends Controller
+class RequisitionController extends Controller
 {
     public function index(Request $request)
     {
