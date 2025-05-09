@@ -13,7 +13,7 @@ class RequisitionFilter extends AbstractApiFilter
         'status' => ['eq'],
         'accountId' => ['eq'],
     ];
-    
+
     /**
      * Map request parameters to database columns.
      */
@@ -21,4 +21,10 @@ class RequisitionFilter extends AbstractApiFilter
         'status' => 'status',
         'accountId' => 'account_id'
     ];
+
+    /**
+     * List of parameters that should skip filtering when their value is 'any'.
+     * Override the parent property to customize for this specific filter.
+     */
+    protected $skipWhenAny = ['status'];
 }

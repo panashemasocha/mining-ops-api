@@ -43,6 +43,12 @@ abstract class AbstractApiFilter
     }
 
     /**
+     * List of parameters that should skip filtering when their value is 'any'.
+     * @var array
+     */
+    protected $skipWhenAny = ['status'];
+
+    /**
      * Transform the request query parameters into filter conditions.
      *
      * @param Request $request
@@ -63,6 +69,11 @@ abstract class AbstractApiFilter
 
             foreach ($operators as $operator) {
                 if (isset($query[$operator])) {
+                    // Skip adding filter if parameter is in skipWhenAny list and value is 'any'
+                    if (in_array($param, $this->skipWhenAny) && strtolower($query[$operator]) === 'any') {
+                        continue;
+                    }
+
                     $filterQuery[] = [$column, $this->mapOperator($operator), $query[$operator]];
                 }
             }
