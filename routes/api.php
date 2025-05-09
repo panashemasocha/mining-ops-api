@@ -49,23 +49,22 @@ Route::prefix('v1')->group(function () {
 
         //Users Routes
 
-        Route::apiResource('departments', DepartmentController::class);
-        Route::apiResource('branches', BranchController::class);
-        Route::apiResource('roles', UserRoleController::class);
-        Route::apiResource('driver-info', DriverInfoController::class);
-        Route::apiResource('job-positions', JobPositionController::class);
+        Route::apiResource('user-departments', DepartmentController::class);
+        Route::apiResource('user-branches', BranchController::class);
+        Route::apiResource('user-roles', UserRoleController::class);
+        Route::apiResource('user-driver-info', DriverInfoController::class);
+        Route::apiResource('user-job-positions', JobPositionController::class);
 
         Route::post('fleet-stats', [FleetStatisticalDataController::class, 'getFleetStatistics']);
 
         Route::apiResource('vehicles', VehicleController::class);
 
         // Vehicles
-        Route::prefix('vehicles')->group(function () {
-
+       
             // Vehicle Category
-            Route::apiResource('categories', VehicleCategoryController::class);
+            Route::apiResource('vehicle-categories', VehicleCategoryController::class);
             // Vehicle Sub Category
-            Route::apiResource('sub-types', VehicleSubTypeController::class);
+            Route::apiResource('vehicle-sub-types', VehicleSubTypeController::class);
 
             //Excavator
             Route::apiResource('excavator-usages', ExcavatorUsageController::class);
@@ -87,7 +86,7 @@ Route::prefix('v1')->group(function () {
                 Route::post('bulk-store', [DieselAllocationController::class, 'bulkStore']);
 
             });
-        });
+      
 
         // Ores
         Route::apiResource('ores', OreController::class);
