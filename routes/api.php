@@ -48,13 +48,12 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('users', UserController::class);
 
         //Users Routes
-        Route::prefix('users')->group(function () {
-            Route::apiResource('departments', DepartmentController::class);
+    
+           Route::apiResource('departments', DepartmentController::class);
             Route::apiResource('branches', BranchController::class);
             Route::apiResource('roles', UserRoleController::class);
             Route::apiResource('driver-info', DriverInfoController::class);
-        });
-            Route::apiResource('job-positions', JobPositionController::class);
+            Route::apiResource('users/job-positions', JobPositionController::class);
 
         Route::post('fleet-stats', [FleetStatisticalDataController::class, 'getFleetStatistics']);
 
