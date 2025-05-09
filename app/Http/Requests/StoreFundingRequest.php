@@ -45,7 +45,7 @@ class StoreFundingRequest extends FormRequest
     protected function failedAuthorization()
     {
         throw new HttpResponseException(response()->json([
-            'message' => 'Only accountants are allowed to create funding requests.'
+            'message' => 'Only accountants are allowed to create requisitions.'
         ], 403));
     }
 }

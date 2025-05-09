@@ -53,7 +53,7 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('branches', BranchController::class);
             Route::apiResource('roles', UserRoleController::class);
             Route::apiResource('driver-info', DriverInfoController::class);
-            Route::apiResource('job-positions', JobPositionController::class);
+            Route::apiResource('/job-positions', JobPositionController::class);
         });
 
         Route::post('fleet-stats', [FleetStatisticalDataController::class, 'getFleetStatistics']);
@@ -125,7 +125,6 @@ Route::prefix('v1')->group(function () {
                 Route::get('/', [AccountingController::class, 'accountsWithBalances']);
                 Route::get('search', [AccountingController::class, 'searchAccountTransactions']);
                 Route::get('/{id}', [AccountingController::class, 'accountTransactions']);
-
             });
 
             // invoices  
@@ -134,7 +133,6 @@ Route::prefix('v1')->group(function () {
             // invoices  
             Route::post('payments', [AccountingController::class, 'paymentReport']);
             Route::post('receipt', [AccountingController::class, 'storeReceipt']);
-
 
             // cashbook  
             Route::get('cashbook', [AccountingController::class, 'cashbook']);
