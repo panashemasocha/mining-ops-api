@@ -43,17 +43,17 @@ Route::prefix('v1')->group(function () {
         //Auth
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::post('/refresh', [AuthController::class, 'refresh']);
+       
+        //Users
+        Route::apiResource('users', UserController::class);
 
-        //User
+        //Users Routes
         Route::prefix('users')->group(function () {
-            Route::apiResource('', UserController::class, [
-                'parameters' => ['' => 'user']
-            ]);
             Route::apiResource('departments', DepartmentController::class);
             Route::apiResource('branches', BranchController::class);
             Route::apiResource('roles', UserRoleController::class);
             Route::apiResource('driver-info', DriverInfoController::class);
-            Route::apiResource('/job-positions', JobPositionController::class);
+            Route::apiResource('job-positions', JobPositionController::class);
         });
 
         Route::post('fleet-stats', [FleetStatisticalDataController::class, 'getFleetStatistics']);
