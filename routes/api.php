@@ -53,8 +53,8 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('branches', BranchController::class);
             Route::apiResource('roles', UserRoleController::class);
             Route::apiResource('driver-info', DriverInfoController::class);
-            Route::apiResource('job-positions', JobPositionController::class);
         });
+            Route::apiResource('job-positions', JobPositionController::class);
 
         Route::post('fleet-stats', [FleetStatisticalDataController::class, 'getFleetStatistics']);
 
