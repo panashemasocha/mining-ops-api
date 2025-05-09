@@ -8,29 +8,43 @@ use App\Http\Requests\StoreFundingRequest;
 use App\Http\Requests\UpdateFundingRequest;
 use App\Http\Resources\FundingRequestResource;
 use App\Models\FundingRequest;
+use App\Services\RequisitionStatsService;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class RequisitionController extends Controller
 {
     /**
-     * Display a listing of the funding requests with optional filtering.
+     * Display a listing of the funding requests with optional filtering and stats.
      *
      * @param Request $request
-     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     * @param RequisitionStatsService $statsService
+     * @return JsonResponse
      */
-    public function index(Request $request)
+    public function index(Request $request, RequisitionStatsService $statsService)
     {
+        // Apply filters
         $filter = new RequisitionFilter();
         $filterItems = $filter->transform($request);
 
         $query = FundingRequest::where($filterItems);
         $query->orderBy('updated_at', 'desc');
 
+        // Get requisitions with pagination
         $requests = $request->query('paging', 'true') === 'false'
             ? $query->get()
             : $query->paginate(10)->appends($request->query());
 
-        return FundingRequestResource::collection($requests);
+        // Get stats
+        $stats = $statsService->getStats();
+
+        // Return structured response
+        return response()->json([
+            'data' => [
+                'stats' => $stats,
+                'requisitions' => FundingRequestResource::collection($requests)
+            ]
+        ]);
     }
 
     /**
