@@ -11,35 +11,49 @@ class UpdateCostPriceRequest extends FormRequest
      */
     public function authorize()
     {
-       $user = auth()->user();
-        return $user && in_array($user->role->name, ['management', 'executive']) ||
-            ($user && in_array($user->jobPosition->id, [3, 6]));
+        $user = auth()->user();
+        return $user && (
+            in_array($user->role->name, ['management', 'executive'])
+            || in_array($user->jobPosition->id, [3, 6])
+        );
     }
 
     public function rules()
     {
+        // For full PUT requests, fields are required; for PATCH (and others), they are validated if present.
+        $prefix = $this->isMethod('put') ? 'required|' : 'sometimes|';
+
         return [
-            'commodity'     => 'sometimes|string|in:loading cost,ore cost,diesel cost',
-            'ore_type'      => 'sometimes|nullable|string|max:255',
-            'quality_type'  => 'sometimes|nullable|string|max:255',
-            'quality_grade' => 'sometimes|nullable|string|max:255',
-            'price'         => 'sometimes|numeric|min:0',
-            'created_by'    => 'sometimes|exists:users,id',
+            'commodity'      => "{$prefix}string|in:loading cost,ore cost,diesel cost",
+            'ore_type'       => "{$prefix}nullable|string|max:255",
+            'quality_type'   => "{$prefix}nullable|string|max:255",
+            'quality_grade'  => "{$prefix}nullable|string|max:255",
+            'price'          => "{$prefix}numeric|min:0",
+            'created_by'     => "{$prefix}exists:users,id",
         ];
     }
 
-     /**
-     * Prepare the data for validation by converting camelCase inputs to snake_case.
+    /**
+     * Prepare the data for validation by normalizing camelCase inputs to snake_case.
      */
     protected function prepareForValidation()
     {
-        $this->merge([
-            'commodity' => $this->input('commodity', $this->input('commodity')),
-            'ore_type' => $this->input('ore_type', $this->input('oreType')),
-            'quality_type' => $this->input('quality_type', $this->input('qualityType')),
-            'quality_grade' => $this->input('quality_grade', $this->input('qualityGrade')),
-            'price' => $this->input('price', $this->input('price')),
-            'created_by' => $this->input('created_by', $this->input('createdBy')),
-        ]);
+        $mapping = [
+            'commodity'      => ['commodity', 'commodity'],
+            'ore_type'       => ['ore_type', 'oreType'],
+            'quality_type'   => ['quality_type', 'qualityType'],
+            'quality_grade'  => ['quality_grade', 'qualityGrade'],
+            'price'          => ['price', 'price'],
+            'created_by'     => ['created_by', 'createdBy'],
+        ];
+
+        $data = [];
+        foreach ($mapping as $snake => [$snakeKey, $camelKey]) {
+            if ($this->has($snakeKey) || $this->has($camelKey)) {
+                $data[$snake] = $this->input($snakeKey, $this->input($camelKey));
+            }
+        }
+
+        $this->merge($data);
     }
 }
