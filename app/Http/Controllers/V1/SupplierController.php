@@ -12,8 +12,8 @@ class SupplierController extends Controller
 {
     public function index(Request $request)
     {
-        $suppliers = $request->query('paging', 'true') === 'false' 
-            ? Supplier::all() 
+        $suppliers = $request->query('paging', 'true') === 'false'
+            ? Supplier::all()
             : Supplier::paginate(10);
         return SupplierResource::collection($suppliers);
     }
@@ -37,8 +37,12 @@ class SupplierController extends Controller
     {
         $supplier = Supplier::findOrFail($id);
         $data = $request->validated();
-        $data['first_name'] = ucfirst($data['first_name']);
-        $data['last_name'] = ucfirst($data['last_name']);
+        if ($data['first_name']) {
+            $data['first_name'] = ucfirst($data['first_name']);
+        }
+        if ($data['last_name']) {
+            $data['last_name'] = ucfirst($data['last_name']);
+        }
         $supplier->update($data);
         return new SupplierResource($supplier);
     }
