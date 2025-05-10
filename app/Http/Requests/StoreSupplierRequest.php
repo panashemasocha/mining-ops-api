@@ -11,7 +11,8 @@ class StoreSupplierRequest extends FormRequest
      */
     public function authorize()
     {
-        return auth()->user()->role->name === 'management';
+        $user = auth()->user();
+        return $user && in_array($user->role->id, [1, 2, 3]);
     }
 
     public function rules()

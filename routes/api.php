@@ -48,7 +48,6 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('users', UserController::class);
 
         //Users Routes
-
         Route::apiResource('user-departments', DepartmentController::class);
         Route::apiResource('user-branches', BranchController::class);
         Route::apiResource('user-roles', UserRoleController::class);
@@ -60,33 +59,33 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('vehicles', VehicleController::class);
 
         // Vehicles
-       
-            // Vehicle Category
-            Route::apiResource('vehicle-categories', VehicleCategoryController::class);
-            // Vehicle Sub Category
-            Route::apiResource('vehicle-sub-types', VehicleSubTypeController::class);
 
-            //Excavator
-            Route::apiResource('excavator-usages', ExcavatorUsageController::class);
+        // Vehicle Category
+        Route::apiResource('vehicle-categories', VehicleCategoryController::class);
+        // Vehicle Sub Category
+        Route::apiResource('vehicle-sub-types', VehicleSubTypeController::class);
 
-            //Odometer Readings
-            Route::apiResource('odometer-readings', OdometerReadingController::class);
+        //Excavator
+        Route::apiResource('excavator-usages', ExcavatorUsageController::class);
 
-            // Assigned Drivers
-            Route::apiResource('assigned-drivers', AssignedVehicleController::class);
+        //Odometer Readings
+        Route::apiResource('odometer-readings', OdometerReadingController::class);
 
-            Route::apiResource('diesel-allocations', DieselAllocationController::class);
+        // Assigned Drivers
+        Route::apiResource('assigned-drivers', AssignedVehicleController::class);
 
-            //Diesel Allocations
-            Route::prefix('diesel-allocations')->group(function () {
-                //types
-                Route::apiResource('types', DieselAllocationTypeController::class);
+        Route::apiResource('diesel-allocations', DieselAllocationController::class);
 
-                //Bulk Insert
-                Route::post('bulk-store', [DieselAllocationController::class, 'bulkStore']);
+        //Diesel Allocations
+        Route::prefix('diesel-allocations')->group(function () {
+            //types
+            Route::apiResource('types', DieselAllocationTypeController::class);
 
-            });
-      
+            //Bulk Insert
+            Route::post('bulk-store', [DieselAllocationController::class, 'bulkStore']);
+
+        });
+
 
         // Ores
         Route::apiResource('ores', OreController::class);
@@ -101,7 +100,6 @@ Route::prefix('v1')->group(function () {
 
         //Quantities
         Route::get('ore-quantities', [OreController::class, 'quantities']);
-
 
         //Accounting
         Route::prefix('accounting')->group(function () {
