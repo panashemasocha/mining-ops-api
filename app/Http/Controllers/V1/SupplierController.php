@@ -37,10 +37,10 @@ class SupplierController extends Controller
     {
         $supplier = Supplier::findOrFail($id);
         $data = $request->validated();
-        if ($data['first_name']) {
+        if ($data['first_name'] != null) {
             $data['first_name'] = ucfirst($data['first_name']);
         }
-        if ($data['last_name']) {
+        if ($data['last_name'] != null) {
             $data['last_name'] = ucfirst($data['last_name']);
         }
         $supplier->update($data);
