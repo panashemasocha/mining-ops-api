@@ -43,11 +43,6 @@ class Trip extends Model
         return $this->belongsTo(DieselAllocation::class,'diesel_allocation_id');
     }
 
-    public function oreLoader()
-    {
-        return $this->hasOne(OreLoader::class);
-    }
-
     public function odometerReading()
     {
         return $this->hasOne(OdometerReading::class);

@@ -24,7 +24,7 @@ class DispatchRepository
 
     /**
      * Fetch dispatches for a specific driver created on or between the given dates 
-     * sorted by newest first.
+     * based on associated trips, sorted by newest first.
      *
      * @param  int     $driverId   ID of the driver
      * @param  string  $startDate  YYYY-MM-DD
@@ -33,7 +33,7 @@ class DispatchRepository
      */
     public function getDispatchesForDriver(int $driverId, string $startDate, string $endDate)
     {
-        return Dispatch::whereHas('vehicle.assignedDrivers', function ($query) use ($driverId) {
+        return Dispatch::whereHas('trips', function ($query) use ($driverId) {
             $query->where('driver_id', $driverId);
         })
             ->whereDate('created_at', '>=', $startDate)
