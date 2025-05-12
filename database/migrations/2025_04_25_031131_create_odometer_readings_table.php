@@ -21,9 +21,9 @@ return new class extends Migration {
                 ->constrained('trips')
                 ->onUpdate('cascade')
                 ->onDelete('set null');
-            $table->unsignedBigInteger('initial_value');
-            $table->unsignedBigInteger('trip_end_value');
-            $table->enum('reading_unit', ['Kilometre', 'Mile']);
+            $table->unsignedBigInteger('initial_value')->nullable();
+            $table->unsignedBigInteger('trip_end_value')->nullable();
+            $table->enum('reading_unit', ['Kilometre', 'Mile'])->nullable();
             $table->boolean('meter_not_working')->default(false);
             $table->timestamps();
         });

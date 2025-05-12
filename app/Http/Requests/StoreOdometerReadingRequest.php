@@ -17,8 +17,8 @@ class StoreOdometerReadingRequest extends FormRequest
         return [
             'vehicle_id' => 'required|exists:vehicles,id',
             'trip_id' => 'nullable|exists:trips,id',
-            'initial_value' => 'required|integer|min:0',
-            'trip_end_value'  => 'required|integer|min:0|gt:initial_value',
+            'initial_value' => 'nullable|integer|min:0',
+            'trip_end_value'  => 'nullable|integer|min:0|gt:initial_value',
             'reading_unit' => 'required|in:Kilometre,Mile',
             'meter_not_working' => 'sometimes|boolean',
         ];
