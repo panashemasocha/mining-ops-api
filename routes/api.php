@@ -23,6 +23,7 @@ use App\Http\Controllers\V1\OreTypeController;
 use App\Http\Controllers\V1\PaymentMethodController;
 use App\Http\Controllers\V1\SupplierController;
 use App\Http\Controllers\V1\TripController;
+use App\Http\Controllers\V1\TripOdometerController;
 use App\Http\Controllers\V1\VehicleCategoryController;
 use App\Http\Controllers\V1\VehicleController;
 use App\Http\Controllers\V1\VehicleSubTypeController;
@@ -147,6 +148,7 @@ Route::prefix('v1')->group(function () {
             //Bulk Insert
             Route::post('bulk-store', [TripController::class, 'bulkStore']);
         });
+        Route::put('/trips/{tripId}/update-with-odometer', [TripOdometerController::class, 'updateTripAndOdometer']);
 
         Route::apiResource('dispatches', DispatchController::class);
 
