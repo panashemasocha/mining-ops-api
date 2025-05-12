@@ -147,8 +147,11 @@ Route::prefix('v1')->group(function () {
 
             //Bulk Insert
             Route::post('bulk-store', [TripController::class, 'bulkStore']);
+            
+            //Update trip and odometer readings
+            Route::patch('{tripId}/update-with-odometer', [TripOdometerController::class, 'updateTripAndOdometer']);
+
         });
-        Route::patch('/trips/{tripId}/update-with-odometer', [TripOdometerController::class, 'updateTripAndOdometer']);
 
         Route::apiResource('dispatches', DispatchController::class);
 
