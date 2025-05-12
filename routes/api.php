@@ -149,7 +149,7 @@ Route::prefix('v1')->group(function () {
             Route::post('bulk-store', [TripController::class, 'bulkStore']);
             
             //Update trip and odometer readings
-            Route::patch('{tripId}/update-with-odometer', [TripOdometerController::class, 'updateTripAndOdometer']);
+            Route::patch('update-with-odometer/{tripId}', [TripOdometerController::class, 'updateTripAndOdometer']);
 
         });
 
