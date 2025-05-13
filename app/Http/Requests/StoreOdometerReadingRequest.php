@@ -30,25 +30,25 @@ class StoreOdometerReadingRequest extends FormRequest
         $end     = $this->input('trip_end_value');
 
         // Only enforce gt:initial_value if initial_value > 0 AND trip_end_value != 0
-        if ($initial !== null
-            && (int) $initial > 0
-            && $end !== null
-            && (int) $end !== 0
-        ) {
-            $tripEndRules[] = 'gt:initial_value';
-        }
+        // if ($initial !== null
+        //     && (int) $initial > 0
+        //     && $end !== null
+        //     && (int) $end !== 0
+        // ) {
+        //     $tripEndRules[] = 'gt:initial_value';
+        // }
 
-        $rules['trip_end_value'] = $tripEndRules;
+        // $rules['trip_end_value'] = $tripEndRules;
 
         return $rules;
     }
 
-    public function messages(): array
-    {
-        return [
-            'trip_end_value.gt' => 'The trip end value must be greater than the initial value.',
-        ];
-    }
+    // public function messages(): array
+    // {
+    //     return [
+    //         'trip_end_value.gt' => 'The trip end value must be greater than the initial value.',
+    //     ];
+    // }
 
     protected function prepareForValidation(): void
     {
