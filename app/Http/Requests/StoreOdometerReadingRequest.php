@@ -14,41 +14,22 @@ class StoreOdometerReadingRequest extends FormRequest
 
     public function rules(): array
     {
-        // Base rules
-        $rules = [
-            'vehicle_id'         => 'required|exists:vehicles,id',
-            'trip_id'            => 'nullable|exists:trips,id',
-            'initial_value'      => 'nullable|integer|min:0',
-            'reading_unit'       => 'required|in:Kilometre,Mile',
-            'meter_not_working'  => 'sometimes|boolean',
+        return [
+            'vehicle_id'        => 'required|exists:vehicles,id',
+            'trip_id'           => 'nullable|exists:trips,id',
+            'initial_value'     => 'nullable|integer|min:0',
+            'trip_end_value'    => 'nullable|integer|min:0',
+            'reading_unit'      => 'required|in:Kilometre,Mile',
+            'meter_not_working' => 'sometimes|boolean',
         ];
-
-        // Always allow trip_end_value to be nullable, integer, min:0
-        $tripEndRules = ['nullable', 'integer', 'min:0'];
-
-        $initial = $this->input('initial_value');
-        $end     = $this->input('trip_end_value');
-
-        // Only enforce gt:initial_value if initial_value > 0 AND trip_end_value != 0
-        // if ($initial !== null
-        //     && (int) $initial > 0
-        //     && $end !== null
-        //     && (int) $end !== 0
-        // ) {
-        //     $tripEndRules[] = 'gt:initial_value';
-        // }
-
-        // $rules['trip_end_value'] = $tripEndRules;
-
-        return $rules;
     }
 
-    // public function messages(): array
-    // {
-    //     return [
-    //         'trip_end_value.gt' => 'The trip end value must be greater than the initial value.',
-    //     ];
-    // }
+    public function messages(): array
+    {
+        return [
+            // You may add custom messages here if needed.
+        ];
+    }
 
     protected function prepareForValidation(): void
     {
