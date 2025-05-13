@@ -36,8 +36,8 @@ class DispatchRepository
         return Dispatch::whereHas('trips', function ($query) use ($driverId) {
             $query->where('driver_id', $driverId);
         })
-            ->whereDate('created_at', '>=', $startDate)
-            ->whereDate('created_at', '<=', $endDate)
+            // ->whereDate('created_at', '>=', $startDate)
+            // ->whereDate('created_at', '<=', $endDate)
             ->orderBy('created_at', 'desc')
             ->get();
     }
