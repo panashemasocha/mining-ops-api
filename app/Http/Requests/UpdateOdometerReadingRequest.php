@@ -26,22 +26,22 @@ class UpdateOdometerReadingRequest extends FormRequest
         return [
             'vehicle_id' => "{$prefix}exists:vehicles,id",
             'trip_id' => "{$prefix}nullable|exists:trips,id",
-            'initial_value' => "{$prefix}integer|min:0",
-            'trip_end_value' => "{$prefix}integer|min:0|gt:initial_value",
+            'initial_value' => "{$prefix}integer|nullable|min:0",
+            'trip_end_value' => "{$prefix}integer|nullable|min:0",
             'reading_unit' => "{$prefix}in:Kilometre,Mile",
             'meter_not_working' => "{$prefix}boolean",
         ];
     }
 
-    /**
-     * Custom error messages for validation.
-     */
-    public function messages(): array
-    {
-        return [
-            'trip_end_value.gt' => 'The trip end value must be greater than the initial value.',
-        ];
-    }
+    // /**
+    //  * Custom error messages for validation.
+    //  */
+    // public function messages(): array
+    // {
+    //     return [
+    //         'trip_end_value.gt' => 'The trip end value must be greater than the initial value.',
+    //     ];
+    // }
 
     /**
      * Prepare the data for validation by converting camelCase inputs to snake_case.
