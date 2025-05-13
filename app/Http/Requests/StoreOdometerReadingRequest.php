@@ -14,14 +14,26 @@ class StoreOdometerReadingRequest extends FormRequest
 
     public function rules(): array
     {
-        return [
+        // Base rules
+        $rules = [
             'vehicle_id' => 'required|exists:vehicles,id',
             'trip_id' => 'nullable|exists:trips,id',
             'initial_value' => 'nullable|integer|min:0',
-            'trip_end_value'  => 'nullable|integer|min:0|gt:initial_value',
             'reading_unit' => 'required|in:Kilometre,Mile',
             'meter_not_working' => 'sometimes|boolean',
         ];
+
+        // Always allow trip_end_value to be nullable, integer, min:0
+        $tripEndRules = ['nullable', 'integer', 'min:0'];
+
+        // Only enforce gt:initial_value if initial_value > 0
+        if ($this->input('initial_value') !== null && (int) $this->input('initial_value') > 0) {
+            $tripEndRules[] = 'gt:initial_value';
+        }
+
+        $rules['trip_end_value'] = $tripEndRules;
+
+        return $rules;
     }
 
     public function messages(): array
