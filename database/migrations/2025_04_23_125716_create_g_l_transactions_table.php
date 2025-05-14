@@ -26,6 +26,7 @@ return new class extends Migration {
             $table->enum('trans_type', [
                 'invoice',
                 'payment',
+                'requisition'
             ]);
             $table->string('description');
 

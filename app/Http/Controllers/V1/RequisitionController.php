@@ -123,7 +123,7 @@ class RequisitionController extends Controller
                     : Carbon::now()->toDateString(),
                 'description' => "Requisition approved – {$funding->purpose}",
                 'created_by' => $funding->accountant_id ?? auth()->id(),
-                'trans_type' => 'requisition',
+                'trans_type' => ' ',
             ]);
 
             // 2) Debit the funded current‐asset account
