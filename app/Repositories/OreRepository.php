@@ -18,7 +18,9 @@ class OreRepository
      */
     public function getOres($startDate, $endDate)
     {
-        return Ore::whereBetween('created_at', [$startDate, $endDate])
+         $start = Carbon::parse($startDate)->startOfDay();
+        $end = Carbon::parse($endDate)->endOfDay();
+        return Ore::whereBetween('created_at', [$start, $end])
             ->with(['supplier', 'oreType', 'oreQualityType', 'oreQualityGrade', 'creator'])
             ->get();
     }
@@ -33,7 +35,10 @@ class OreRepository
      */
     public function getOresForSiteClerk($siteClerkId, $startDate, $endDate)
     {
-        return Ore::whereBetween('created_at', [$startDate, $endDate])
+         $start = Carbon::parse($startDate)->startOfDay();
+        $end = Carbon::parse($endDate)->endOfDay();
+
+        return Ore::whereBetween('created_at', [$start, $end])
             ->where('created_by', $siteClerkId)
             ->with(['supplier', 'oreType', 'oreQualityType', 'oreQualityGrade', 'creator'])
             ->get();
