@@ -149,6 +149,10 @@ class ConsolidatedDataController extends Controller
                     $this->oreRepository->getOres($startDate, $endDate)
                 )
             ];
+             $data['oreQuantityStats'] = $this
+                ->oreRepository
+                ->generateOreQuantityStats($userId);
+
             $data['suppliers'] = ['data' => SupplierResource::collection($this->supplierRepository->getAllSuppliers())];
             $data['oreTypes'] = ['data' => OreTypeResource::collection($this->oreTypeRepository->getOreTypes())];
             $data['oreQualityTypes'] = ['data' => OreQualityTypeResource::collection($this->oreQualityTypeRepository->getAllOreQualityTypes())];
@@ -267,6 +271,9 @@ class ConsolidatedDataController extends Controller
             'cashRequisitions' => number_format($overallCashRequisitions, 2, '.', ''),
             'monthly' => $months,
         ];
+        $data['oreQuantityStats'] = $this
+            ->oreRepository
+            ->generateOreQuantityStats();
 
         return $data;
     }
