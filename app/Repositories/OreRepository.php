@@ -81,9 +81,7 @@ class OreRepository
         $end = Carbon::parse($endDate)->endOfDay();
 
         // 1) Submitted
-        $submittedOres = Ore::whereHas('dispatches', function ($q) use ($siteClerkId) {
-            $q->where('site_clerk_id', $siteClerkId);
-        })
+        $submittedOres = Ore::where('created_by',$siteClerkId)
             ->whereBetween('ores.created_at', [$start, $end])
             ->join('ore_types', 'ores.ore_type_id', '=', 'ore_types.id')
             ->select('ore_types.type', DB::raw('SUM(ores.quantity) as submitted'))
