@@ -14,7 +14,7 @@ class GLTransaction extends Model
         'trans_date',
         'supplier_id',
         'trip_id',
-        'trans_date',
+        'trans_type',
         'description',
         'created_by',
     ];

@@ -14,13 +14,14 @@ class AccountSeeder extends Seeder
     public function run()
     {
         $accounts = [
-            ['Cash on Hand', 'Asset',1],
-            ['Bank', 'Asset',0],
-            ['Ecocash', 'Asset',0],
-            ['Ore expense', 'Expense',1],
-            ['Diesel expense', 'Expense',1],
-            ['Ore loading expense', 'Expense',1],
-            ['Accounts payable','Liability',1]
+            ['Cash on Hand', 'Asset', 1],
+            ['Bank', 'Asset', 0],
+            ['Ecocash', 'Asset', 0],
+            ['Ore expense', 'Expense', 1],
+            ['Diesel expense', 'Expense', 1],
+            ['Ore loading expense', 'Expense', 1],
+            ['Accounts payable', 'Liability', 1],
+            ['Equity', 'Equity', 1]
         ];
 
         foreach ($accounts as [$name, $type]) {
