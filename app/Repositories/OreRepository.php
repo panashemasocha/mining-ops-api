@@ -43,15 +43,15 @@ class OreRepository
 
     /**
      * Get ore quantity statistics by type for all ores within a date range.
-     *
-     * @param string $startDate
-     * @param string $endDate
-     * @return array
      */
     public function getOreQuantityStats($startDate, $endDate)
     {
-        // Get submitted ore quantities (from Ore table)
-        $submittedOres = Ore::whereBetween('ores.created_at', [$startDate, $endDate])
+        // Normalize to full-day Carbon instances
+        $start = Carbon::parse($startDate)->startOfDay();
+        $end = Carbon::parse($endDate)->endOfDay();
+
+        // 1) Submitted from ores table
+        $submittedOres = Ore::whereBetween('ores.created_at', [$start, $end])
             ->join('ore_types', 'ores.ore_type_id', '=', 'ore_types.id')
             ->select('ore_types.type', DB::raw('SUM(ores.quantity) as submitted'))
             ->groupBy('ore_types.type')
@@ -59,9 +59,9 @@ class OreRepository
             ->keyBy('type')
             ->toArray();
 
-        // Get collected ore quantities (from fulfilled trips)
+        // 2) Collected from fulfilled trips
         $collectedOres = Trip::where('trips.status', 'fulfilled')
-            ->whereBetween('trips.created_at', [$startDate, $endDate])
+            ->whereBetween('trips.created_at', [$start, $end])
             ->join('dispatches', 'trips.dispatch_id', '=', 'dispatches.id')
             ->join('ores', 'dispatches.ore_id', '=', 'ores.id')
             ->join('ore_types', 'ores.ore_type_id', '=', 'ore_types.id')
@@ -71,36 +71,22 @@ class OreRepository
             ->keyBy('type')
             ->toArray();
 
-        // Combine both datasets
-        $oreTypeStats = [];
-        $allTypes = array_unique(array_merge(array_keys($submittedOres), array_keys($collectedOres)));
-
-        foreach ($allTypes as $type) {
-            $oreTypeStats[] = [
-                'type' => $type,
-                'submitted' => isset($submittedOres[$type]) ? round($submittedOres[$type]['submitted'], 2) : 0,
-                'collected' => isset($collectedOres[$type]) ? round($collectedOres[$type]['collected'], 2) : 0
-            ];
-        }
-
-        return $oreTypeStats;
+        return $this->combineStats($submittedOres, $collectedOres);
     }
 
     /**
-     * Get ore quantity statistics by type for a specific site clerk within a date range.
-     *
-     * @param int $siteClerkId
-     * @param string $startDate
-     * @param string $endDate
-     * @return array
+     * Same as above but filtered to a specific site clerk.
      */
     public function getOreQuantityStatsForSiteClerk($siteClerkId, $startDate, $endDate)
     {
-        // Get submitted ore quantities (from Ore table)
+        $start = Carbon::parse($startDate)->startOfDay();
+        $end = Carbon::parse($endDate)->endOfDay();
+
+        // 1) Submitted
         $submittedOres = Ore::whereHas('dispatches', function ($q) use ($siteClerkId) {
             $q->where('site_clerk_id', $siteClerkId);
         })
-            ->whereBetween('ores.created_at', [$startDate, $endDate])
+            ->whereBetween('ores.created_at', [$start, $end])
             ->join('ore_types', 'ores.ore_type_id', '=', 'ore_types.id')
             ->select('ore_types.type', DB::raw('SUM(ores.quantity) as submitted'))
             ->groupBy('ore_types.type')
@@ -108,11 +94,13 @@ class OreRepository
             ->keyBy('type')
             ->toArray();
 
-        // Get collected ore quantities (from fulfilled trips)
+        // 2) Collected
         $collectedOres = Trip::where('trips.status', 'fulfilled')
-            ->whereBetween('trips.created_at', [$startDate, $endDate])
-            ->join('dispatches', 'trips.dispatch_id', '=', 'dispatches.id')
-            ->where('dispatches.site_clerk_id', $siteClerkId)
+            ->whereBetween('trips.created_at', [$start, $end])
+            ->join('dispatches', function ($join) use ($siteClerkId) {
+                $join->on('trips.dispatch_id', '=', 'dispatches.id')
+                    ->where('dispatches.site_clerk_id', $siteClerkId);
+            })
             ->join('ores', 'dispatches.ore_id', '=', 'ores.id')
             ->join('ore_types', 'ores.ore_type_id', '=', 'ore_types.id')
             ->select('ore_types.type', DB::raw('SUM(trips.ore_quantity) as collected'))
@@ -121,69 +109,74 @@ class OreRepository
             ->keyBy('type')
             ->toArray();
 
-        // Combine both datasets
-        $oreTypeStats = [];
-        $allTypes = array_unique(array_merge(array_keys($submittedOres), array_keys($collectedOres)));
-
-        foreach ($allTypes as $type) {
-            $oreTypeStats[] = [
-                'type' => $type,
-                'submitted' => isset($submittedOres[$type]) ? round($submittedOres[$type]['submitted'], 2) : 0,
-                'collected' => isset($collectedOres[$type]) ? round($collectedOres[$type]['collected'], 2) : 0
-            ];
-        }
-
-        return $oreTypeStats;
+        return $this->combineStats($submittedOres, $collectedOres);
     }
 
     /**
-     * Generate comprehensive ore quantity statistics.
-     *
-     * @param string|null $siteClerkId (Optional) Site clerk ID for filtering
-     * @return array
+     * Combines submitted & collected arrays into the final per‑type structure.
+     */
+    protected function combineStats(array $submitted, array $collected): array
+    {
+        $allTypes = array_unique(
+            array_merge(array_keys($submitted), array_keys($collected))
+        );
+
+        $stats = [];
+        foreach ($allTypes as $type) {
+            $stats[] = [
+                'type' => $type,
+                'submitted' => $submitted[$type]['submitted'] ?? 0,
+                'collected' => $collected[$type]['collected'] ?? 0,
+            ];
+        }
+
+        return $stats;
+    }
+
+    /**
+     * Generate comprehensive ore quantity stats for: all‑time, this month, this week, today.
      */
     public function generateOreQuantityStats($siteClerkId = null)
     {
         $now = Carbon::now();
-        $today = $now->format('Y-m-d');
-        $startOfMonth = $now->copy()->startOfMonth()->format('Y-m-d');
-        $startOfWeek = $now->copy()->startOfWeek()->format('Y-m-d');
-        $currentWeekNumber = $now->weekOfMonth;
+        $today = $now->toDateString();
 
-        // Get stats for all time
-        $allTimeOreStats = $siteClerkId
+        // All time (back to year 2000)
+        $allTimeStats = $siteClerkId
             ? $this->getOreQuantityStatsForSiteClerk($siteClerkId, '2000-01-01', $today)
             : $this->getOreQuantityStats('2000-01-01', $today);
 
-        // Get stats for current month
-        $currentMonthOreStats = $siteClerkId
-            ? $this->getOreQuantityStatsForSiteClerk($siteClerkId, $startOfMonth, $today)
-            : $this->getOreQuantityStats($startOfMonth, $today);
+        // Month → today
+        $monthStart = $now->copy()->startOfMonth()->toDateString();
+        $monthStats = $siteClerkId
+            ? $this->getOreQuantityStatsForSiteClerk($siteClerkId, $monthStart, $today)
+            : $this->getOreQuantityStats($monthStart, $today);
 
-        // Get stats for current week
-        $currentWeekOreStats = $siteClerkId
-            ? $this->getOreQuantityStatsForSiteClerk($siteClerkId, $startOfWeek, $today)
-            : $this->getOreQuantityStats($startOfWeek, $today);
+        // Week → today
+        $weekStart = $now->copy()->startOfWeek()->toDateString();
+        $weekStats = $siteClerkId
+            ? $this->getOreQuantityStatsForSiteClerk($siteClerkId, $weekStart, $today)
+            : $this->getOreQuantityStats($weekStart, $today);
 
-        // Get stats for today
-        $todayOreStats = $siteClerkId
+        // Today only (use whereDate to be extra explicit)
+        $todayStats = $siteClerkId
             ? $this->getOreQuantityStatsForSiteClerk($siteClerkId, $today, $today)
             : $this->getOreQuantityStats($today, $today);
 
         return [
-            'oreType' => $allTimeOreStats,
+            'oreType' => $allTimeStats,
             'currentMonth' => [
                 'label' => $now->format('F Y'),
-                'oreType' => $currentMonthOreStats
+                'oreType' => $monthStats,
             ],
             'currentWeek' => [
-                'label' => 'Week ' . $currentWeekNumber,
-                'oreType' => $currentWeekOreStats
+                'label' => 'Week ' . $now->weekOfMonth,
+                'oreType' => $weekStats,
             ],
             'today' => [
                 'label' => $today,
-                'oreType' => $todayOreStats
-            ]
+                'oreType' => $todayStats,
+            ],
         ];
     }
 }
