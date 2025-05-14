@@ -33,10 +33,8 @@ class OreRepository
      */
     public function getOresForSiteClerk($siteClerkId, $startDate, $endDate)
     {
-        return Ore::whereHas('dispatches', function ($query) use ($siteClerkId) {
-            $query->where('site_clerk_id', $siteClerkId);
-        })
-            ->whereBetween('created_at', [$startDate, $endDate])
+        return Ore::whereBetween('created_at', [$startDate, $endDate])
+            ->where('created_by', $siteClerkId)
             ->with(['supplier', 'oreType', 'oreQualityType', 'oreQualityGrade', 'creator'])
             ->get();
     }
