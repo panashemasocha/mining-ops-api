@@ -45,4 +45,9 @@ class Ore extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
+
+     public function dispatches()
+    {
+        return $this->hasMany(Dispatch::class, 'ore_id');
+    }
 }
