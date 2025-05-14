@@ -36,6 +36,7 @@ use App\Http\Resources\OreResource;
 use App\Http\Resources\SupplierResource;
 use App\Http\Resources\DispatchResource;
 use App\Http\Resources\TripResource;
+use App\Repositories\RequisitionRepository;
 use App\Repositories\VehicleSubTypeRepository;
 use Carbon\Carbon;
 
@@ -59,6 +60,7 @@ class ConsolidatedDataController extends Controller
     protected $vehicleCategoryRepository;
     protected $vehicleSubTypeRepository;
     protected $miningSiteRepository;
+    protected $requisitionRepository;
 
     public function __construct(
         OreRepository $oreRepository,
@@ -78,7 +80,8 @@ class ConsolidatedDataController extends Controller
         DieselAllocationTypeRepository $dieselAllocationTypeRepository,
         VehicleCategoryRepository $vehicleCategoryRepository,
         VehicleSubTypeRepository $vehicleSubTypeRepository,
-        MiningSiteRepository $miningSiteRepository
+        MiningSiteRepository $miningSiteRepository,
+        RequisitionRepository $requisitionRepository,
     ) {
         $this->oreRepository = $oreRepository;
         $this->supplierRepository = $supplierRepository;
@@ -98,6 +101,7 @@ class ConsolidatedDataController extends Controller
         $this->vehicleCategoryRepository = $vehicleCategoryRepository;
         $this->vehicleSubTypeRepository = $vehicleSubTypeRepository;
         $this->miningSiteRepository = $miningSiteRepository;
+        $this->requisitionRepository = $requisitionRepository;
     }
 
     /**
@@ -227,6 +231,7 @@ class ConsolidatedDataController extends Controller
         $overallCurrentAssets = $this->accountingRepository->getCurrentAssetsBalance($endCarbon);
         $overallCreditors = $this->accountingRepository->getCreditorsBalance($endCarbon);
         $overallPaidExpenses = $this->accountingRepository->getTotalPaidExpenses($startDate, $endDate);
+        $overallCashRequisitions = $this->requisitionRepository->getTotalAcceptedUpTo($endCarbon);
 
         $months = [];
         for ($i = 0; $i < 3; $i++) {
@@ -243,12 +248,14 @@ class ConsolidatedDataController extends Controller
             $paidExpenses = $this->accountingRepository->getTotalPaidExpenses($monthStart, $monthEnd);
             $currentAssets = $this->accountingRepository->getCurrentAssetsBalance($monthEnd);
             $creditors = $this->accountingRepository->getCreditorsBalance($monthEnd);
+            $monthCashReqs = $this->requisitionRepository->getTotalAcceptedBetween($monthStart, $monthEnd);
 
             $months[] = [
                 'month' => $monthDate->format('F Y'),
                 'currentAssets' => number_format($currentAssets, 2, '.', ''),
                 'creditors' => number_format($creditors, 2, '.', ''),
                 'paidExpenses' => number_format($paidExpenses, 2, '.', ''),
+                'cashRequisitions' => number_format($monthCashReqs, 2, '.', ''),
             ];
         }
         $months = array_reverse($months); // Oldest to newest
@@ -257,6 +264,7 @@ class ConsolidatedDataController extends Controller
             'currentAssets' => number_format($overallCurrentAssets, 2, '.', ''),
             'creditors' => number_format($overallCreditors, 2, '.', ''),
             'paidExpenses' => number_format($overallPaidExpenses, 2, '.', ''),
+            'cashRequisitions' => number_format($overallCashRequisitions, 2, '.', ''),
             'monthly' => $months,
         ];
 
