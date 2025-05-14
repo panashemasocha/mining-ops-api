@@ -43,6 +43,9 @@ return new class extends Migration {
             $table->year('year_of_manufacture')->nullable();
             $table->string('vin')->nullable();
 
+            $table->enum('odometer_reading_unit', allowed: ['Kilometre', 'Mile'])->nullable();
+            $table->string('initial_odometer_reading')->nullable();
+
             $table->decimal('loading_capacity', 8, 2)->nullable();
             $table->integer('engine_hours')->nullable();
 

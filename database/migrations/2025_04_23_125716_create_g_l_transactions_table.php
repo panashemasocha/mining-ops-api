@@ -12,29 +12,39 @@ return new class extends Migration {
     {
         Schema::create('gl_transactions', function (Blueprint $table) {
             $table->id();
-            $table->date('trans_date');
+
+            // Transaction date
+            $table->date('trans_date')->index();
+
+            // Optional links to supplier and trip
             $table->foreignId('supplier_id')
-                ->nullable()
-                ->constrained('suppliers')
-                ->onUpdate('cascade')
-                ->onDelete('set null');
+                  ->nullable()
+                  ->constrained()
+                  ->cascadeOnUpdate()
+                  ->nullOnDelete();
+
             $table->foreignId('trip_id')
-                ->nullable()
-                ->constrained('trips')
-                ->onUpdate('cascade')
-                ->onDelete('set null');
-            $table->enum('trans_type', [
-                'invoice',
-                'payment',
-                'requisition'
-            ]);
+                  ->nullable()
+                  ->constrained()
+                  ->cascadeOnUpdate()
+                  ->nullOnDelete();
+
+            // Type of transaction
+            $table->enum('trans_type', ['invoice', 'payment', 'requisition'])
+                  ->comment('Invoice, payment, or requisition')
+                  ->index();
+
+            // Description of the transaction
             $table->string('description');
 
+            // Who created it
             $table->foreignId('created_by')
-                ->nullable()
-                ->constrained('users')
-                ->onUpdate('cascade')
-                ->onDelete('set null');
+                  ->nullable()
+                  ->constrained('users')
+                  ->cascadeOnUpdate()
+                  ->nullOnDelete();
+
+            // Timestamps
             $table->timestamps();
         });
     }

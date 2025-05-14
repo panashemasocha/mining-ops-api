@@ -23,7 +23,7 @@ return new class extends Migration {
                 ->onDelete('set null');
             $table->unsignedBigInteger('initial_value')->nullable();
             $table->unsignedBigInteger('trip_end_value')->nullable();
-            $table->enum('reading_unit', ['Kilometre', 'Mile'])->nullable();
+            $table->enum('reading_unit', allowed: ['Kilometre', 'Mile'])->nullable();
             $table->boolean('meter_not_working')->default(false);
             $table->timestamps();
         });
