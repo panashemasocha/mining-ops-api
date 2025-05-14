@@ -5,49 +5,67 @@ namespace App\Repositories;
 use App\Models\Account;
 use App\Models\GLEntry;
 use App\Models\GLTransaction;
-use Log;
+use App\Models\GlPaymentAllocation;
+use Carbon\Carbon;
 
 class AccountingRepository
 {
-    public function getAllFinancials($perPage = 10)
+    /**
+     * Get the total balance of current assets as of a given date.
+     *
+     * @param Carbon $asOfDate
+     * @return float
+     */
+    public function getCurrentAssetsBalance($asOfDate)
     {
-        return GLTransaction::paginate($perPage, ['*'], 'financials_page');
+        $balance = GLEntry::whereIn('account_id', [1, 2, 3])
+            ->whereHas('transaction', function ($q) use ($asOfDate) {
+                $q->where('trans_date', '<=', $asOfDate);
+            })
+            ->selectRaw('SUM(debit_amt) - SUM(credit_amt) as balance')
+            ->value('balance');
+
+        return $balance ?? 0;
     }
 
     /**
-     * Get cashbook totals for “Cash on Hand”.
+     * Get the balance of creditors as of a given date.
      *
-     * @param  string|null  $startDate  YYYY‑MM‑DD
-     * @param  string|null  $endDate    YYYY‑MM‑DD
-     * @return array
-     *
-     * @throws \RuntimeException if the Cash on Hand account is missing
+     * @param Carbon $asOfDate
+     * @return float
      */
-    public function getCashbookTotals(?string $startDate, ?string $endDate): array
+    public function getCreditorsBalance($asOfDate)
     {
-        $cashAccount = Account::where('account_name', 'Cash on Hand')->first();
+        $balance = GLEntry::where('account_id', 7)
+            ->whereHas('transaction', function ($q) use ($asOfDate) {
+                $q->where('trans_date', '<=', $asOfDate);
+            })
+            ->selectRaw('SUM(credit_amt) - SUM(debit_amt) as balance')
+            ->value('balance');
 
-        if (! $cashAccount) {
-            Log::error('Cash on Hand account not found.');
-            throw new \RuntimeException('Cash on Hand account not found.');
-        }
-
-        $query = GLEntry::where('account_id', $cashAccount->id);
-
-        if ($startDate) {
-            $query->whereDate('created_at', '>=', $startDate);
-        }
-        if ($endDate) {
-            $query->whereDate('created_at', '<=', $endDate);
-        }
-
-        $receipts = $query->sum('debit_amt');
-        $payments = $query->sum('credit_amt');
-
-        return [
-            'cashReceipts' => $receipts,
-            'cashPayments' => $payments,
-            'balance'      => $receipts - $payments,
-        ];
+        return $balance ?? 0;
     }
+
+    /**
+     * Get the total paid expenses within a given period.
+     *
+     * @param string $startDate
+     * @param string $endDate
+     * @return float
+     */
+    public function getTotalPaidExpenses($startDate, $endDate)
+    {
+        $expenseInvoiceIds = GLTransaction::whereHas('entries', function ($q) {
+            $q->whereIn('account_id', [4, 5, 6])->where('debit_amt', '>', 0);
+        })->pluck('id');
+
+        $totalPaid = GlPaymentAllocation::whereIn('invoice_trans_id', $expenseInvoiceIds)
+            ->whereHas('paymentTransaction', function ($q) use ($startDate, $endDate) {
+                $q->whereBetween('trans_date', [$startDate, $endDate]);
+            })
+            ->sum('allocated_amount');
+
+        return $totalPaid ?? 0;
+    }
+
 }

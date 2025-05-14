@@ -3,11 +3,9 @@
 namespace App\Http\Controllers\V1;
 
 use App\Http\Requests\GetConsolidatedDataRequest;
-use App\Http\Requests\ViewCashbookRequest;
 use App\Http\Resources\BranchResource;
 use App\Http\Resources\CostPriceResource;
 use App\Http\Resources\DepartmentResource;
-use App\Http\Resources\GLTransactionResource;
 use App\Http\Resources\JobPositionResource;
 use App\Http\Resources\MiningSiteResource;
 use App\Http\Resources\OreQualityGradeResource;
@@ -16,7 +14,6 @@ use App\Http\Resources\OreTypeResource;
 use App\Http\Resources\UserRoleResource;
 use App\Http\Resources\VehicleCategoryResource;
 use App\Http\Resources\VehicleSubTypeResource;
-use App\Models\VehicleSubType;
 use App\Repositories\AccountingRepository;
 use App\Repositories\DieselAllocationTypeRepository;
 use App\Repositories\MiningSiteRepository;
@@ -59,11 +56,8 @@ class ConsolidatedDataController extends Controller
     protected $oreTypeRepository;
     protected $oreQualityTypeRepository;
     protected $oreQualityGradeRepository;
-
     protected $vehicleCategoryRepository;
-
     protected $vehicleSubTypeRepository;
-
     protected $miningSiteRepository;
 
     public function __construct(
@@ -84,7 +78,7 @@ class ConsolidatedDataController extends Controller
         DieselAllocationTypeRepository $dieselAllocationTypeRepository,
         VehicleCategoryRepository $vehicleCategoryRepository,
         VehicleSubTypeRepository $vehicleSubTypeRepository,
-        MiningSiteRepository $miningSiteRepository,
+        MiningSiteRepository $miningSiteRepository
     ) {
         $this->oreRepository = $oreRepository;
         $this->supplierRepository = $supplierRepository;
@@ -146,7 +140,6 @@ class ConsolidatedDataController extends Controller
                 $this->dieselAllocationTypeRepository->getAllDieselAllocationTypes()
             );
         } else if ($jobPositionId == 4) {
-
             $data['ores'] = [
                 'data' => OreResource::collection(
                     $this->oreRepository->getOres($startDate, $endDate)
@@ -156,21 +149,17 @@ class ConsolidatedDataController extends Controller
             $data['oreTypes'] = ['data' => OreTypeResource::collection($this->oreTypeRepository->getOreTypes())];
             $data['oreQualityTypes'] = ['data' => OreQualityTypeResource::collection($this->oreQualityTypeRepository->getAllOreQualityTypes())];
             $data['oreQualityGrades'] = ['data' => OreQualityGradeResource::collection($this->oreQualityGradeRepository->getAllOreQualityGrade())];
-
         } else if ($jobPositionId == 5) {
             $data['dispatches'] = [
-                'data' =>
-                    DispatchResource::collection(
-                        $this->dispatchRepository->getDispatchesForDriver($userId, $startDate, $endDate)
-                    )
+                'data' => DispatchResource::collection(
+                    $this->dispatchRepository->getDispatchesForDriver($userId, $startDate, $endDate)
+                )
             ];
             $data['trips'] = [
-                'data' =>
-                    TripResource::collection(
-                        $this->tripRepository->getTripsForDriver($userId, $startDate, $endDate)
-                    )
+                'data' => TripResource::collection(
+                    $this->tripRepository->getTripsForDriver($userId, $startDate, $endDate)
+                )
             ];
-
         } else if (in_array($roleId, [1, 2, 3])) {
             $data = $this->getComprehensiveData($request, $startDate, $endDate);
         } else {
@@ -180,22 +169,12 @@ class ConsolidatedDataController extends Controller
         return response()->json($data, 200);
     }
 
-    public function cashbook(ViewCashbookRequest $request)
-    {
-        try {
-            $data = $this->accountingRepository
-                ->getCashbookTotals($request->start_date, $request->end_date);
-        } catch (\RuntimeException $e) {
-            return response()->json(['message' => $e->getMessage()], 404);
-        }
-
-        return response()->json($data);
-    }
-
     /**
      * Retrieve comprehensive data for role IDs 1, 2, or 3 (except Site clerk with roleId 3).
      *
      * @param GetConsolidatedDataRequest $request
+     * @param string $startDate
+     * @param string $endDate
      * @return array
      */
     private function getComprehensiveData(GetConsolidatedDataRequest $request, $startDate, $endDate)
@@ -211,19 +190,16 @@ class ConsolidatedDataController extends Controller
                     $this->oreRepository->getOres($startDate, $endDate)
                 )
             ],
-            'suppliers' =>
-                [
-                    'data' => SupplierResource::collection(
-                        $this->supplierRepository->getAllSuppliers() ?? collect()
-                    )
-                ],
-
+            'suppliers' => [
+                'data' => SupplierResource::collection(
+                    $this->supplierRepository->getAllSuppliers() ?? collect()
+                )
+            ],
             'trips' => [
                 'data' => TripResource::collection(
                     $this->tripRepository->getTrips($startDate, $endDate)
                 )
             ],
-
             'vehicleSubTypes' => [
                 'data' => VehicleSubTypeResource::collection(
                     $this->vehicleSubTypeRepository->getAllSubTypes()
@@ -239,82 +215,51 @@ class ConsolidatedDataController extends Controller
                     $this->miningSiteRepository->getAllSites()
                 )
             ],
-
-
-            // 'vehicles' => $this->transformPaginated(
-            //     $this->vehicleRepository->getAllVehicles($request->input('vehicles_per_page', 10)),
-            //     VehicleResource::class
-            // ),
-            'financials' => $this->transformPaginated(
-                $this->accountingRepository->getAllFinancials($request->input('financials_per_page', 10)),
-                GLTransactionResource::class
-            ),
         ];
 
-        try {
-            $cashbookTotals = $this->accountingRepository
-                ->getCashbookTotals(
-                    $request->input('start_date'),
-                    $request->input('end_date')
-                );
-        } catch (\RuntimeException $e) {
-            $cashbookTotals = [
-                'cashReceipts' => 0,
-                'cashPayments' => 0,
-                'balance' => 0,
+        $data['departments'] = DepartmentResource::collection($this->departmentRepository->getAllDepartments());
+        $data['branches'] = BranchResource::collection($this->branchRepository->getAllBranches());
+        $data['jobPositions'] = JobPositionResource::collection($this->jobPositionRepository->getAllJobPositions());
+        $data['roles'] = UserRoleResource::collection($this->roleRepository->getAllRoles());
+
+        // Add financialStats
+        $endCarbon = Carbon::parse($endDate);
+        $overallCurrentAssets = $this->accountingRepository->getCurrentAssetsBalance($endCarbon);
+        $overallCreditors = $this->accountingRepository->getCreditorsBalance($endCarbon);
+        $overallPaidExpenses = $this->accountingRepository->getTotalPaidExpenses($startDate, $endDate);
+
+        $months = [];
+        for ($i = 0; $i < 3; $i++) {
+            $monthDate = $endCarbon->copy()->subMonths($i)->startOfMonth();
+            $monthStart = $monthDate->copy();
+            $monthEnd = $monthDate->copy()->endOfMonth();
+
+            if ($monthDate->month == $endCarbon->month && $monthDate->year == $endCarbon->year) {
+                $monthEnd = $endCarbon->copy();
+            } else if ($monthEnd > $endCarbon) {
+                continue;
+            }
+
+            $paidExpenses = $this->accountingRepository->getTotalPaidExpenses($monthStart, $monthEnd);
+            $currentAssets = $this->accountingRepository->getCurrentAssetsBalance($monthEnd);
+            $creditors = $this->accountingRepository->getCreditorsBalance($monthEnd);
+
+            $months[] = [
+                'month' => $monthDate->format('F Y'),
+                'currentAssets' => number_format($currentAssets, 2, '.', ''),
+                'creditors' => number_format($creditors, 2, '.', ''),
+                'paidExpenses' => number_format($paidExpenses, 2, '.', ''),
             ];
         }
+        $months = array_reverse($months); // Oldest to newest
 
-        $data['cashbook'] = $cashbookTotals;
-
-        // $data['prices'] = CostPriceResource::collection($this->priceRepository->getAllPrices());
-         $data['departments'] = DepartmentResource::collection($this->departmentRepository->getAllDepartments());
-         $data['branches'] = BranchResource::collection($this->branchRepository->getAllBranches());
-         $data['jobPositions'] = JobPositionResource::collection($this->jobPositionRepository->getAllJobPositions());
-         $data['roles'] = UserRoleResource::collection($this->roleRepository->getAllRoles());
+        $data['financialStats'] = [
+            'currentAssets' => number_format($overallCurrentAssets, 2, '.', ''),
+            'creditors' => number_format($overallCreditors, 2, '.', ''),
+            'paidExpenses' => number_format($overallPaidExpenses, 2, '.', ''),
+            'monthly' => $months,
+        ];
 
         return $data;
-    }
-
-    /**
-     * Helper method to transform a paginated result using a given resource.
-     *
-     * @param mixed $result   Either a LengthAwarePaginator (or similar) or a plain Collection.
-     * @param string $resourceClass
-     * @return array
-     */
-    private function transformPaginated($result, $resourceClass)
-    {
-        if (!$result) {
-            return ['data' => []];
-        }
-        // Check if the result is a LengthAwarePaginator instance
-        if ($result instanceof \Illuminate\Pagination\LengthAwarePaginator) {
-            // Transform the data items using the provided resource.
-            $transformedData = $resourceClass::collection($result)->resolve();
-
-            // Extract pagination details.
-            $pagination = [
-                'current_page' => $result->currentPage(),
-                'last_page' => $result->lastPage(),
-                'per_page' => $result->perPage(),
-                'total' => $result->total(),
-                'first_page_url' => $result->url(1),
-                'last_page_url' => $result->url($result->lastPage()),
-                'next_page_url' => $result->nextPageUrl(),
-                'prev_page_url' => $result->previousPageUrl(),
-            ];
-
-            return [
-                'data' => $transformedData,
-                'links' => $pagination,
-                'meta' => $pagination,
-            ];
-        } else {
-            // Handle non-paginated results
-            return [
-                'data' => $resourceClass::collection($result)->resolve()
-            ];
-        }
     }
 }
