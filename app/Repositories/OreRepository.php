@@ -51,7 +51,7 @@ class OreRepository
     public function getOreQuantityStats($startDate, $endDate)
     {
         // Get submitted ore quantities (from Ore table)
-        $submittedOres = Ore::whereBetween('created_at', [$startDate, $endDate])
+        $submittedOres = Ore::whereBetween('ores.created_at', [$startDate, $endDate])
             ->join('ore_types', 'ores.ore_type_id', '=', 'ore_types.id')
             ->select('ore_types.type', DB::raw('SUM(ores.quantity) as submitted'))
             ->groupBy('ore_types.type')
@@ -60,8 +60,8 @@ class OreRepository
             ->toArray();
 
         // Get collected ore quantities (from fulfilled trips)
-        $collectedOres = Trip::where('status', 'fulfilled')
-            ->whereBetween('created_at', [$startDate, $endDate])
+        $collectedOres = Trip::where('trips.status', 'fulfilled')
+            ->whereBetween('trips.created_at', [$startDate, $endDate])
             ->join('dispatches', 'trips.dispatch_id', '=', 'dispatches.id')
             ->join('ores', 'dispatches.ore_id', '=', 'ores.id')
             ->join('ore_types', 'ores.ore_type_id', '=', 'ore_types.id')
@@ -97,10 +97,10 @@ class OreRepository
     public function getOreQuantityStatsForSiteClerk($siteClerkId, $startDate, $endDate)
     {
         // Get submitted ore quantities (from Ore table)
-        $submittedOres = Ore::whereHas('dispatches', function ($query) use ($siteClerkId) {
-            $query->where('site_clerk_id', $siteClerkId);
+        $submittedOres = Ore::whereHas('dispatches', function ($q) use ($siteClerkId) {
+            $q->where('site_clerk_id', $siteClerkId);
         })
-            ->whereBetween('created_at', [$startDate, $endDate])
+            ->whereBetween('ores.created_at', [$startDate, $endDate])
             ->join('ore_types', 'ores.ore_type_id', '=', 'ore_types.id')
             ->select('ore_types.type', DB::raw('SUM(ores.quantity) as submitted'))
             ->groupBy('ore_types.type')
@@ -109,8 +109,8 @@ class OreRepository
             ->toArray();
 
         // Get collected ore quantities (from fulfilled trips)
-        $collectedOres = Trip::where('status', 'fulfilled')
-            ->whereBetween('created_at', [$startDate, $endDate])
+        $collectedOres = Trip::where('trips.status', 'fulfilled')
+            ->whereBetween('trips.created_at', [$startDate, $endDate])
             ->join('dispatches', 'trips.dispatch_id', '=', 'dispatches.id')
             ->where('dispatches.site_clerk_id', $siteClerkId)
             ->join('ores', 'dispatches.ore_id', '=', 'ores.id')
