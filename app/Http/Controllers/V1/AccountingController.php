@@ -69,7 +69,7 @@ class AccountingController extends Controller
 
         // Build query, applying filters only when the request provided them
         $query = Account::query()
-            ->where('status', 1)                       
+            ->where('status', 1)
             ->withSum('entries as total_debits', 'debit_amt')
             ->withSum('entries as total_credits', 'credit_amt')
             ->when($request->filled('type'), function ($q) use ($request) {
@@ -78,7 +78,7 @@ class AccountingController extends Controller
             // ->when($request->filled('name'), function ($q) use ($request) {
             //     $q->where('account_name', 'like', '%' . $request->input('name') . '%');
             // })
-            ;
+        ;
 
         $paginated = $query->paginate($perPage);
 
@@ -173,7 +173,9 @@ class AccountingController extends Controller
                     'date' => $txn->trans_date->toDateTimeString(),
                     'type' => $txn->trans_type,
                     'trip' => $txn->trip,
-                    'supplier' => $txn->supplier,
+                    'supplier' => $txn->supplier
+                        ? new SupplierResource($txn->supplier)
+                        : null,
                     'description' => $txn->description,
                     'debit' => number_format($entry->debit_amt, 2, '.', ''),
                     'credit' => number_format($entry->credit_amt, 2, '.', ''),
