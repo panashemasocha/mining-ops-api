@@ -13,7 +13,7 @@ class SearchAccountsRequest extends FormRequest
     {
         $user = auth()->user();
 
-        return $user?->role?->id == 1 || $user->department?->name === 'Finance';
+        return in_array($user?->role?->id, [1, 2]) || $user->department?->name === 'Finance' || in_array($user?->jobPosition?->id, [3, 6]);
     }
 
     /**
