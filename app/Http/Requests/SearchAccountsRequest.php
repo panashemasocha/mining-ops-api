@@ -40,7 +40,7 @@ class SearchAccountsRequest extends FormRequest
     }
 
     /**
-     * Custom error for unauthorized access.
+     * Custom error for unauthorised access.
      */
     protected function failedAuthorization()
     {

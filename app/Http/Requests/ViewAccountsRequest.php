@@ -41,7 +41,7 @@ class   ViewAccountsRequest extends FormRequest
     }
 
     /**
-     * Custom error message for unauthorized access.
+     * Custom error message for unauthorised access.
      */
     protected function failedAuthorization()
     {

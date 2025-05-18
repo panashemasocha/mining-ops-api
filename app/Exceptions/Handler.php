@@ -69,7 +69,7 @@ class Handler extends ExceptionHandler
 
         // Handle AuthorizationException
         if ($exception instanceof AuthorizationException && $request->expectsJson()) {
-            return response()->json(['message' => 'You are unauthorized to make this request.'], 403);
+            return response()->json(['message' => 'You are unauthorised to make this request.'], 403);
         }
 
         // Handle ValidationException
