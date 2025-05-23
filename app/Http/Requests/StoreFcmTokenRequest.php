@@ -21,6 +21,7 @@ class StoreFcmTokenRequest extends FormRequest
     {
         return [
             'device_type' => 'required|in:android,ios',
+            'token' => 'required|string'
         ];
     }
 
