@@ -9,6 +9,7 @@ use App\Http\Controllers\V1\DieselAllocationTypeController;
 use App\Http\Controllers\V1\DispatchController;
 use App\Http\Controllers\V1\ExcavatorUsageController;
 use App\Http\Controllers\V1\ExpenseController;
+use App\Http\Controllers\V1\FcmController;
 use App\Http\Controllers\V1\FleetStatisticalDataController;
 use App\Http\Controllers\V1\RequisitionController;
 use App\Http\Controllers\V1\JobPositionController;
@@ -147,7 +148,7 @@ Route::prefix('v1')->group(function () {
 
             //Bulk Insert
             Route::post('bulk-store', [TripController::class, 'bulkStore']);
-            
+
             //Update trip and odometer readings
             Route::patch('{tripId}/update-with-odometer', [TripOdometerController::class, 'updateTripAndOdometer']);
 
@@ -171,6 +172,11 @@ Route::prefix('v1')->group(function () {
         // Supplier
         Route::apiResource('suppliers', SupplierController::class);
 
+        //Notifications
+        Route::prefix('notifications')->group(function () {
+            Route::post('/fcm/register', [FcmController::class, 'register']);
+            Route::delete('/fcm/unregister', [FcmController::class, 'unregister']);
+        });
     });
 });
 

@@ -17,9 +17,21 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'employee_code', 'first_name', 'last_name', 'phone_number', 'pin', 'status',
-        'job_position_id', 'branch_id', 'department_id', 'role_id',
-        'physical_address', 'date_of_birth', 'national_id', 'gender', 'email'
+        'employee_code',
+        'first_name',
+        'last_name',
+        'phone_number',
+        'pin',
+        'status',
+        'job_position_id',
+        'branch_id',
+        'department_id',
+        'role_id',
+        'physical_address',
+        'date_of_birth',
+        'national_id',
+        'gender',
+        'email'
     ];
 
     /**
@@ -65,5 +77,10 @@ class User extends Authenticatable
     public function driverInfo()
     {
         return $this->hasOne(DriverInfo::class);
+    }
+
+    public function fcmTokens()
+    {
+        return $this->hasMany(FcmToken::class);
     }
 }

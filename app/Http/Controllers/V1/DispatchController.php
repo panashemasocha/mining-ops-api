@@ -84,6 +84,36 @@ class DispatchController extends Controller
                 $trips->push($trip);
             }
 
+            // Notify higher ranking users about new dispatch
+            // $this->fcmService->sendToHigherRanking(
+            //     ['manager', 'admin', 'supervisor'], // Adjust roles based on your system
+            //     'New Dispatch Created',
+            //     'A new dispatch has been created and needs attention.',
+            //     [
+            //         'dispatch_id' => $dispatch->id,
+            //         'notification_type' => 'new_dispatch',
+            //         'click_action' => 'FLUTTER_NOTIFICATION_CLICK'
+            //     ]
+            // );
+
+            // // Notify assigned drivers about their new trip
+            // if ($request->has('driver_ids') && is_array($request->driver_ids)) {
+            //     $drivers = User::whereIn('id', $request->driver_ids)->get();
+
+            //     if ($drivers->isNotEmpty()) {
+            //         $this->fcmService->sendToUsers(
+            //             $drivers,
+            //             'New Trip Assigned',
+            //             'You have been assigned to a new trip. Please check your schedule.',
+            //             [
+            //                 'dispatch_id' => $dispatch->id,
+            //                 'notification_type' => 'driver_assignment',
+            //                 'click_action' => 'FLUTTER_NOTIFICATION_CLICK'
+            //             ]
+            //         );
+            //     }
+            // }
+
             DB::commit();
 
             return response()->json([
@@ -114,6 +144,19 @@ class DispatchController extends Controller
         $dispatch = Dispatch::findOrFail($id);
 
         $dispatch->update($request->validated());
+        // Notify relevant parties about status change
+        // if ($request->status === 'completed') {
+        //     $this->fcmService->sendToHigherRanking(
+        //         ['manager', 'admin'],
+        //         'Dispatch Completed',
+        //         "Dispatch #{$dispatch->id} has been completed.",
+        //         [
+        //             'dispatch_id' => $dispatch->id,
+        //             'notification_type' => 'dispatch_completed',
+        //             'click_action' => 'FLUTTER_NOTIFICATION_CLICK'
+        //         ]
+        //     );
+        // }
         return new DispatchResource($dispatch);
     }
 

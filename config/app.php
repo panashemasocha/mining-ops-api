@@ -196,6 +196,7 @@ return [
         App\Providers\RouteServiceProvider::class,
 
         App\Providers\RequisitionStatsServiceProvider::class,
+        App\Providers\FcmServiceProvider::class
     ],
 
     /*

@@ -7,17 +7,19 @@ use App\Http\Resources\OreQuantityResource;
 use App\Http\Resources\OreResource;
 use App\Models\Ore;
 use App\Repositories\OreRepository;
+use App\Services\FcmService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
 class OreController extends Controller
 {
-    protected $oreRepository;
+    protected $fcmService;
 
-    public function __construct(OreRepository $oreRepository)
+
+    public function __construct(FcmService $fcmService)
     {
-        $this->oreRepository = $oreRepository;
+        $this->fcmService = $fcmService;
     }
 
     public function index(Request $request)
@@ -31,6 +33,19 @@ class OreController extends Controller
     public function store(StoreOreRequest $request)
     {
         $ore = Ore::create($request->validated());
+
+        // Notify relevant users about new ore data
+        $this->fcmService->sendToHigherRanking(
+            ['manager', 'supervisor', 'admin'], // Higher ranking roles
+            'New Ore Data Submitted',
+            'New ore data has been submitted for review.',
+            [
+                'ore_id' => $ore->id,
+                'notification_type' => 'new_ore',
+                'click_action' => 'FLUTTER_NOTIFICATION_CLICK'
+            ]
+        );
+
         return new OreResource($ore);
     }
 
