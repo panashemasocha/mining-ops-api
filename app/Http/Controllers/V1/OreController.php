@@ -36,7 +36,7 @@ class OreController extends Controller
 
         // Notify relevant users about new ore data
         $this->fcmService->sendToHigherRanking(
-            ['manager', 'supervisor', 'admin'], // Higher ranking roles
+            [1, 2, 3], // Higher ranking roles
             'New Ore Data Submitted',
             'New ore data has been submitted for review.',
             [

@@ -65,8 +65,8 @@ class FcmService
      */
     public function sendToHigherRanking(array $higherRoles, string $title, string $body, array $data = [])
     {
-        $users = User::whereHas('roles', function($query) use ($higherRoles) {
-            $query->whereIn('name', $higherRoles);
+        $users = User::whereHas('role', function($query) use ($higherRoles) {
+            $query->whereIn('id', $higherRoles);
         })->get();
         
         return $this->sendToUsers($users, $title, $body, $data);
