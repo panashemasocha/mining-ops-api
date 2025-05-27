@@ -34,13 +34,17 @@ class OreController extends Controller
     {
         $ore = Ore::create($request->validated());
 
+        // Prepare ore data for notification (must be string values)
+        $oreArray = (new OreResource($ore))->toArray(request());
+        $oreJson = json_encode($oreArray);
+
         // Notify relevant users about new ore data
         $this->fcmService->sendToHigherRanking(
             [1, 2, 3], // Higher ranking roles
-            '📋 New '.ucfirst($ore->oreType->type). 'Ore Stockpile Ready!',  
-            'Tap to review quantity details',  
+            '📋 New ' . ucfirst($ore->oreType->type) . 'Ore Stockpile Ready!',
+            'Tap to review quantity details',
             [
-                'ore' => new OreResource($ore),
+                'ore' => $oreJson,
                 'notification_type' => 'new_ore',
                 'click_action' => 'FLUTTER_NOTIFICATION_CLICK'
             ]
