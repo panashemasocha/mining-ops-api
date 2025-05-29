@@ -41,7 +41,7 @@ class OreController extends Controller
         // Notify relevant users about new ore data
         $this->fcmService->sendToHigherRanking(
             [1, 2, 3], // Higher ranking roles
-            '📋 New ' . ucfirst($ore->oreType->type) . 'Ore Stockpile Ready!',
+            '📋 New ' . ucfirst($ore->oreType->type) . ' Ore Stockpile Ready!',
             'Tap to review quantity details',
             [
                 'ore' => $oreJson,
