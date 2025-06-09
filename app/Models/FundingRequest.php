@@ -20,6 +20,7 @@ class FundingRequest extends Model
             'department_id',
             'mining_site_id',
             'accountant_id',
+            'approved_by',
             'decision_date',
             'status' //enum: pending,accepted,rejected
         ];

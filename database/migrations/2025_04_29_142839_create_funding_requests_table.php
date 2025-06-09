@@ -40,6 +40,11 @@ return new class extends Migration {
                         ->constrained('users')
                         ->onUpdate('cascade')
                         ->onDelete('set null');
+                  $table->foreignId('approved_by')
+                        ->nullable()
+                        ->constrained('users')
+                        ->onUpdate('cascade')
+                        ->onDelete('set null');
                   $table->dateTime('decision_date')->nullable();
                   $table->enum('status', ['pending', 'accepted', 'rejected'])->default('pending');
                   $table->timestamps();
