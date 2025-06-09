@@ -17,6 +17,7 @@ class FundingRequestResource extends JsonResource
             'department'     => new DepartmentResource($this->department),
             'miningSite'     => new MiningSiteResource($this->miningSite),
             'accountant'     => new UserResource($this->accountant),
+            'approvedBy'     => new UserResource($this->approvedBy),
             'decisionDate'   => $this->decision_date,
             'status'         => $this->status,
             'createdAt'      => $this->created_at,

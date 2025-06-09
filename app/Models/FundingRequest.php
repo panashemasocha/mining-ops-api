@@ -49,4 +49,11 @@ class FundingRequest extends Model
         return $this->belongsTo(User::class, 'accountant_id');
     }
 
+    
+    public function approvedBy()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
+
 }
