@@ -9,8 +9,8 @@ class AccountResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'accountName' => $this->account_name,
-            'accountType' => $this->account_type,
+            'name' => $this->account_name,
+            'type' => $this->account_type,
             'status' => $this->status == 1 ? 'Active' : 'Inactive',
             'createdAt' => $this->created_at,
             'updatedAt' => $this->updated_at,
