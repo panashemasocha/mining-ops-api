@@ -41,6 +41,7 @@ abstract class AbstractApiFilter
     {
         return $this->operatorMap[$operator] ?? '=';
     }
+    
 
     /**
      * List of parameters that should skip filtering when their value is 'any'.
