@@ -71,6 +71,3 @@ This API leverages **Repository & Service layers**, **Laravel Policies** for aut
 
 1. Clone the repository:
 
-```bash
-git clone <repo-url>
-cd <repo-folder>
